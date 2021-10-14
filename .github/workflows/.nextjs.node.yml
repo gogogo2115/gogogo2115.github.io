@@ -1,0 +1,42 @@
+name: GitHub Pages deploy
+
+on:
+  push:
+    branches: [master]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [14.x]
+        
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v2
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: packages 설치
+        run: npm ci
+
+      - name: App 빌드
+        run: npm run build 
+      
+      - name: App 내보내기
+        run: npm run export 
+        
+      - name: .nojekyll 파일 생성
+        run: touch ./out/.nojekyll
+
+      - name: Deploy 🚀
+        uses: JamesIves/github-pages-deploy-action@4.1.5
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH: gh-pages  # 배포될 브랜치
+          FOLDER: out   # 해당 폴더의 내용을 배포
+          CLEAN: true   # 배포 브랜치에 있는 파일들을 자동으로 삭제
