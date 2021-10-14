@@ -25,10 +25,10 @@ jobs:
         run: npm ci
 
       - name: App 빌드
-        run: npm run build 
+        run: npm run build
       
       - name: App 내보내기
-        run: npm run export 
+        run: npm run export
         
       - name: .nojekyll 파일 생성
         run: touch ./out/.nojekyll
