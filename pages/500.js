@@ -1,4 +1,4 @@
 function Error500(){
-    return(<>존재하지 않는 페이지 입니다.</>);
+    return(<>에러페이지</>);
 }
 export default Error500;
