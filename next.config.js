@@ -1,8 +1,9 @@
+const path = require('path');
+
 module.exports = {
     compress: true,
-    exportPathMap: () => ({
-        "/": { page: "/" },
-        "/main": { page: "/" },
-        "/home": { page: "/" }
-    })
-}
+    poweredByHeader: false,
+    sassOptions: {
+        includePaths: [path.join(__dirname, 'styles')]
+    },
+};
