@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
+import NotFound from "components/NotFound";
 
 function Error404(){
 
-    const [ isRedirect ] = useState(true);
+    const [ isRedirect ] = useState(false);
     const redirectPath = "/";
     const router = useRouter();
 
@@ -14,7 +15,7 @@ function Error404(){
     }, []);
 
     return((isRedirect === false)
-    ? <>존재하지 않는 페이지 입니다.</>
+    ? <NotFound />
     : null);
 }
 export default Error404;
