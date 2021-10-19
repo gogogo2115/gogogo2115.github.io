@@ -4,19 +4,23 @@
   "private": true,
   "scripts": {
     "dev": "next dev -p 3000",
+    "start": "next start -p 5000",
     "build": "next build",
     "export": "next export",
-    "start": "next start -p 5000",
+    "analyze": "ANALYZE=true next build",
     "lint": "next lint"
   },
   "dependencies": {
+    "@next/bundle-analyzer": "11.1.2",
     "next": "11.1.2",
+    "next-compose-plugins": "2.2.1",
+    "next-images": "1.8.1",
     "react": "17.0.2",
     "react-dom": "17.0.2",
     "sass": "1.43.2",
-    "styled-components": "5.3.1"
+    "styled-components": "5.3.3"
   },
   "devDependencies": {
-    "babel-plugin-styled-components": "1.13.2"
+    "babel-plugin-styled-components": "1.13.3"
   }
 }
