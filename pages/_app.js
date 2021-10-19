@@ -1,4 +1,7 @@
 import Head from "next/head";
+
+import wrapper from "store";
+
 import toBoolean from "lib/toBoolean";
 import Maintence from "components/Maintenance";
 
@@ -17,4 +20,4 @@ function NextApp({ Component, pageProps }) {
     : (<Component {...pageProps} />)} 
     </>);
 }
-export default NextApp;
+export default wrapper.withRedux(NextApp);
