@@ -15,12 +15,18 @@
     "next": "11.1.2",
     "next-compose-plugins": "2.2.1",
     "next-images": "1.8.1",
+    "next-redux-wrapper": "7.0.5",
     "react": "17.0.2",
     "react-dom": "17.0.2",
+    "react-redux": "7.2.5",
+    "redux": "4.1.1",
+    "redux-thunk": "2.3.0",
     "sass": "1.43.2",
     "styled-components": "5.3.3"
   },
   "devDependencies": {
-    "babel-plugin-styled-components": "1.13.3"
+    "babel-plugin-styled-components": "1.13.3",
+    "redux-devtools-extension": "2.13.9",
+    "redux-logger": "3.0.6"
   }
 }
