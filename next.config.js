@@ -12,6 +12,8 @@ const nextConfig = {
     sassOptions: {
         includePaths: [path.join(__dirname, 'styles')]
     },
+    esModule: true,
+    inlineImageLimit: false,
     images: {
         disableStaticImages: true,
     },
