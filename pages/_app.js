@@ -1,9 +1,10 @@
 import Head from "next/head";
+import toBoolean from "lib/toBoolean";
 import Maintence from "components/Maintenance";
 
 function NextApp({ Component, pageProps }) {
 
-    const isMaintenance = process.env.NEXT_PUBLIC_MAINTENANCE_MODE;
+    const isMaintenance = toBoolean(process.env.NEXT_PUBLIC_MAINTENANCE_MODE, true);
 
     return (<>
     <Head>
@@ -11,7 +12,7 @@ function NextApp({ Component, pageProps }) {
         <meta name="viewport" content="width=device-width" />
         <title>ssss</title>
     </Head>
-    {(isMaintenance === "true") 
+    {(isMaintenance === true) 
     ? (<Maintence />) 
     : (<Component {...pageProps} />)} 
     </>);
