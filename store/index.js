@@ -7,12 +7,13 @@ import logger from 'redux-logger';
 import thunk from 'redux-thunk';
 
 import appState from './appState';
+import appWindow from './appWinodw';
 
 const isProd = process.env.NODE_ENV === "production";
 const isDev = process.env.NODE_ENV === "development";
 
 const rootReducer = combineReducers({
-    appState
+    appState, appWindow
 });
 
 const middlewares = [thunk];
