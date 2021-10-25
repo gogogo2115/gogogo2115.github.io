@@ -7,13 +7,12 @@ import logger from 'redux-logger';
 import thunk from 'redux-thunk';
 
 import appState from './appState';
-import appWindow from './appWinodw';
 
 const isProd = process.env.NODE_ENV === "production";
 const isDev = process.env.NODE_ENV === "development";
 
 const rootReducer = combineReducers({
-    appState, appWindow
+ appState
 });
 
 const middlewares = [thunk];
@@ -23,7 +22,10 @@ const enhancer = (isProd)
 
 const store = () => ( createStore(rootReducer, enhancer) );
 
-console.log( isDev ? store().getState() : "");
+if(isDev){
+    console.log( store().getState() );
+}
+
 
 const wrapper = createWrapper(store);
 
