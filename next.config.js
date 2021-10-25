@@ -1,9 +1,5 @@
 const path = require('path');
-
 const withPlugins = require('next-compose-plugins');
-const withBundleAnalyzer = require('@next/bundle-analyzer')({
-    enabled: process.env.ANALYZE === 'true',
-});
 const withImages = require('next-images');
 
 const nextConfig = {
@@ -11,15 +7,9 @@ const nextConfig = {
     poweredByHeader: false,
     sassOptions: {
         includePaths: [path.join(__dirname, 'styles')]
-    },
-    esModule: true,
-    inlineImageLimit: false,
-    images: {
-        disableStaticImages: true,
-    },
+    }
 };
 
 module.exports = withPlugins([
-    withBundleAnalyzer, withImages
-
-], nextConfig);
+    withImages
+],nextConfig);
