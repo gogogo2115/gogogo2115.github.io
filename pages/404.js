@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
-import NotFound from "components/NotFound";
 
-function Error404(){
+const Error404 = () => {
 
     const [ isRedirect ] = useState(false);
     const redirectPath = "/";
@@ -15,7 +14,7 @@ function Error404(){
     }, []);
 
     return((isRedirect === false)
-    ? <NotFound />
-    : null);
+    ? <>Error404</>
+    : null);;
 }
 export default Error404;
