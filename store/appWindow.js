@@ -4,6 +4,7 @@ const { isBrowser } = require("lib/useSSR");
 const WINDOW_SIZE = "appWindow/WINDOW_SIZE"; 
 
 const { innerWidth, innerHeight } = isBrowser ? window :  { innerWidth: 0, innerHeight: 0 };
+
 function deviceType(windowWidth){
     if( windowWidth >= 320 && windowWidth <= 479 ){ //모바일
         return "mobile";
