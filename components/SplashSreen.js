@@ -1,3 +1,3 @@
-export default function SplashSreen(){
+export default function SplashSreen({children}){
     return(<></>);
 }
