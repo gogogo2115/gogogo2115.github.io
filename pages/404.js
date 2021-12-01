@@ -1,9 +1,9 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/router";
 
 const Error404 = () => {
 
-    const [ isRedirect ] = useState(false);
+    const isRedirect = false;
     const redirectPath = "/";
     const router = useRouter();
 

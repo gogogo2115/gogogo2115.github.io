@@ -1,10 +1,10 @@
 export default function isBoolean(str, option=false){
 
+    str = String(str).toLowerCase().trim();
+
     const strictBooleans = ['true', 'false', '1', '0'];
     const looseBooleans = [...strictBooleans, 'yes', 'no', 'y', 'n','on', 'off'];
 
-    str = String(str).toLowerCase().trim();
-    
     if(option === true){
         return looseBooleans.includes(str);
     }
