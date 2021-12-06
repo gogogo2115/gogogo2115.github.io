@@ -7,10 +7,20 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
 
 const nextConfig = {
     compress: true,
+    //generateEtags: false,
+    //productionBrowserSourceMaps: true,
     poweredByHeader: false,
-    sassOptions: {
-        includePaths: [path.join(__dirname, 'styles')]
-    }
+    esModule: true, //next-images image static url로 출력 옵션
+    inlineImageLimit: false, //next-images image static url로 출력 옵션
+    images: {disableStaticImages: true}, //next-images 오류방지를 위한 옵션
+    sassOptions: { includePaths: [path.join(__dirname, 'styles')] },
+    exportPathMap: async function (defaultPathMap, { dev, dir, outDir, distDir, buildId }) {
+        return {
+          '/': { page: '/', query: { position: 'index' } },
+          '/home': { page: '/', query: { position: 'home' } },
+          '/main': { page: '/', query: { position: 'main' } },
+        };
+    },
 };
 
 module.exports = withPlugins([
