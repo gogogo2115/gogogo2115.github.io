@@ -20,6 +20,7 @@ const StyledFooter = styled.footer`
     }
     .copyright{
         text-align: center;
+        background: #202020;
     }
 `
 function Footer(){
