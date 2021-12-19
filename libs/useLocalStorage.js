@@ -1,6 +1,5 @@
-import { useEffect, useLayoutEffect, useState, useCallback, useMemo } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import isEmpty from './isEmpty';
-
 import { isBrowser } from './useSSR';
 
 const parse = (str) => {
@@ -15,7 +14,7 @@ const parse = (str) => {
 
 const stringify = (obj) => {
   try {
-    const typeChk = (typeof obj !== 'string');
+    const typeChk = (typeof obj !== 'string' && typeof obj !== 'function' );
     return typeChk ? JSON.stringify(obj) : String(obj);
   } catch (err) {
     //console.log('stringify : JSON stringify Error', obj);
@@ -30,4 +29,40 @@ export function supported(){
   } catch (err) {
     return false;
   }
+}
+
+/**
+ * 
+ * @param {string} key 
+ * @param {any} initialValue 
+ */ 
+export default function useLocalStoreage( key, initialValue=null ){
+
+  
+  const [storedValue, setStoredValue] = useState(()=>{
+    const parseInitialValue= parse(initialValue);
+    try {
+      if(!supported()) return parseInitialValue;
+      const storeage = (window.localStorage||localStorage);
+      const getItem = storeage.getItem(key);
+      if(isEmpty(getItem,true)){
+        return parseInitialValue;
+      }
+      return parse(getItem); 
+    } catch (err) {
+      return parseInitialValue;
+    }
+  });
+
+  const handleStorageChange = useCallback((e) => {
+    if(e.key === key){
+    }
+  },[]);
+
+  useEffect(() => {
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
+  }, [handleStorageChange]);
+
+  return { supported, storedValue };
 }
