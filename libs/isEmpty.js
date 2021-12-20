@@ -6,10 +6,11 @@ export default function isEmpty(value, strOpt=false){
     if (Array.isArray(value) && value.length < 1) return true;
     if (typeof value === 'object' && Object.keys(value).length < 1) return true;
     if(strOpt === true){
-        if ( typeof value === 'string' && /^null$/i.test(value.trim()) ) return true;
-        if ( typeof value === 'string' && /^undefined$/i.test(value.trim()) ) return true;
-        if ( typeof value === 'string' && /^\{(\s*)\}$/g.test(value.trim()) ) return true;
-        if ( typeof value === 'string' && /^\[(\s*)\]$/g.test(value.trim()) ) return true;
+        const valueTrim = value.trim();
+        if ( typeof value === 'string' && /^null$/i.test(valueTrim) ) return true;
+        if ( typeof value === 'string' && /^undefined$/i.test(valueTrim) ) return true;
+        if ( typeof value === 'string' && /^\{(\s*)\}$/g.test(valueTrim) ) return true;
+        if ( typeof value === 'string' && /^\[(\s*)\]$/g.test(valueTrim) ) return true;
     }
     return false;
 }
