@@ -3,20 +3,32 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev -p 3000",
+    "dev": "next dev",
+    "start": "next start",
     "build": "next build",
     "export": "next export",
-    "start": "next start -p 5000",
+    "analyze": "ANALYZE=true next build",
     "lint": "next lint"
   },
   "dependencies": {
-    "next": "11.1.2",
+    "@next/bundle-analyzer": "12.0.7",
+    "@redux-devtools/extension": "3.2.2",
+    "classnames": "2.3.1",
+    "next": "12.0.7",
+    "next-compose-plugins": "2.2.1",
+    "next-images": "1.8.4",
+    "next-redux-wrapper": "7.0.5",
     "react": "17.0.2",
     "react-dom": "17.0.2",
-    "sass": "1.43.2",
-    "styled-components": "5.3.1"
+    "react-redux": "7.2.6",
+    "redux": "4.1.2",
+    "redux-thunk": "2.4.1",
+    "sass": "1.45.0",
+    "styled-components": "5.3.3"
   },
   "devDependencies": {
-    "babel-plugin-styled-components": "1.13.2"
+    "babel-plugin-styled-components": "2.0.2",
+    "redux-devtools-extension": "2.13.9",
+    "redux-logger": "3.0.6"
   }
 }

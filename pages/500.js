@@ -1,4 +1,4 @@
 function Error500(){
-    return(<>에러페이지</>);
+    return(<>Error500</>);
 }
 export default Error500;

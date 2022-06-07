@@ -1,7 +1,6 @@
-import { useEffect } from "react";
 import styled from "styled-components";
 
-const StyledMaintenance = styled.div`
+const StyledLoading = styled.div`
     position: fixed;
     top: 0;
     left: 0;
@@ -13,15 +12,11 @@ const StyledMaintenance = styled.div`
     text-align: center;
     margin: 0 auto;
     z-index: 2000;
-`;
+`
 
-export default function Maintenance(){
-
-    useEffect(() => {
-    }, []);
-
+export default function Loading(){
     return(
-    <StyledMaintenance className="maintenance">
-        현재 점검중입니다.
-    </StyledMaintenance>);
+    <StyledLoading>
+        Loading
+    </StyledLoading>);
 }

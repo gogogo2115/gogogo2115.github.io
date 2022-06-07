@@ -1,0 +1,57 @@
+@charset "UTF-8";
+*,
+::before,
+::after {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box; 
+    background-repeat: no-repeat;
+    text-decoration: inherit;
+    vertical-align: inherit;
+}
+
+ul, ol{ list-style: none}
+
+img {
+    border: 0;
+    max-width: 100%;
+    display: block;
+}
+
+article, aside, details, figcaption, figure, 
+footer, header, hgroup, menu, nav, section, main {
+	display: block;
+}
+
+input[type="hidden"]{
+    appearance: none;
+}
+
+head, script, link, meta, style, title, input[type="hidden"] {
+    display: none !important;
+    cursor: default;
+}
+
+label[for], button{
+    cursor: pointer;
+}
+
+button {
+    background-color: transparent;
+}
+
+button[disabled], button.disabled
+input[disabled], input.disabled{
+    cursor: not-allowed;
+}
+
+a, a:link ,a:hover, a:visited, a:active {
+    background-color: transparent;
+    text-decoration: none;
+    color: #000;
+    outline: 0;
+}
+
+optgroup {
+    font-weight: bold;
+}

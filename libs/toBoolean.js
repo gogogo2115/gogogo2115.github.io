@@ -1,6 +1,6 @@
 export default function toBoolean(str,option=false){
 
-    str = String(str).toLowerCase().trim();
+    str = String(str).trim();
 
     if (option === true) {
         return /^(true|1|yes|y|on)$/i.test(str);
