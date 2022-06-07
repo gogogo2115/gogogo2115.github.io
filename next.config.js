@@ -20,17 +20,19 @@ const nextConfig = {
     isDevelopment: process.env.NODE_ENV === "development",
     isProduction: process.env.NODE_ENV === "production",
   },
+};
+
+const pwaConfig = {
   pwa: {
     dest: "public",
     runtimeCaching,
     register: true,
     skipWaiting: true,
     disable: process.env.NODE_ENV === "development",
-    sw: "/sw.js",
   },
 };
 
 module.exports = withPlugins(
-  [withBundleAnalyzer, withImages, withPWA],
+  [[withBundleAnalyzer], [withImages], [withPWA, pwaConfig]],
   nextConfig
 );
