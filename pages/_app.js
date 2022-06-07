@@ -88,7 +88,7 @@ function NextAPP({ Component, pageProps }) {
         필요합니다.
       </noscript>
 
-      {isMaintenanceMode === false ? (
+      {isMaintenanceMode === true ? (
         <Maintenance />
       ) : (
         <Component {...pageProps} />
