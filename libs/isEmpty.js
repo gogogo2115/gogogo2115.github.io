@@ -1,5 +1,4 @@
 export default function isEmpty(value, strOpt=false){
-
     if (value === null) return true;
     if (value === undefined || typeof value === 'undefined') return true;
     if (typeof value === 'string' && value === '') return true;
@@ -13,4 +12,8 @@ export default function isEmpty(value, strOpt=false){
         if ( /^\[(\s*)\]$/g.test(valueTrim) || /^("|')\[(\s*)\]("|')$/g.test(valueTrim) ) return true;
     }
     return false;
+}
+
+export function isNotEmpty(value,strOpt=false){
+    return !isEmpty( value, strOpt );
 }

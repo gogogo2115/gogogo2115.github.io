@@ -1,40 +1,37 @@
-import { HYDRATE } from 'next-redux-wrapper';
-const { isBrowser } = require("lib/useSSR");
+import { isBrowser, isServer } from "libs/useSSR";
 
-const WINDOW_SIZE = "appWindow/WINDOW_SIZE"; 
+const WINDOW_SIZE = 'appWindow/WINDOW_SIZE';
 
-const { innerWidth, innerHeight } = isBrowser ? window :  { innerWidth: 0, innerHeight: 0 };
+const { innerWidth, innerHeight } = isBrowser() ? window : { innerWidth:0, innerHeight:0 }
 
 function deviceType(windowWidth){
-    if( windowWidth >= 320 && windowWidth <= 479 ){ //모바일
-        return "mobile";
+    if( windowWidth >= 280 && windowWidth <= 479 ){ //모바일, 저해상도 모바일
+        return 'mobile';
     } else if( windowWidth >= 480 && windowWidth <= 767 ) { //모바일, 저해상도 태블릿 
-        return "moblie";
+        return 'moblie';
     } else if( windowWidth >= 768 && windowWidth <= 1023 ) { //태블릿 
-        return "tablet";
+        return 'tablet';
     } else if( windowWidth >= 1024 ){ //pc
-        return "pc"; //pc
+        return 'pc'; //pc
     } else {
-        return "pc";
+        return isServer() ? 'server' : "unknown";
     }
 }
 
 const initialState = {
     width : innerWidth,
     height : innerHeight,
-    device : deviceType(innerWidth),
+    deviceType : deviceType(innerWidth)
 }
 
-export const setWindowStore = (width = 0, height = 0) => ({
+export const storeSetWindow = (width = innerWidth, height = innerHeight) => ({
     type : WINDOW_SIZE, setWidth : width, setHeight : height
 });
 
 export default function appWindow(state=initialState, action){
     switch (action.type) {
-        case HYDRATE:
-            return { ...state, ...action.payload.appWindow }
         case WINDOW_SIZE:
-            return { ...state, width: action.setWidth, height: action.setHeight, device : deviceType(action.setWidth) }
+            return { ...state, width : action.setWidth, height: action.setHeight, deviceType : deviceType(action.setWidth) }
         default:
             return state;
     }

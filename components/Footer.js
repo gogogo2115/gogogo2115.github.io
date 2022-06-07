@@ -1,6 +1,7 @@
 import styled from "styled-components";
 import LinkBlank from "./LinkBlank";
 
+
 const StyledFooter = styled.footer`
     ul{
         &::after{
@@ -21,6 +22,8 @@ const StyledFooter = styled.footer`
     .copyright{
         text-align: center;
         background: #202020;
+        color: #fff;
+        padding: .5%
     }
 `
 function Footer(){

@@ -1,6 +1,6 @@
 export default function isBoolean(str, option=false){
 
-    str = String(str).trim().toLowerCase();
+    str = String(str).toLowerCase().trim();
 
     const strictBooleans = ['true', 'false', '1', '0'];
     const looseBooleans = [...strictBooleans, 'yes', 'no', 'y', 'n','on', 'off'];

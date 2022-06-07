@@ -1,46 +1,100 @@
-import { useEffect, useCallback } from "react";
-import Head from "next/head";
-import { useSelector, useDispatch } from "react-redux";
-import { throttle } from "lodash";
 
-import { isBrowser } from "lib/useSSR";
+import { useEffect, useCallback, useState} from 'react';
 
-import wrapper from "store";
+import { useRouter } from 'next/router';
 
-import toBoolean from "lib/toBoolean";
-import Maintence from "components/Maintenance";
-import { setWindowStore } from "store/appWinodw";
+import { useDispatch, useSelector } from 'react-redux'; 
 
-function NextApp({ Component, pageProps }) {
+import wrapper from 'store';
+import toBoolean from 'libs/toBoolean';
 
-    const isMaintenance = toBoolean(process.env.NEXT_PUBLIC_MAINTENANCE_MODE, true);
+import Maintenance from 'components/Maintenance';
+import Loading from 'components/Loading';
+import AppHead from 'components/AppHead';
+import { isNavigator as getIsNavigator } from 'libs/useSSR';
+import { storeSetIsLoading, storeSetIsOnline } from 'store/appState';
+import DevModeView from "components/DevModeView";
 
+import 'public/reset.css';
+import Modal from "components/Modal";
+
+function NextAPP({ Component, pageProps }) {
+
+    const router = useRouter();
     const dispatch = useDispatch();
-    const appWindow = useSelector(state => state.appWindow);
+    const appStateLoading = useSelector(state => state.appState.loading);
+    const appWindowDeviceType = useSelector(state => state.appWindow.deviceType);
     
-    const eventResize = useCallback((e) => {
+    const isMaintenanceMode = toBoolean(process.env.NEXT_PUBLIC_MAINTENANCE_MODE);
+
+    //<!-- window addEventListener
+    const handleResizeEvent = useCallback((e) => {
         e.preventDefault();
-        const { innerWidth, innerHeight } = isBrowser ? window :  { innerWidth: 0, innerHeight: 0 };
-        dispatch(setWindowStore(innerWidth, innerHeight));
+        return false;
+    },[]);
+
+    const handleScrollEvent = useCallback((e) => {
+        e.preventDefault();
+        return false;
+    },[]);
+    // window addEventListener -->
+
+    //<!-- router events
+    const handleRouteStart = useCallback(() => {
+        //console.log('handleRouteStart');
+        dispatch(storeSetIsLoading(true));
         return false;
     },[dispatch]);
-    
+
+    const handleRouteComplete = useCallback(() => {
+        //console.log('handleRouteComplete');
+        const isOnline = getIsNavigator() ? navigator.onLine : true;
+        dispatch(storeSetIsLoading(false));
+        dispatch(storeSetIsOnline(isOnline));
+        return false;
+    },[dispatch]);
+    // router events -->
+
     useEffect(() => {
-        window.addEventListener("resize", throttle(eventResize, 500), false);
+        window.addEventListener('resize',throttle(handleResizeEvent,450));
+        window.addEventListener('scroll',throttle(handleScrollEvent,450));
         return () => {
-            window.removeEventListener("resize", throttle(eventResize, 500), false);
-        }
+            window.removeEventListener('resize',throttle(handleResizeEvent,450));
+            window.removeEventListener('scroll',throttle(handleScrollEvent,450));
+        }    
     }, []);
 
-    return (<>
-    <Head>
-        <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
-        <meta name="viewport" content="width=device-width" />
-        <title>ssss</title>
-    </Head>
-    {(isMaintenance === true) 
-    ? (<Maintence />) 
-    : (<Component {...pageProps} />)} 
+    useEffect(() => {
+        router.events.on('routeChangeStart', handleRouteStart);
+        router.events.on('routeChangeComplete', handleRouteComplete);
+        router.events.on('routeChangeError', handleRouteComplete);
+    
+        return () => {
+          router.events.off('routeChangeStart', handleRouteStart);
+          router.events.off('routeChangeComplete', handleRouteComplete);
+          router.events.off('routeChangeError', handleRouteComplete);
+        }
+    }, [router.events]);
+
+    return(
+    <>
+    <DevModeView />
+
+    <AppHead />
+
+    <noscript id="noScript">
+        모든 기능을 활용하기 위해서는 자바스크립트(JavaScript) 활성화가 필요합니다.
+    </noscript>
+
+    {(isMaintenanceMode === false)
+        ? (<Maintenance />)
+        : (<Component {...pageProps} />)}
+    
+    <Modal />
+
+    {(appStateLoading === true) 
+        ? (<Loading />) 
+        : (null)}
     </>);
 }
-export default wrapper.withRedux(NextApp);
+export default wrapper.withRedux(NextAPP);

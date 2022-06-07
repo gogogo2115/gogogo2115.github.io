@@ -22,8 +22,8 @@ export default function AppHead(){
         <meta charSet="utf-8" />
         <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
         <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
-        <meta name="theme-color" content="#fff" />
         <meta name="robots" content="noindex,nofollow" />
+        <meta name="theme-color" content="#fff" />
 
         <link rel="manifest" href="/manifest.json" />
         <link href="/favicon.ico" rel="shortcut icon" type="image/x-icon" />
