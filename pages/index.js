@@ -18,7 +18,13 @@ function Index() {
   return (
     <>
       <ModalPotal open={open}>aaaaaaaa</ModalPotal>
-      <button>check</button>
+      <button
+        onClick={() => {
+          alert("Hello World!");
+        }}
+      >
+        check
+      </button>
     </>
   );
 }

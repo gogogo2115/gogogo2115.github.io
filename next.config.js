@@ -4,6 +4,8 @@ const withImages = require("next-images");
 const withBundleAnalyzer = require("@next/bundle-analyzer")({
   enabled: process.env.ANALYZE === "true",
 });
+const withPWA = require("next-pwa");
+const runtimeCaching = require("next-pwa/cache");
 
 const nextConfig = {
   compress: true,
@@ -18,6 +20,13 @@ const nextConfig = {
     isDevelopment: process.env.NODE_ENV === "development",
     isProduction: process.env.NODE_ENV === "production",
   },
+  pwa: {
+    dest: "public",
+    runtimeCaching,
+  },
 };
 
-module.exports = withPlugins([withBundleAnalyzer, withImages], nextConfig);
+module.exports = withPlugins(
+  [withBundleAnalyzer, withImages, withPWA],
+  nextConfig
+);
