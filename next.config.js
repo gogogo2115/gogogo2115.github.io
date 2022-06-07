@@ -23,6 +23,10 @@ const nextConfig = {
   pwa: {
     dest: "public",
     runtimeCaching,
+    register: true,
+    skipWaiting: true,
+    disable: IS_DEVELOPMENT,
+    sw: "/sw.js",
   },
 };
 
