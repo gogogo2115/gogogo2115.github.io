@@ -18,16 +18,6 @@ const nextConfig = {
     isDevelopment: process.env.NODE_ENV === "development",
     isProduction: process.env.NODE_ENV === "production",
   },
-  exportPathMap: async function (
-    defaultPathMap,
-    { dev, dir, outDir, distDir, buildId }
-  ) {
-    return {
-      "/": { page: "/", query: { position: "index" } },
-      "/home": { page: "/", query: { position: "home" } },
-      "/main": { page: "/", query: { position: "main" } },
-    };
-  },
 };
 
 module.exports = withPlugins([withBundleAnalyzer, withImages], nextConfig);
