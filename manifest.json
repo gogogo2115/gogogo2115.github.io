@@ -3,7 +3,7 @@
   "short_name": "Next.js",
   "description": "Next.js",
   "theme_color": "#fff",
-  "background_color": "#fff",
+  "background_color": "#223045",
   "display": "standalone",
   "scope": "/",
   "start_url": "/",
