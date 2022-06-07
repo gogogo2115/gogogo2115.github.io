@@ -25,7 +25,7 @@ const nextConfig = {
     runtimeCaching,
     register: true,
     skipWaiting: true,
-    disable: IS_DEVELOPMENT,
+    disable: process.env.NODE_ENV === "development",
     sw: "/sw.js",
   },
 };
