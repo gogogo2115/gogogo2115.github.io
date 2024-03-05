@@ -1,7 +1,10 @@
+import "@/styles/globals.scss";
+
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import "@/styles/globals.scss";
+
 import { IS_PROD_MAINTENANCE } from "@/utils";
+import MaintenancePage from "@/components/Maintenance";
 
 type RootLayoutProps = Readonly<{
   children: React.ReactNode;
@@ -18,7 +21,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="ko">
       <body id="__next" className={inter.className}>
-        {IS_PROD_MAINTENANCE ? <>준비중입니다.</> : children}
+        {IS_PROD_MAINTENANCE ? <MaintenancePage /> : children}
       </body>
     </html>
   );
