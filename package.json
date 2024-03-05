@@ -1,6 +1,9 @@
 {
   "name": "gogogo2115.github.io",
-  "version": "0.1.0",
+  "homepage": "gogogo2115.github.io",
+  "author": "gogogo2115",
+  "description": "개인 블로그용으로 제작됨",
+  "version": "0.2.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
