@@ -11,7 +11,7 @@ const IS_PROD = NODE_ENV === "production";
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: "export",
+  output: IS_PROD ? "export" : undefined,
   reactStrictMode: false,
   compiler: {
     removeConsole: IS_PROD,
