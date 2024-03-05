@@ -1,5 +1,5 @@
-const MaintenancePage = () => {
+const Maintenance = () => {
   return <div id="Maintenance">준비중입니다.</div>;
 };
 
-export default MaintenancePage;
+export default Maintenance;
