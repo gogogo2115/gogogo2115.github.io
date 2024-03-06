@@ -6,7 +6,7 @@ const { createHash } = require("crypto");
 const { stringify: packageStringify, parse: packageParse } = readFileJson("./package.json");
 const PACKAGE_HASH = createHash("sha256").update(packageStringify).digest("base64");
 const next = packageParse?.dependencies?.next ?? undefined;
-const PACKAGE_GENERATOR = next ? `Next.js ${next}` : `Next.js`;
+const PACKAGE_GENERATOR = next ? `next.js ${next}` : `next.js`;
 
 const BUILD_AT = new Date().toISOString();
 const BUILD_TS = Date.parse(BUILD_AT).toString();

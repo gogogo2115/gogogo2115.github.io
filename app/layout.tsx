@@ -1,13 +1,13 @@
 import "@/styles/globals.scss";
-
+import type { ReactNode } from "react";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 
 import { IS_PROD_MAINTENANCE, PACKAGE_GENERATOR } from "@/utils";
-import MaintenancePage from "@/components/Maintenance";
+import Maintenance from "@/components/Maintenance";
 
 type RootLayoutProps = Readonly<{
-  children: React.ReactNode;
+  children: ReactNode;
 }>;
 
 const inter = Inter({ subsets: ["latin"] });
@@ -23,7 +23,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="ko">
       <body id="__next" className={inter.className}>
-        {IS_PROD_MAINTENANCE ? <MaintenancePage /> : children}
+        {IS_PROD_MAINTENANCE ? <Maintenance /> : children}
       </body>
     </html>
   );
