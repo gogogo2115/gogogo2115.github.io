@@ -17,5 +17,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "monthly",
       priority: 1,
     },
+    {
+      url: siteMapPrefix + "/wai-aria",
+      lastModified: BUILD_AT,
+      changeFrequency: "monthly",
+      priority: 1,
+    },
   ];
 }
