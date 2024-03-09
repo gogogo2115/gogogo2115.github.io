@@ -5,7 +5,7 @@ import { Nanum_Gothic_Coding } from "next/font/google";
 
 import { IS_PROD_MAINTENANCE, PACKAGE_GENERATOR } from "@/utils";
 import Maintenance from "@/components/Maintenance";
-import GoogleAnalytics from "@/components/GoogleAnalytics";
+import GoogleAnalytics from "@/components/analytics/GoogleAnalytics";
 
 type RootLayoutProps = Readonly<{
   children: ReactNode;
