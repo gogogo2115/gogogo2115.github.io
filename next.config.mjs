@@ -25,6 +25,9 @@ const nextConfig = {
   sassOptions: {
     includePaths: [path.join(__dirname, "styles")],
   },
+  headers: async () => {
+    return [{ source: "/api/:path*", headers: [{ key: "X-Robots-Tag", value: "none" }] }];
+  },
 };
 
 export default withBundleAnalyzer(nextConfig);
