@@ -11,5 +11,10 @@ declare namespace NodeJS {
     readonly BUILD_AT: string;
     readonly BUILD_TS: string;
     readonly BUILD_HASH: string;
+
+    readonly NEXT_PUBLIC_GISCUS_REPO: string;
+    readonly NEXT_PUBLIC_GISCUS_REPO_ID: string;
+    readonly NEXT_PUBLIC_GISCUS_CATEGORY: string;
+    readonly NEXT_PUBLIC_GISCUS_CATEGORY_ID: string;
   }
 }
