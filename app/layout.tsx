@@ -5,6 +5,7 @@ import { Nanum_Gothic_Coding } from "next/font/google";
 
 import { IS_PROD_MAINTENANCE, PACKAGE_GENERATOR } from "@/utils";
 import Maintenance from "@/components/Maintenance";
+import GoogleAnalytics from "@/components/GoogleAnalytics";
 
 type RootLayoutProps = Readonly<{
   children: ReactNode;
@@ -25,10 +26,14 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="ko">
+      <head></head>
       <body id="__next" className={nanum.className}>
         {IS_PROD_MAINTENANCE ? <Maintenance /> : children}
-        <script type="text/javascript" id="theme" defer async src="/theme.js"></script>
-        <script type="text/javascript" id="featureNotBug" defer async src="/featureNotBug.js"></script>
+
+        <GoogleAnalytics />
+
+        <script type="text/javascript" id="theme" defer async src="/theme.js" />
+        <script type="text/javascript" id="featureNotBug" defer async src="/featureNotBug.js" />
       </body>
     </html>
   );
