@@ -34,8 +34,15 @@ const nextConfig = {
       { source: "/api/:path*", headers: [{ key: "X-Robots-Tag", value: "none" }] },
     ];
   },
+  webpack(config) {
+    config.module.rules.push({ test: /\.svg$/i, use: ["@svgr/webpack"] }); // svg
+    return config;
+  },
   experimental: {
     appDocumentPreloading: true,
+    turbo: {
+      rules: { "*.svg": { loaders: ["@svgr/webpack"], as: "*.js" } },
+    },
   },
 };
 
