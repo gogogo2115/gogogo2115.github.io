@@ -41,7 +41,7 @@ const nextConfig = {
   experimental: {
     appDocumentPreloading: true,
     turbo: {
-      rules: { "*.svg": { loaders: ["@svgr/webpack"], as: "*.js" } },
+      rules: { "*.svg": { loaders: ["@svgr/webpack"], as: "*.js" } }, // svg
     },
   },
 };
