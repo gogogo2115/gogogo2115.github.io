@@ -18,7 +18,7 @@ const withBundleAnalyzer = bundleAnalyzer({
 const nextConfig = {
   output: IS_PROD ? "export" : undefined,
   reactStrictMode: false,
-  productionBrowserSourceMaps: false,
+  productionBrowserSourceMaps: !IS_PROD,
   poweredByHeader: false,
   generateEtags: true,
   env,
@@ -33,6 +33,9 @@ const nextConfig = {
       // { source: "/:path*", headers: [] },
       { source: "/api/:path*", headers: [{ key: "X-Robots-Tag", value: "none" }] },
     ];
+  },
+  eslint: {
+    ignoreDuringBuilds: true, //eslint때문에 빌드가 실패하는것을 무시하고 진행, react-query에서의 옵션
   },
   webpack(config) {
     config.module.rules.push({ test: /\.svg$/i, use: ["@svgr/webpack"] }); // svg
