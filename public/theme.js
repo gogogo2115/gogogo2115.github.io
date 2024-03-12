@@ -1,11 +1,10 @@
-(function () {
-  "use static";
+!(function () {
+"use static";
   try {
-    const storedName = "theme";
-    const datasetName = "theme";
-    const storedTheme = window.localStorage.getItem(storedName)?.toLowerCase().trim() ?? "";
-    const validTheme = ["dark", "light", "auto", "gray"].includes(storedTheme) ? storedTheme : "auto";
-    const toDatasetTheme = validTheme === "auto" ? (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light") : validTheme;
-    document.body.dataset[datasetName] = toDatasetTheme;
-  } catch (error) {}
+    const t = document.body.dataset.theme,
+      e = (window.localStorage.getItem("theme") ?? "").toLowerCase().trim(),
+      a = ["dark", "light", "auto", "gray"].includes(e) ? e : "auto",
+      o = "auto" === a ? (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light") : a;
+    t !== o && (document.body.dataset.theme = o);
+  } catch (r) {}
 })();
