@@ -24,6 +24,7 @@ const nextConfig = {
   env,
   compiler: {
     removeConsole: IS_PROD,
+    styledComponents: true,
   },
   sassOptions: {
     includePaths: [path.join(__dirname, "styles")],
