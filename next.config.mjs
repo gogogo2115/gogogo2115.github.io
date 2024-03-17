@@ -42,7 +42,11 @@ const nextConfig = {
     locales: ["ko", "en"],
     defaultLocale: "ko",
   },
-  webpack(config) {
+
+  webpack: (config) => {
+    if (config.name === "server") {
+      config.optimization.concatenateModules = false; // react-query에서의 옵션
+    }
     config.module.rules.push({ test: /\.svg$/i, use: ["@svgr/webpack"] }); // svg
     return config;
   },
