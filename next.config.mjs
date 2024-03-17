@@ -24,6 +24,7 @@ const nextConfig = {
   env,
   compiler: {
     removeConsole: IS_PROD,
+    styledComponents: true,
   },
   sassOptions: {
     includePaths: [path.join(__dirname, "styles")],
@@ -37,7 +38,15 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true, //eslint때문에 빌드가 실패하는것을 무시하고 진행, react-query에서의 옵션
   },
-  webpack(config) {
+  i18n: {
+    locales: ["ko", "en"],
+    defaultLocale: "ko",
+  },
+
+  webpack: (config) => {
+    if (config.name === "server") {
+      config.optimization.concatenateModules = false; // react-query에서의 옵션
+    }
     config.module.rules.push({ test: /\.svg$/i, use: ["@svgr/webpack"] }); // svg
     return config;
   },

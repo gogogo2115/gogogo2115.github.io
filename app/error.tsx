@@ -1,4 +1,5 @@
-"use client";
+"use client"; // Error components must be Client Components
+
 import { useEffect } from "react";
 
 type ErrorProps = {
@@ -8,11 +9,19 @@ type ErrorProps = {
 
 const RootError = ({ error, reset }: ErrorProps) => {
   const { message } = error;
-  useEffect(() => {
-    console.log(error.message);
-  }, [error]);
 
-  return <>에러페이지</>;
+  useEffect(() => {
+    console.log(message);
+  }, [message]);
+
+  return (
+    <div>
+      <div>에러페이지</div>
+      <button title="리셋" onClick={() => reset()}>
+        리셋
+      </button>
+    </div>
+  );
 };
 
 export default RootError;
