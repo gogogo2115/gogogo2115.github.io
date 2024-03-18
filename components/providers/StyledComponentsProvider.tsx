@@ -2,7 +2,8 @@
 
 import { useState, type ReactNode } from "react";
 import { useServerInsertedHTML } from "next/navigation";
-import { ServerStyleSheet, StyleSheetManager } from "styled-components";
+import { ServerStyleSheet, StyleSheetManager, ThemeProvider } from "styled-components";
+import theme from "@/styles/theme";
 
 type StyledComponentsProviderProps = { children: ReactNode };
 
@@ -17,7 +18,11 @@ const StyledComponentsProvider = (props: StyledComponentsProviderProps) => {
   });
 
   if (typeof window !== "undefined") return <>{children}</>;
-  return <StyleSheetManager sheet={styledComponentsStyleSheet.instance}>{children}</StyleSheetManager>;
+  return (
+    <StyleSheetManager sheet={styledComponentsStyleSheet.instance}>
+      <ThemeProvider theme={theme}>{children}</ThemeProvider>
+    </StyleSheetManager>
+  );
 };
 
 export default StyledComponentsProvider;
