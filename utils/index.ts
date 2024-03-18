@@ -48,6 +48,8 @@ export const IS_TEST_MAINTENANCE = IS_MAINTENANCE && IS_TEST;
 export const isClient: boolean = typeof window !== "undefined" && !!window.document && !!window.document.createElement;
 export const isServer: boolean = !isClient;
 
+export const isNavigator: boolean = !!(typeof navigator != "undefined");
+
 // next.js ssg cache
 export const fetchHeaderSsgCache: { cache: string } = { cache: "force-cache" };
 
