@@ -12,6 +12,7 @@ import GoogleAnalytics from "@/components/analytics/GoogleAnalytics";
 import ReactQueryProvider from "@/components/providers/ReactQueryProvider";
 import StyledComponentsProvider from "@/components/providers/StyledComponentsProvider";
 import ReduxProvider from "@/components/providers/ReduxProvider";
+import StoredTheme from "@/components/theme/StoredTheme";
 
 type RootLayoutProps = Readonly<{
   children: ReactNode;
@@ -34,18 +35,20 @@ export default function RootLayout({ children }: RootLayoutProps) {
   // const theme = cookieStore.get("theme")?.value ?? "dark";
   return (
     <ReduxProvider>
-      <html lang="ko" dir="ltr">
-        <body id="__next" className={nanum.className}>
-          <ReactQueryProvider>
-            <StyledComponentsProvider>
-              <>{IS_PROD_MAINTENANCE ? <Maintenance /> : children}</>
-            </StyledComponentsProvider>
-          </ReactQueryProvider>
-          <script type="text/javascript" id="theme" defer async src="/theme.js" />
-          <script type="text/javascript" id="featureNotBug" defer async src="/featureNotBug.js" />
-          <GoogleAnalytics />
-        </body>
-      </html>
+      <StoredTheme>
+        <html lang="ko" dir="ltr">
+          <body id="__next" className={nanum.className}>
+            <ReactQueryProvider>
+              <StyledComponentsProvider>
+                <>{IS_PROD_MAINTENANCE ? <Maintenance /> : children}</>
+              </StyledComponentsProvider>
+            </ReactQueryProvider>
+            <script type="text/javascript" id="theme" defer async src="/theme.js" />
+            <script type="text/javascript" id="featureNotBug" defer async src="/featureNotBug.js" />
+            <GoogleAnalytics />
+          </body>
+        </html>
+      </StoredTheme>
     </ReduxProvider>
   );
 }
