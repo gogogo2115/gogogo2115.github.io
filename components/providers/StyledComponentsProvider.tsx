@@ -3,7 +3,7 @@
 import { useState, type ReactNode } from "react";
 import { useServerInsertedHTML } from "next/navigation";
 import { ServerStyleSheet, StyleSheetManager, ThemeProvider } from "styled-components";
-import theme from "@/styles/theme";
+import styledTheme from "@/styles/styledTheme";
 
 type StyledComponentsProviderProps = { children: ReactNode };
 
@@ -20,7 +20,7 @@ const StyledComponentsProvider = (props: StyledComponentsProviderProps) => {
   if (typeof window !== "undefined") return <>{children}</>;
   return (
     <StyleSheetManager sheet={styledComponentsStyleSheet.instance}>
-      <ThemeProvider theme={theme}>{children}</ThemeProvider>
+      <ThemeProvider theme={styledTheme}>{children}</ThemeProvider>
     </StyleSheetManager>
   );
 };

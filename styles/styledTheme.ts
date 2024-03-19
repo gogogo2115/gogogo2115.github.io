@@ -1,10 +1,10 @@
 import { DefaultTheme } from "styled-components";
 
-const theme: DefaultTheme = {
+const styledTheme: DefaultTheme = {
   colors: {
-    primary: "",
+    primary: "#f00",
     secondary: "",
   },
 };
 
-export default theme;
+export default styledTheme;
