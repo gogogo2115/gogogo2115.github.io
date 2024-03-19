@@ -1,12 +1,12 @@
 "use client";
 import { isNavigator } from "@/utils";
 
-export type NavigatorShareData = {
-  title?: string; // 공유 제목
-  text?: string; // 공유 설명
-  url?: string; // 공유할 URL
-  files?: File[]; // 공유할 파일 배열
-};
+// export type NavigatorShareData = {
+//   title?: string; // 공유 제목
+//   text?: string; // 공유 설명
+//   url?: string; // 공유할 URL
+//   files?: File[]; // 공유할 파일 배열
+// };
 
 export const isNavigatorShareSupported = (): boolean => {
   return isNavigator && typeof navigator.share === "function" && typeof navigator.canShare === "function";
@@ -58,7 +58,7 @@ class NavigatorShare {
     return this;
   }
 
-  share(data?: NavigatorShareData): void {
+  share(data: ShareData): void {
     //지원 여부
     if (!isNavigatorShareSupported()) {
       if (typeof this.notSupportedCallback === "function") {
@@ -66,6 +66,38 @@ class NavigatorShare {
       }
       return;
     }
+
+    // const isSetDataFiles = data.files && data.files.length >= 1;
+    // const files = isSetDataFiles ? data.files : undefined;
+
+    const isCanShare = typeof navigator.canShare === "function" && navigator.canShare(data);
+    if (!isCanShare) {
+      if (typeof this.failureCallback === "function") {
+        this.failureCallback();
+      }
+      return;
+    }
+
+    navigator
+      .share(data)
+      .then(() => {
+        if (typeof this.successCallback === "function") {
+          this.successCallback();
+        }
+      })
+      .catch((e) => {
+        if (e instanceof DOMException && e.code === DOMException.ABORT_ERR) {
+          if (typeof this.cancelCallback === "function") {
+            this.cancelCallback();
+          }
+        } else {
+          if (typeof this.failureCallback === "function") {
+            this.failureCallback();
+          }
+        }
+      });
+
+    return;
   }
 }
 
