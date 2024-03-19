@@ -1,13 +1,20 @@
 "use client";
 import { useEffect, useState } from "react";
+import styled from "styled-components";
+
+const StyledMaintenance = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
 
 const Maintenance = () => {
   useEffect(() => {}, []);
 
   return (
-    <div>
-      <div id="Maintenance">준비중입니다.</div>
-    </div>
+    <StyledMaintenance id="Maintenance">
+      <div>준비중입니다.</div>
+    </StyledMaintenance>
   );
 };
 
