@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment, type ReactNode, useRef, useEffect } from "react";
+import { Fragment, type ReactNode, useRef, useEffect, useCallback } from "react";
 import useIsomorphicLayoutEffect from "@/hooks/useIsomorphicEffect";
 import { useReduxDispatch, useReduxSelector } from "@/store";
 import { shallowEqual } from "react-redux";
@@ -8,6 +8,8 @@ import { appStateActions } from "@/store/modules/appState";
 
 type ColorTheme = "dark" | "light" | "auto" | "gray";
 type StoredThemeProps = { children: ReactNode };
+
+const { setTheme } = appStateActions;
 
 export const COLOR_THEME_ARR: ColorTheme[] = ["dark", "light", "auto", "gray"];
 const DEFAULT_COLOR_THEME: (typeof COLOR_THEME_ARR)[number] = "auto";
@@ -51,11 +53,32 @@ const onColorSchemeEvent = (e: MediaQueryListEvent) => {
 const STORED_NAME = "theme";
 const DATASET_NAME = "theme";
 
+export const useApplyTheme = () => {
+  const currTheme = useReduxSelector(({ appState }) => appState.theme, shallowEqual) as ColorTheme | undefined;
+  const dispatch = useReduxDispatch();
+
+  const applyColorTheme = useCallback(
+    (colorTheme: ColorTheme) => {
+      if (currTheme === colorTheme) return;
+      const isColorThemeCheck = isValidColorTheme(colorTheme);
+
+      const toSaveColorTheme = isColorThemeCheck ? colorTheme : DEFAULT_COLOR_THEME;
+      const toDataSetColorTheme = resolveAutoColorTheme(toSaveColorTheme);
+
+      window.localStorage.setItem(STORED_NAME, toSaveColorTheme);
+      document.body.dataset[DATASET_NAME] = toDataSetColorTheme;
+      dispatch(setTheme(toSaveColorTheme));
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [currTheme]
+  );
+  return { currTheme, applyColorTheme };
+};
+
 const StoredTheme = (props: StoredThemeProps) => {
   const { children } = props;
   const currTheme = useReduxSelector(({ appState }) => appState.theme, shallowEqual);
   const dispatch = useReduxDispatch();
-  const { setTheme } = appStateActions;
 
   useIsomorphicLayoutEffect(() => {
     const storedTheme = (window.localStorage?.getItem(STORED_NAME) ?? "").toLowerCase().trim();
