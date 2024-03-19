@@ -18,7 +18,7 @@ export const appState = createSlice({
     setIsLoading: (state, action: PayloadAction<boolean>) => {
       state.isLoading = action.payload;
     },
-    setColorTheme: (state, action: PayloadAction<string>) => {
+    setTheme: (state, action: PayloadAction<string>) => {
       state.theme = action.payload;
     },
   },
