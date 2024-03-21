@@ -15,9 +15,9 @@
   },
   "dependencies": {
     "@giscus/react": "3.0.0",
-    "@reduxjs/toolkit": "2.2.1",
-    "@tanstack/react-query": "5.28.4",
-    "@tanstack/react-query-next-experimental": "5.28.4",
+    "@reduxjs/toolkit": "2.2.2",
+    "@tanstack/react-query": "5.28.6",
+    "@tanstack/react-query-next-experimental": "5.28.6",
     "classnames": "2.5.1",
     "hls.js": "1.5.7",
     "next": "14.1.4",
@@ -29,7 +29,7 @@
   "devDependencies": {
     "@next/bundle-analyzer": "14.1.4",
     "@svgr/webpack": "8.1.0",
-    "@tanstack/react-query-devtools": "5.28.4",
+    "@tanstack/react-query-devtools": "5.28.6",
     "@types/node": "20.11.30",
     "@types/react": "18.2.67",
     "@types/react-dom": "18.2.22",
@@ -38,6 +38,6 @@
     "eslint-config-next": "14.1.4",
     "sass": "1.72.0",
     "serve": "14.2.1",
-    "typescript": "5.4.2"
+    "typescript": "5.4.3"
   }
 }
