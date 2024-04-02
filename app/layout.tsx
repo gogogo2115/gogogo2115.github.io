@@ -11,7 +11,7 @@ import GoogleAnalytics from "@/components/analytics/GoogleAnalytics";
 
 import ReactQueryProvider from "@/components/providers/ReactQueryProvider";
 import StyledComponentsProvider from "@/components/providers/StyledComponentsProvider";
-import ReduxProvider from "@/components/providers/ReduxProvider";
+import AppStoreProvider from "@/components/providers/AppStoreProvider";
 import StoredTheme from "@/components/theme/StoredTheme";
 
 type RootLayoutProps = Readonly<{
@@ -34,7 +34,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
   // const cookieStore = cookies();
   // const theme = cookieStore.get("theme")?.value ?? "dark";
   return (
-    <ReduxProvider>
+    <AppStoreProvider>
       <StoredTheme>
         <html lang="ko" dir="ltr">
           <body id="__next" className={nanum.className}>
@@ -49,6 +49,6 @@ export default function RootLayout({ children }: RootLayoutProps) {
           </body>
         </html>
       </StoredTheme>
-    </ReduxProvider>
+    </AppStoreProvider>
   );
 }

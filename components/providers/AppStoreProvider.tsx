@@ -2,15 +2,15 @@
 
 import { type PropsWithChildren, useRef, useEffect } from "react";
 import { Provider } from "react-redux";
-import reduxStore, { type ReduxStore } from "@/store";
+import { makeStore, type AppStore } from "@/store";
 import { setupListeners } from "@reduxjs/toolkit/query";
 
-type ReduxProviderProps = PropsWithChildren;
+type AppStoreProviderProps = PropsWithChildren;
 
-const ReduxProvider = ({ children }: ReduxProviderProps) => {
-  const storeRef = useRef<ReduxStore | null>(null);
+const AppStoreProvider = ({ children }: AppStoreProviderProps) => {
+  const storeRef = useRef<AppStore | null>(null);
   if (!storeRef.current) {
-    storeRef.current = reduxStore;
+    storeRef.current = makeStore();
   }
 
   useEffect(() => {
@@ -25,4 +25,4 @@ const ReduxProvider = ({ children }: ReduxProviderProps) => {
   return <Provider store={storeRef.current}>{children}</Provider>;
 };
 
-export default ReduxProvider;
+export default AppStoreProvider;
