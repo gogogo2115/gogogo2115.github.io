@@ -2,7 +2,7 @@
 
 import { Fragment, type ReactNode, useRef, useEffect, useCallback } from "react";
 import useIsomorphicLayoutEffect from "@/hooks/useIsomorphicEffect";
-import { useReduxDispatch, useReduxSelector } from "@/store";
+import { useAppStoreSelector, useAppStoreDispatch } from "@/store";
 import { shallowEqual } from "react-redux";
 import { appStateActions } from "@/store/modules/appState";
 
@@ -54,8 +54,8 @@ const STORED_NAME = "theme";
 const DATASET_NAME = "theme";
 
 export const useApplyTheme = () => {
-  const currTheme = useReduxSelector(({ appState }) => appState.theme, shallowEqual) as ColorTheme | undefined;
-  const dispatch = useReduxDispatch();
+  const currTheme = useAppStoreSelector(({ appState }) => appState.theme, shallowEqual) as ColorTheme | undefined;
+  const dispatch = useAppStoreDispatch();
 
   const applyColorTheme = useCallback(
     (colorTheme: ColorTheme) => {
@@ -77,8 +77,8 @@ export const useApplyTheme = () => {
 
 const StoredTheme = (props: StoredThemeProps) => {
   const { children } = props;
-  const currTheme = useReduxSelector(({ appState }) => appState.theme, shallowEqual);
-  const dispatch = useReduxDispatch();
+  const currTheme = useAppStoreSelector(({ appState }) => appState.theme, shallowEqual);
+  const dispatch = useAppStoreDispatch();
 
   useIsomorphicLayoutEffect(() => {
     const storedTheme = (window.localStorage?.getItem(STORED_NAME) ?? "").toLowerCase().trim();
