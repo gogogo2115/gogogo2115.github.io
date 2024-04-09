@@ -12,6 +12,14 @@ const StyledMaintenance = styled.div`
   justify-content: center;
   align-items: center;
 `;
+const fetchData = () => {
+  return new Promise((resolve) => setTimeout(() => resolve("World!"), 2000));
+};
+
+const AsyncDataFetcher = () => {
+  const dataPromise = fetchData();
+  return <>{dataPromise}</>;
+};
 
 const Maintenance = () => {
   useEffect(() => {}, []);
@@ -20,7 +28,10 @@ const Maintenance = () => {
     <StyledMaintenance id="Maintenance">
       <div>준비중입니다.</div>
       <div>
-        Hello <Suspense fallback={"..."}>{new Promise((resolve) => setTimeout(() => resolve("world!"), 3000))}</Suspense>
+        Hello{" "}
+        <Suspense fallback="...">
+          <AsyncDataFetcher />
+        </Suspense>
       </div>
     </StyledMaintenance>
   );
