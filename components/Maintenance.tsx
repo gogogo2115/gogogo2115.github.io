@@ -1,5 +1,6 @@
 "use client";
-import { useEffect, useState } from "react";
+
+import { Suspense, useEffect, useState } from "react";
 import styled from "styled-components";
 
 const StyledMaintenance = styled.div`
@@ -18,6 +19,9 @@ const Maintenance = () => {
   return (
     <StyledMaintenance id="Maintenance">
       <div>준비중입니다.</div>
+      <div>
+        Hello <Suspense fallback={"..."}>{new Promise((resolve) => setTimeout(() => resolve("world!"), 3000))}</Suspense>
+      </div>
     </StyledMaintenance>
   );
 };
