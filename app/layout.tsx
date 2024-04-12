@@ -15,7 +15,7 @@ import ReactQueryProvider from "@/components/providers/ReactQueryProvider";
 import StyledComponentsProvider from "@/components/providers/StyledComponentsProvider";
 import AppStoreProvider from "@/components/providers/AppStoreProvider";
 
-import StoredTheme from "@/components/theme/StoredTheme";
+import StorageThemeProvider from "@/components/providers/StorageThemeProvider";
 
 type RootLayoutProps = Readonly<{
   children: ReactNode;
@@ -35,25 +35,26 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: RootLayoutProps) {
   // const cookieStore = cookies();
-  // const theme = cookieStore.get("theme")?.value ?? "dark";
+  // const theme = cookieStore.get("theme")?.value ?? "system";
+
   return (
     <AppStoreProvider>
-      <StoredTheme>
-        <html lang="ko" dir="ltr">
-          <body id="__next" className={nanum.className}>
-            <ReactQueryProvider>
-              <StyledComponentsProvider>
+      <StyledComponentsProvider>
+        <StorageThemeProvider>
+          <html lang="ko" dir="ltr">
+            <body id="__next" className={nanum.className}>
+              <ReactQueryProvider>
                 <>{IS_PROD_MAINTENANCE ? <Maintenance /> : children}</>
-              </StyledComponentsProvider>
-            </ReactQueryProvider>
-            <script type="text/javascript" id="theme" defer async src="/theme.js" />
-            <script type="text/javascript" id="featureNotBug" defer async src="/featureNotBug.js" />
+              </ReactQueryProvider>
+              <script type="text/javascript" id="theme" defer async src="/storageTheme.js" />
+              <script type="text/javascript" id="featureNotBug" defer async src="/featureNotBug.js" />
 
-            <GoogleAnalytics />
-            <WebVitals />
-          </body>
-        </html>
-      </StoredTheme>
+              <GoogleAnalytics />
+              <WebVitals />
+            </body>
+          </html>
+        </StorageThemeProvider>
+      </StyledComponentsProvider>
     </AppStoreProvider>
   );
 }
