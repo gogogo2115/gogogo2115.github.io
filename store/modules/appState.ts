@@ -2,6 +2,8 @@ import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { AppThunk } from "@/store";
 import { createAppSlice } from "@/store";
 
+export type ThemeColor = "dark" | "light" | "system" | "gray";
+
 type AppState = {
   isLoading: boolean;
   theme?: string;
@@ -29,6 +31,7 @@ export const appState = createSlice({
       state.isLoading = action.payload;
     }),
     setTheme: create.reducer((state, action: PayloadAction<string>) => {
+      if (state.theme === action.payload) return;
       state.theme = action.payload;
     }),
     // testTheme: create.preparedReducer(
