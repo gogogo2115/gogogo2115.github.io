@@ -1,23 +1,17 @@
-import { useEffect, useRef } from "react";
+"use client";
 
-// export default function usePrevious<T>(value: T, { defaultValue }: { defaultValue?: T }): T | undefined {
-//   const ref = useRef<T>();
+import { useRef, useEffect, type MutableRefObject } from "react";
 
-//   useEffect(() => {
-//     ref.current = value;
-//   });
+type Options<D> = { defaultValue?: D };
 
-//   return ref.current;
-// }
-
-const usePrevious = <T>(value: T, { defaultValue }: { defaultValue?: T }) => {
-  const ref = useRef<T>(defaultValue != null ? defaultValue : value);
+function usePrevious<T>(value: T, { defaultValue }: Options<T> = {}): MutableRefObject<T | undefined>["current"] {
+  const ref = useRef<T | undefined>(defaultValue === undefined ? value : defaultValue);
 
   useEffect(() => {
     ref.current = value;
   }, [value]);
 
   return ref.current;
-};
+}
 
 export default usePrevious;
