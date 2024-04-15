@@ -1,11 +1,12 @@
 "use client";
-import { Fragment, useEffect, type ReactNode } from "react";
+import { Fragment, useCallback, useEffect, useState, type ReactNode } from "react";
 import { shallowEqual } from "react-redux";
 
 import useIsomorphicLayoutEffect from "@/hooks/useIsomorphicEffect";
 import { useAppStoreDispatch, useAppStoreSelector } from "@/store";
 import { appStateActions, selectAppStateTheme } from "@/store/modules/appState";
 import { isClient } from "@/utils";
+import usePrevious from "@/hooks/usePrevious";
 
 type ProviderProps = { children: ReactNode };
 type ThemeColor = "dark" | "light" | "system" | "gray";
@@ -31,11 +32,7 @@ const isValidateThemeColor = (theme: unknown): theme is ThemeColor => THEME_COLO
 
 const getSystemThemeColor = (): ThemeColor => (window.matchMedia(COLOR_SCHEME_QUERY.dark).matches ? "dark" : "light");
 
-const onChangeColorScheme = (e: MediaQueryListEvent) => {
-  const changeColorTheme = e.matches ? "dark" : "light";
-  document.body.dataset[DATASET_NAME] !== changeColorTheme && (document.body.dataset[DATASET_NAME] = changeColorTheme);
-  return;
-};
+// const useStorageThemeChangeListener = (currTheme: ThemeColor, dispatch: ReturnType<typeof useAppStoreDispatch>) => {};
 
 const StorageThemeProvider = ({ children }: ProviderProps) => {
   const currTheme = useAppStoreSelector(selectAppStateTheme, shallowEqual) as ThemeColor;
@@ -66,6 +63,15 @@ const StorageThemeProvider = ({ children }: ProviderProps) => {
   // theme가 system일때 운영체제(window, mac)의 테마가 변경이 일어날때
   useEffect(() => {
     if (currTheme !== "system") return;
+
+    const onChangeColorScheme = (e: MediaQueryListEvent) => {
+      const changeColorTheme = e.matches ? "dark" : "light";
+
+      if (document.body.dataset[DATASET_NAME] !== changeColorTheme) {
+        document.body.dataset[DATASET_NAME] = changeColorTheme;
+      }
+    };
+
     const mediaQuery = window.matchMedia(COLOR_SCHEME_QUERY.dark);
     mediaQuery.addEventListener("change", onChangeColorScheme);
     return () => mediaQuery.removeEventListener("change", onChangeColorScheme);
@@ -74,7 +80,7 @@ const StorageThemeProvider = ({ children }: ProviderProps) => {
   // localStorage가 변경이 일어날때
   useEffect(() => {
     const onStorageChange = (e: StorageEvent) => {
-      if (e.type !== "storage" && e.key !== STORAGE_NAME) return;
+      if (e.key !== STORAGE_NAME) return;
       const isThemeColor = isValidateThemeColor(e.newValue);
       const toStorageTheme = isThemeColor ? (e.newValue as ThemeColor) : DEFAULT_THEME_COLOR;
       const toDatasetTheme = toStorageTheme === "system" ? getSystemThemeColor() : toStorageTheme;
@@ -94,94 +100,37 @@ const StorageThemeProvider = ({ children }: ProviderProps) => {
 
 export default StorageThemeProvider;
 
-// const { setTheme } = appStateActions;
+export const useStorageTheme = () => {
+  const currTheme = useAppStoreSelector(selectAppStateTheme, shallowEqual) as ThemeColor;
+  const dispatch = useAppStoreDispatch();
+  const [dataset, setDataset] = useState(currTheme === "system" ? getSystemThemeColor() : currTheme);
 
-// type ThemeColorObj = Record<ThemeColor, { value: ThemeColor; num: number }>;
+  useEffect(() => {
+    if (currTheme !== "system") return;
+    const onChangeColorScheme = (e: MediaQueryListEvent) => {
+      const changeColorTheme = e.matches ? "dark" : "light";
+      if (document.body.dataset[DATASET_NAME] !== changeColorTheme) {
+        document.body.dataset[DATASET_NAME] = changeColorTheme;
+      }
+      setDataset(changeColorTheme);
+    };
 
-// export const THEME_COLOR_OBJ: ThemeColorObj = THEME_COLOR_ARR.reduce((acc, curr, index) => {
-//   acc[curr] = { value: curr, num: index };
-//   return acc;
-// }, {} as ThemeColorObj);
+    const mediaQuery = window.matchMedia(COLOR_SCHEME_QUERY.dark);
+    mediaQuery.addEventListener("change", onChangeColorScheme);
+    return () => mediaQuery.removeEventListener("change", onChangeColorScheme);
+  }, [currTheme]);
 
-// // const COLOR_SCHEME_QUERY = {
-// //   dark: "(prefers-color-scheme: dark)",
-// //   light: "(prefers-color-scheme: light)",
+  const applyTheme = useCallback(
+    (themeColor: ThemeColor) => {
+      if (currTheme === themeColor || !isValidateThemeColor(themeColor)) return;
+      const toDatasetTheme = themeColor === "system" ? getSystemThemeColor() : themeColor;
+      document.body.dataset.theme = toDatasetTheme;
+      window.localStorage.setItem(STORAGE_NAME, themeColor);
+      setDataset(toDatasetTheme);
+      dispatch(setTheme(themeColor));
+    },
+    [currTheme, dispatch]
+  );
 
-// //   /**
-// //    * @deprecated dark 또는 light 값을 사용해주세요
-// //    */
-// //   noPreference: "(prefers-color-scheme: no-preference)",
-// // };
-
-// const isValidateThemeColor = (theme: unknown): boolean => {
-//   return THEME_COLOR_ARR.includes(theme as ThemeColor);
-// };
-
-// const getPrefersColorScheme = () => {
-//   const isMatches = window.matchMedia(COLOR_SCHEME_QUERY.dark).matches;
-//   return isMatches ? "dark" : "light";
-// };
-
-// const resolveSystemThemeColor = (themeColor: ThemeColor): ThemeColor => {
-//   return themeColor === "system" ? getPrefersColorScheme() : themeColor;
-// };
-
-// const onChangeColorScheme = (e: MediaQueryListEvent) => {
-//   const changeColorTheme = e.matches ? "dark" : "light";
-//   document.body.dataset[DATASET_NAME] !== changeColorTheme && (document.body.dataset[DATASET_NAME] = changeColorTheme);
-//   return;
-// };
-
-// const StorageThemeProvider = ({ children }: ProviderProps) => {
-//   const currTheme = useAppStoreSelector(selectAppStateTheme, shallowEqual) as ThemeColor;
-//   const dispatch = useAppStoreDispatch();
-
-//   useIsomorphicLayoutEffect(() => {
-//     const storageTheme = (window.localStorage.getItem(STORAGE_NAME) ?? "").toLowerCase() as ThemeColor;
-//     const isThemeColor = isValidateThemeColor(storageTheme);
-
-//     const toStorageTheme = isThemeColor ? storageTheme : DEFAULT_THEME_COLOR;
-//     const toDatasetTheme = resolveSystemThemeColor(toStorageTheme);
-
-//     if (!isThemeColor) {
-//       window.localStorage.setItem(STORAGE_NAME, toStorageTheme);
-//     }
-
-//     if (document.body.dataset[DATASET_NAME] !== toDatasetTheme) {
-//       document.body.dataset[DATASET_NAME] = toDatasetTheme;
-//     }
-
-//     dispatch(setTheme(toStorageTheme));
-//   }, []);
-
-//   useIsomorphicLayoutEffect(() => {
-//     if (currTheme !== "system") return;
-//     const mediaQuery = window.matchMedia(COLOR_SCHEME_QUERY.dark);
-//     mediaQuery.addEventListener("change", onChangeColorScheme);
-//     return () => mediaQuery.removeEventListener("change", onChangeColorScheme);
-//   }, [currTheme]);
-
-//   useIsomorphicLayoutEffect(() => {}, []);
-
-//   return <Fragment key={"StorageThemeProvider"}>{children}</Fragment>;
-// };
-
-// export const useStorageTheme = () => {
-//   const currTheme = useAppStoreSelector(selectAppStateTheme, shallowEqual);
-//   const prevTheme = usePrevious(currTheme);
-
-//   const dispatch = useAppStoreDispatch();
-
-//   const applyTheme = useCallback(
-//     (themeColor: ThemeColor) => {
-//       if (currTheme === themeColor) return;
-//       dispatch(setTheme(themeColor));
-//     },
-//     // eslint-disable-next-line react-hooks/exhaustive-deps
-//     [currTheme]
-//   );
-
-//   return { currTheme, prevTheme, applyTheme };
-// };
-
-//
+  return { curr: { theme: currTheme, dataset }, applyTheme };
+};
