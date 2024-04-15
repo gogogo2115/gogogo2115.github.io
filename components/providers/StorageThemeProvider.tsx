@@ -108,20 +108,24 @@ export const useStorageTheme = () => {
   const dispatch = useAppStoreDispatch();
   const [dataset, setDataset] = useState(currTheme === "system" ? getSystemThemeColor() : currTheme);
 
-  useEffect(() => {
-    if (currTheme !== "system") return;
-    const onChangeColorScheme = (e: MediaQueryListEvent) => {
-      const changeColorTheme = e.matches ? "dark" : "light";
-      if (document.body.dataset[DATASET_NAME] !== changeColorTheme) {
-        document.body.dataset[DATASET_NAME] = changeColorTheme;
-      }
-      setDataset(changeColorTheme);
-    };
+  const onChangeColorScheme = useCallback((e: MediaQueryListEvent) => {
+    const changeColorTheme = e.matches ? "dark" : "light";
+    if (document.body.dataset[DATASET_NAME] !== changeColorTheme) {
+      document.body.dataset[DATASET_NAME] = changeColorTheme;
+    }
+    setDataset(changeColorTheme);
+  }, []);
 
-    const mediaQuery = window.matchMedia(COLOR_SCHEME_QUERY.dark);
-    mediaQuery.addEventListener("change", onChangeColorScheme);
-    return () => mediaQuery.removeEventListener("change", onChangeColorScheme);
-  }, [currTheme]);
+  useEffect(() => {
+    if (currTheme !== "system") {
+      setDataset(currTheme);
+      return () => {};
+    } else {
+      const mediaQuery = window.matchMedia(COLOR_SCHEME_QUERY.dark);
+      mediaQuery.addEventListener("change", onChangeColorScheme);
+      return () => mediaQuery.removeEventListener("change", onChangeColorScheme);
+    }
+  }, [currTheme, onChangeColorScheme]);
 
   const applyTheme = useCallback(
     (themeColor: ThemeColor) => {
