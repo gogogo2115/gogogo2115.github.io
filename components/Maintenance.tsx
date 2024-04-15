@@ -1,8 +1,8 @@
 "use client";
 
-import { Suspense, useEffect } from "react";
+import { useEffect } from "react";
 import styled from "styled-components";
-import { useStorageTheme } from "./providers/StorageThemeProvider";
+// import { useStorageTheme } from "./providers/StorageThemeProvider";
 
 const StyledMaintenance = styled.div`
   position: relative;
@@ -16,7 +16,7 @@ const StyledMaintenance = styled.div`
 `;
 
 const Maintenance = () => {
-  const { curr, applyTheme } = useStorageTheme();
+  //const { curr, applyTheme } = useStorageTheme();
 
   useEffect(() => {
     console.log("aaaa");
@@ -48,10 +48,6 @@ const Maintenance = () => {
         </button>
       </div> */}
       <div></div>
-
-      <div>
-        <button></button>
-      </div>
     </StyledMaintenance>
   );
 };
