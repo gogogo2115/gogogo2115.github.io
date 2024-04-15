@@ -4,9 +4,10 @@
     const st = (window?.localStorage?.getItem("theme") ?? "").toLowerCase(),
       is = ["dark", "light", "system", "gray"].includes(st),
       mt = window.matchMedia("(prefers-color-scheme: dark)")?.matches ? "dark" : "light",
-      ft = is ? (st === "system" ? mt : st) : mt;
+      tst = is ? st : "system",
+      tdt = tst == "system" ? mt : tst;
 
-    document.body.dataset["theme"] = ft;
+    document.body.dataset["theme"] = tdt;
     if (!is) {
       window?.localStorage?.setItem("theme", "system");
     }
