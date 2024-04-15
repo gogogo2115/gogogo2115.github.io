@@ -43,7 +43,8 @@ const SettingPage = () => {
         <button type="button" data-theme="system" value={"system"} onClick={onClickThemeBtn} title="시스템 테마" aria-label="다크 테마">
           시스템
         </button>
-
+      </div>
+      <div>
         <ul>
           <li>build hash : {BUILD_HASH}</li>
           <li>build date : {BUILD_AT_KR}</li>
