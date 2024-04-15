@@ -1,6 +1,6 @@
 "use client";
 
-// import { useStorageTheme } from "@/components/providers/StorageThemeProvider";
+import { useStorageTheme } from "@/components/providers/StorageThemeProvider";
 import { BUILD_HASH, BUILD_AT } from "@/utils/index";
 import { MouseEvent, useCallback, useState } from "react";
 
@@ -17,19 +17,19 @@ const SettingPage = () => {
     weekday: "long",
   });
 
-  const [testTxt, setTestTxt] = useState("테스트");
-
-  // const { curr, applyTheme } = useStorageTheme();
+  const { curr, applyTheme } = useStorageTheme();
 
   // console.log("setting page", curr);
 
-  const onClickThemeBtn = useCallback((e: MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-    const target = e.currentTarget;
-    const theme = target.dataset["theme"] || target.value;
-    setTestTxt(theme as "dark" | "light" | "system");
-    alert(theme);
-  }, []);
+  const onClickThemeBtn = useCallback(
+    (e: MouseEvent<HTMLButtonElement>) => {
+      e.preventDefault();
+      const target = e.currentTarget;
+      const theme = target.dataset["theme"] || target.value;
+      applyTheme(theme as "dark" | "light" | "system");
+    },
+    [applyTheme]
+  );
 
   return (
     <div>
