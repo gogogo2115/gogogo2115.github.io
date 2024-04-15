@@ -15,15 +15,6 @@ const StyledMaintenance = styled.div`
   align-items: center;
 `;
 
-const fetchData = () => {
-  return new Promise((resolve) => setTimeout(() => resolve("World!"), 2000));
-};
-
-const AsyncDataFetcher = () => {
-  const dataPromise = fetchData();
-  return <>{dataPromise}</>;
-};
-
 const Maintenance = () => {
   const { curr, applyTheme } = useStorageTheme();
 
@@ -56,12 +47,7 @@ const Maintenance = () => {
           시스템
         </button>
       </div> */}
-      <div>
-        Hello{" "}
-        <Suspense fallback="...">
-          <AsyncDataFetcher />
-        </Suspense>
-      </div>
+      <div></div>
 
       <div>
         <button></button>
