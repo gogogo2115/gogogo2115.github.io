@@ -3,19 +3,13 @@
   try {
     const st = (window?.localStorage?.getItem("theme") ?? "").toLowerCase(),
       is = ["dark", "light", "system", "gray"].includes(st),
-      mm = window.matchMedia("(prefers-color-scheme: dark)"),
-      mt = mm.matches ? "dark" : "light";
+      mt = window.matchMedia("(prefers-color-scheme: dark)")?.matches ? "dark" : "light",
+      tst = is ? st : "system",
+      tdt = tst == "system" ? mt : tst;
 
-    if (is) {
-      if (st === "system") {
-        document.body.dataset["theme"] = mt;
-        return;
-      }
-      document.body.dataset["theme"] = st;
-      return;
+    document.body.dataset["theme"] = tdt;
+    if (!is) {
+      window?.localStorage?.setItem("theme", "system");
     }
-    document.body.dataset["theme"] = mt;
-    window?.localStorage?.setItem("theme", "system");
-    return;
   } catch (e) {}
 })();

@@ -46,7 +46,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
               <ReactQueryProvider>
                 <>{IS_PROD_MAINTENANCE ? <Maintenance /> : children}</>
               </ReactQueryProvider>
-              <script type="text/javascript" id="theme" defer async src="/storageTheme.js" />
+              <script type="text/javascript" id="storageThemeScript" defer async src="/storageTheme.js" />
               <script type="text/javascript" id="featureNotBug" defer async src="/featureNotBug.js" />
 
               <GoogleAnalytics />

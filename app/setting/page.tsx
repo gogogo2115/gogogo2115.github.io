@@ -37,10 +37,10 @@ const SettingPage = () => {
         <button type="button" data-theme="dark" value={"dark"} onClick={onClickThemeBtn} title="다크 테마" aria-label="다크 테마">
           다크
         </button>
-        <button type="button" data-theme="light" value={"light"} onClick={onClickThemeBtn} title="라이트 테마" aria-label="다크 테마">
+        <button type="button" data-theme="light" value={"light"} onClick={onClickThemeBtn} title="라이트 테마" aria-label="라이트 테마">
           라이트
         </button>
-        <button type="button" data-theme="system" value={"system"} onClick={onClickThemeBtn} title="시스템 테마" aria-label="다크 테마">
+        <button type="button" data-theme="system" value={"system"} onClick={onClickThemeBtn} title="시스템 테마" aria-label="시스템 테마">
           시스템
         </button>
       </div>
