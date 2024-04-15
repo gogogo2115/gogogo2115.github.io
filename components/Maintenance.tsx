@@ -2,7 +2,7 @@
 
 import { Suspense, useEffect } from "react";
 import styled from "styled-components";
-// import { useStorageTheme } from "./providers/StorageThemeProvider";
+import { useStorageTheme } from "./providers/StorageThemeProvider";
 
 const StyledMaintenance = styled.div`
   position: relative;
@@ -25,7 +25,7 @@ const AsyncDataFetcher = () => {
 };
 
 const Maintenance = () => {
-  // const { curr, applyTheme } = useStorageTheme();
+  const { curr, applyTheme } = useStorageTheme();
 
   useEffect(() => {
     console.log("aaaa");
