@@ -30,7 +30,10 @@ const COLOR_SCHEME_QUERY = {
 
 const isValidateThemeColor = (theme: unknown): theme is ThemeColor => THEME_COLOR_ARR.includes(theme as ThemeColor);
 
-const getSystemThemeColor = (): ThemeColor => (window.matchMedia(COLOR_SCHEME_QUERY.dark).matches ? "dark" : "light");
+const getSystemThemeColor = (): ThemeColor => {
+  if (!isClient) return "light";
+  return window.matchMedia(COLOR_SCHEME_QUERY.dark).matches ? "dark" : "light";
+};
 
 // const useStorageThemeChangeListener = (currTheme: ThemeColor, dispatch: ReturnType<typeof useAppStoreDispatch>) => {};
 
@@ -122,7 +125,7 @@ export const useStorageTheme = () => {
 
   const applyTheme = useCallback(
     (themeColor: ThemeColor) => {
-      if (currTheme === themeColor || !isValidateThemeColor(themeColor)) return;
+      if (!isClient || currTheme === themeColor || !isValidateThemeColor(themeColor)) return;
       const toDatasetTheme = themeColor === "system" ? getSystemThemeColor() : themeColor;
       document.body.dataset.theme = toDatasetTheme;
       window.localStorage.setItem(STORAGE_NAME, themeColor);
