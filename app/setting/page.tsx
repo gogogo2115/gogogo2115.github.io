@@ -1,8 +1,9 @@
 "use client";
 
-import { useStorageTheme } from "@/components/providers/StorageThemeProvider";
 import { BUILD_HASH, BUILD_AT } from "@/utils/index";
 import { MouseEvent, useCallback, useState } from "react";
+
+import { useStorageTheme } from "@/components/providers/StorageThemeProvider";
 
 const SettingPage = () => {
   const utcDate = new Date(BUILD_AT);
