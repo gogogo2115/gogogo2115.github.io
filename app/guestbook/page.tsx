@@ -1,5 +1,6 @@
 "use client";
 
+import { useStorageTheme } from "@/components/providers/StorageThemeProvider";
 import Giscus, { type GiscusProps, type Repo } from "@giscus/react";
 
 const initial: GiscusProps = {
@@ -12,9 +13,14 @@ const initial: GiscusProps = {
 };
 
 const GuestbookPage = () => {
+  const { curr } = useStorageTheme();
+  const giscusTheme = curr.dataset === "gray" ? "noborder_gray" : curr.dataset;
+
+  console.log(curr);
+
   return (
     <div style={{ width: "80%", margin: "8px auto" }}>
-      <Giscus {...initial} />
+      <Giscus {...initial} theme={giscusTheme} />
     </div>
   );
 };
