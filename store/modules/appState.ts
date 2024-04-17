@@ -2,17 +2,17 @@ import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { AppThunk } from "@/store";
 import { createAppSlice } from "@/store";
 
-export type ThemeColor = "dark" | "light" | "system" | "gray";
-
 type AppState = {
   isLoading: boolean;
   theme?: string;
+  testTheme?: { theme: string; dataset: string };
 };
 
 const name = "appState";
 const initialState: AppState = {
   isLoading: false,
   theme: "system",
+  testTheme: { theme: "system", dataset: "light" },
 };
 
 export const appState = createSlice({
@@ -31,9 +31,13 @@ export const appState = createSlice({
       state.isLoading = action.payload;
     }),
     setTheme: create.reducer((state, action: PayloadAction<string>) => {
-      if (state.theme === action.payload) return;
       state.theme = action.payload;
     }),
+    setTestTheme: create.reducer((state, action: PayloadAction<{ theme: string; dataset: string }>) => {
+      const { theme, dataset } = action.payload;
+      state.testTheme = { theme, dataset };
+    }),
+
     // testTheme: create.preparedReducer(
     //   (theme: string) => {
     //     const getTheme = window.localStorage.getItem("theme") ?? "";
@@ -46,18 +50,19 @@ export const appState = createSlice({
     // ),
   }),
   selectors: {
-    selectAppStateTheme: (s) => s.theme,
-    selectAppStateIsLoading: (s) => s.isLoading,
+    selectTheme: (s) => s.theme,
+    selectTestTheme: (s) => s.testTheme,
+    selectIsLoading: (s) => s.isLoading,
   },
 });
 
-export const { selectAppStateIsLoading, selectAppStateTheme } = appState.selectors;
+export const appStateSelectors = appState.selectors;
 export const appStateActions = appState.actions;
 
 export const themeIfAdd =
   (theme: string): AppThunk =>
   (dispatch, getState) => {
-    const currentValue = selectAppStateTheme(getState());
+    const currentValue = appStateSelectors.selectTheme(getState());
 
     if (!currentValue) {
       dispatch(appStateActions.setTheme(theme));
