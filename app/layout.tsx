@@ -40,20 +40,19 @@ export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <AppStoreProvider>
       <StyledComponentsProvider>
-        <StorageThemeProvider>
+        <>
           <html lang="ko" dir="ltr">
             <body id="__next" className={nanum.className}>
               <ReactQueryProvider>
-                <>{IS_PROD_MAINTENANCE ? <Maintenance /> : children}</>
+                <>{IS_PROD_MAINTENANCE || true ? <Maintenance /> : children}</>
               </ReactQueryProvider>
-              <script type="text/javascript" id="storageThemeScript" defer async src="/storageTheme.js" />
+              {/* <script type="text/javascript" id="storageThemeScript" defer async src="/storageTheme.js" /> */}
               <script type="text/javascript" id="featureNotBug" defer async src="/featureNotBug.js" />
-
               <GoogleAnalytics />
               <WebVitals />
             </body>
           </html>
-        </StorageThemeProvider>
+        </>
       </StyledComponentsProvider>
     </AppStoreProvider>
   );

@@ -12,16 +12,16 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 1,
     },
     {
-      url: siteMapPrefix + "/color",
+      url: siteMapPrefix + "/guestbook",
       lastModified: BUILD_AT,
-      changeFrequency: "monthly",
+      changeFrequency: "weekly",
       priority: 1,
     },
-    {
-      url: siteMapPrefix + "/wai-aria",
-      lastModified: BUILD_AT,
-      changeFrequency: "monthly",
-      priority: 1,
-    },
+    // {
+    //   url: siteMapPrefix + "/wai-aria",
+    //   lastModified: BUILD_AT,
+    //   changeFrequency: "monthly",
+    //   priority: 1,
+    // },
   ];
 }
