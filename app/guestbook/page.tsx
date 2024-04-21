@@ -13,10 +13,8 @@ const initial: GiscusProps = {
 };
 
 const GuestbookPage = () => {
-  const { curr } = useStorageTheme();
-  const giscusTheme = curr.dataset === "gray" ? "noborder_gray" : curr.dataset;
-
-  console.log(curr);
+  const { currTheme } = useStorageTheme();
+  const giscusTheme = currTheme.value === "gray" ? "noborder_gray" : currTheme.value;
 
   return (
     <div style={{ width: "80%", margin: "8px auto" }}>
