@@ -4,15 +4,13 @@ import { createAppSlice } from "@/store";
 
 type AppState = {
   isLoading: boolean;
-  theme?: string;
-  testTheme?: { theme: string; dataset: string };
+  theme?: { theme: string; value: string };
 };
 
 const name = "appState";
 const initialState: AppState = {
   isLoading: false,
-  theme: "system",
-  testTheme: { theme: "system", dataset: "light" },
+  theme: { theme: "system", value: "light" }, //"no-preference",
 };
 
 export const appState = createSlice({
@@ -30,12 +28,9 @@ export const appState = createSlice({
     setIsLoading: create.reducer((state, action: PayloadAction<boolean>) => {
       state.isLoading = action.payload;
     }),
-    setTheme: create.reducer((state, action: PayloadAction<string>) => {
-      state.theme = action.payload;
-    }),
-    setTestTheme: create.reducer((state, action: PayloadAction<{ theme: string; dataset: string }>) => {
-      const { theme, dataset } = action.payload;
-      state.testTheme = { theme, dataset };
+    setTheme: create.reducer((state, action: PayloadAction<{ theme: string; value: string }>) => {
+      const { theme, value } = action.payload;
+      state.theme = { theme, value };
     }),
 
     // testTheme: create.preparedReducer(
@@ -51,7 +46,6 @@ export const appState = createSlice({
   }),
   selectors: {
     selectTheme: (s) => s.theme,
-    selectTestTheme: (s) => s.testTheme,
     selectIsLoading: (s) => s.isLoading,
   },
 });
@@ -60,12 +54,12 @@ export const appStateSelectors = appState.selectors;
 export const appStateActions = appState.actions;
 
 export const themeIfAdd =
-  (theme: string): AppThunk =>
+  (theme: string, value: string): AppThunk =>
   (dispatch, getState) => {
     const currentValue = appStateSelectors.selectTheme(getState());
 
     if (!currentValue) {
-      dispatch(appStateActions.setTheme(theme));
+      dispatch(appStateActions.setTheme({ theme, value }));
     }
   };
 
