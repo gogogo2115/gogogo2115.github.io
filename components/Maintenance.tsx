@@ -25,11 +25,7 @@ const AsyncDataFetcher = () => {
 };
 
 const Maintenance = () => {
-  const { curr, applyTheme } = useStorageTheme();
-
-  useEffect(() => {
-    console.log("aaaa");
-  }, []);
+  const { applyTheme } = useStorageTheme();
 
   const onClickThemeBtn = useCallback(
     (e: MouseEvent<HTMLButtonElement>) => {
