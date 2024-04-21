@@ -40,11 +40,11 @@ export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <AppStoreProvider>
       <StyledComponentsProvider>
-        <StorageThemeProvider>
+        <>
           <html lang="ko" dir="ltr">
             <body id="__next" className={nanum.className}>
               <ReactQueryProvider>
-                <>{IS_PROD_MAINTENANCE ? <Maintenance /> : children}</>
+                <StorageThemeProvider>{IS_PROD_MAINTENANCE ? <Maintenance /> : children}</StorageThemeProvider>
               </ReactQueryProvider>
               {/* <script type="text/javascript" id="storageThemeScript" defer async src="/storageTheme.js" /> */}
               <script type="text/javascript" id="featureNotBug" defer async src="/featureNotBug.js" />
@@ -52,7 +52,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
               <WebVitals />
             </body>
           </html>
-        </StorageThemeProvider>
+        </>
       </StyledComponentsProvider>
     </AppStoreProvider>
   );
