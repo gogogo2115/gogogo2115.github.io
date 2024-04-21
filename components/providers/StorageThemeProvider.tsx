@@ -113,7 +113,12 @@ export default function StorageThemeProvider({ children }: ProviderProps) {
     return () => window.removeEventListener("storage", onChangeStorage);
   }, [onChangeStorage]);
 
-  return <Fragment key={FRAGMENT_KEY}>{children}</Fragment>;
+  return (
+    <Fragment key={FRAGMENT_KEY}>
+      <script type="text/javascript" id="storageThemeScript" defer async src="/storageTheme.js" />
+      {children}
+    </Fragment>
+  );
 }
 
 export const useStorageTheme = () => {
