@@ -7,13 +7,12 @@ import { useAppStoreDispatch, useAppStoreSelector } from "@/store";
 import { appStateActions, appStateSelectors } from "@/store/modules/appState";
 import { isClient } from "@/utils";
 import usePrevious from "@/hooks/usePrevious";
-import useIsomorphicLayoutEffect from "@/hooks/useIsomorphicEffect";
 
 //type ModeColor = "system" | "no-preference";
 export type ThemeColor = "dark" | "light" | "system" | "gray";
 type ThemeValue = Exclude<ThemeColor, "system">;
 
-type ProviderProps = { children: ReactNode; theme?: ThemeColor | string };
+type ProviderProps = { children: ReactNode; propsTheme?: ThemeColor | string };
 
 const THEME_COLOR_ARR: ThemeColor[] = ["dark", "light", "system", "gray"];
 const THEME_VALUE_ARR: ThemeValue[] = ["dark", "light", "gray"];
@@ -59,7 +58,7 @@ export const validateThemeData = (themeColor: unknown) => {
 const { selectTheme } = appStateSelectors;
 const { setTheme } = appStateActions;
 
-export default function StorageThemeProvider({ children }: ProviderProps) {
+export default function StorageThemeProvider({ children, propsTheme }: ProviderProps) {
   const { theme: currThemeColor, value: currThemeValue } = useAppStoreSelector(selectTheme, shallowEqual) as { theme: ThemeColor; value: ThemeValue };
   const dispatch = useAppStoreDispatch();
 
