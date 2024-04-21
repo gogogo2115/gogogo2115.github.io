@@ -115,7 +115,7 @@ export default function StorageThemeProvider({ children }: ProviderProps) {
 
   return (
     <Fragment key={FRAGMENT_KEY}>
-      <script type="text/javascript" id="storageThemeScript" defer async src="/storageTheme.js" />
+      {/* <script type="text/javascript" id="storageThemeScript" defer async src="/storageTheme.js" /> */}
       {children}
     </Fragment>
   );
