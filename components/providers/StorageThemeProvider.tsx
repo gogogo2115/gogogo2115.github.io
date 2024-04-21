@@ -30,7 +30,7 @@ export const COLOR_SCHEME_QUERY = {
   noPreference: "(prefers-color-scheme: no-preference)",
 };
 
-const FRAGMENT_KEY = "TestStorageThemeProvider";
+const FRAGMENT_KEY = "StorageThemeProvider";
 const STORAGE_NAME = "theme";
 const DATASET_NAME = "theme";
 
@@ -56,11 +56,11 @@ export const validateThemeData = (themeColor: unknown) => {
   return { isValidTheme, toTheme, toValue, errTheme };
 };
 
-const { selectTheme, selectTestTheme } = appStateSelectors;
-const { setTheme, setTestTheme } = appStateActions;
+const { selectTheme } = appStateSelectors;
+const { setTheme } = appStateActions;
 
 export default function StorageThemeProvider({ children }: ProviderProps) {
-  const { theme: currThemeColor, value: currThemeValue } = useAppStoreSelector(selectTestTheme, shallowEqual) as { theme: ThemeColor; value: ThemeValue };
+  const { theme: currThemeColor, value: currThemeValue } = useAppStoreSelector(selectTheme, shallowEqual) as { theme: ThemeColor; value: ThemeValue };
   const dispatch = useAppStoreDispatch();
 
   const onChangeColorScheme = useCallback(
@@ -70,7 +70,7 @@ export default function StorageThemeProvider({ children }: ProviderProps) {
       const themeValue = (media === COLOR_SCHEME_QUERY.dark && matches ? "dark" : "light") as ThemeValue;
 
       document.body.dataset[DATASET_NAME] !== themeValue && (document.body.dataset[DATASET_NAME] = themeValue);
-      dispatch(setTestTheme({ theme: "system", value: themeValue }));
+      dispatch(setTheme({ theme: "system", value: themeValue }));
     },
     [dispatch]
   );
@@ -83,7 +83,7 @@ export default function StorageThemeProvider({ children }: ProviderProps) {
 
       !isValidTheme && window.localStorage.setItem(STORAGE_NAME, toTheme);
       document.body.dataset[DATASET_NAME] !== toValue && (document.body.dataset[DATASET_NAME] = toValue);
-      dispatch(setTestTheme({ theme: toTheme, value: toValue }));
+      dispatch(setTheme({ theme: toTheme, value: toValue }));
     },
     [dispatch]
   );
@@ -95,7 +95,7 @@ export default function StorageThemeProvider({ children }: ProviderProps) {
     !isValidTheme && window.localStorage.setItem(STORAGE_NAME, toTheme);
 
     document.body.dataset[DATASET_NAME] !== toValue && (document.body.dataset[DATASET_NAME] = toValue);
-    dispatch(setTestTheme({ theme: toTheme, value: toValue }));
+    dispatch(setTheme({ theme: toTheme, value: toValue }));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -117,7 +117,7 @@ export default function StorageThemeProvider({ children }: ProviderProps) {
 }
 
 export const useStorageTheme = () => {
-  const { theme: currThemeColor, value: currThemeValue } = useAppStoreSelector(selectTestTheme, shallowEqual) as { theme: ThemeColor; value: ThemeValue };
+  const { theme: currThemeColor, value: currThemeValue } = useAppStoreSelector(selectTheme, shallowEqual) as { theme: ThemeColor; value: ThemeValue };
   const currTheme = { theme: currThemeColor, value: currThemeValue };
   const prevTheme = usePrevious(currTheme);
   const dispatch = useAppStoreDispatch();
@@ -128,7 +128,7 @@ export const useStorageTheme = () => {
       if (!isValidTheme || themeColor === currThemeColor) return;
       window.localStorage.setItem(STORAGE_NAME, toTheme);
       document.body.dataset[DATASET_NAME] !== toValue && (document.body.dataset[DATASET_NAME] = toValue);
-      dispatch(setTestTheme({ theme: toTheme, value: toValue }));
+      dispatch(setTheme({ theme: toTheme, value: toValue }));
     },
     [currThemeColor, dispatch]
   );
