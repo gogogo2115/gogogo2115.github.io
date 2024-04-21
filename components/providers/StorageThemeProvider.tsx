@@ -1,143 +1,137 @@
 "use client";
-import { Fragment, useCallback, useEffect, useState, type ReactNode } from "react";
+
+import { type ReactNode, Fragment, useEffect, useCallback, useState, useLayoutEffect, use } from "react";
 import { shallowEqual } from "react-redux";
 
-import useIsomorphicLayoutEffect from "@/hooks/useIsomorphicEffect";
 import { useAppStoreDispatch, useAppStoreSelector } from "@/store";
-import { appStateActions, selectAppStateTheme } from "@/store/modules/appState";
+import { appStateActions, appStateSelectors } from "@/store/modules/appState";
 import { isClient } from "@/utils";
 import usePrevious from "@/hooks/usePrevious";
+import useIsomorphicLayoutEffect from "@/hooks/useIsomorphicEffect";
 
-type ProviderProps = { children: ReactNode };
-type ThemeColor = "dark" | "light" | "system" | "gray";
+//type ModeColor = "system" | "no-preference";
+export type ThemeColor = "dark" | "light" | "system" | "gray";
+type ThemeValue = Exclude<ThemeColor, "system">;
 
-const { setTheme } = appStateActions;
-
-const STORAGE_NAME = "theme";
-const DATASET_NAME = "theme";
+type ProviderProps = { children: ReactNode; theme?: ThemeColor | string };
 
 const THEME_COLOR_ARR: ThemeColor[] = ["dark", "light", "system", "gray"];
-const DEFAULT_THEME_COLOR: (typeof THEME_COLOR_ARR)[number] | ThemeColor = "system";
+const THEME_VALUE_ARR: ThemeValue[] = ["dark", "light", "gray"];
+export const DEFAULT_STORAGE_THEME_COLOR: ThemeColor = "system";
+export const DEFAULT_STORAGE_THEME_VALUE: ThemeValue = "light";
 
-const COLOR_SCHEME_QUERY = {
+export const COLOR_SCHEME_QUERY = {
   dark: "(prefers-color-scheme: dark)",
   light: "(prefers-color-scheme: light)",
   /**
-   * @deprecated dark 또는 light 값을 사용해주세요
+   * prefers-color-scheme: no-preference는 사용자가 선호하는 테마를 알리지 않았음을 의미
+   * @deprecated 일부 브라우저용이므로 light 값을 사용하여 기본값으로 잡아주는게 좋음
    */
-  // noPreference: "(prefers-color-scheme: no-preference)",
+  noPreference: "(prefers-color-scheme: no-preference)",
 };
 
-const isValidateThemeColor = (theme: unknown): theme is ThemeColor => THEME_COLOR_ARR.includes(theme as ThemeColor);
+const FRAGMENT_KEY = "TestStorageThemeProvider";
+const STORAGE_NAME = "theme";
+const DATASET_NAME = "theme";
 
-const getSystemThemeColor = (): ThemeColor => {
+export const isValidateThemeColor = (themeColor: unknown): themeColor is ThemeColor => {
+  return THEME_COLOR_ARR.includes(themeColor as ThemeColor);
+};
+
+export const isValidateThemeValue = (themeValue: unknown): themeValue is ThemeValue => {
+  return THEME_VALUE_ARR.includes(themeValue as ThemeValue);
+};
+
+export const getSystemColorScheme = (): ThemeValue => {
   if (!isClient) return "light";
+  if (window.matchMedia(COLOR_SCHEME_QUERY.noPreference).matches) return "light";
   return window.matchMedia(COLOR_SCHEME_QUERY.dark).matches ? "dark" : "light";
 };
 
-// const useStorageThemeChangeListener = (currTheme: ThemeColor, dispatch: ReturnType<typeof useAppStoreDispatch>) => {};
+export const validateThemeData = (themeColor: unknown) => {
+  const isValidTheme = isValidateThemeColor(themeColor);
+  const toTheme = isValidTheme ? themeColor : DEFAULT_STORAGE_THEME_COLOR;
+  const toValue = toTheme === "system" ? getSystemColorScheme() : toTheme;
+  const errTheme = !isValidTheme ? themeColor : undefined;
+  return { isValidTheme, toTheme, toValue, errTheme };
+};
 
-const StorageThemeProvider = ({ children }: ProviderProps) => {
-  const currTheme = useAppStoreSelector(selectAppStateTheme, shallowEqual) as ThemeColor;
+const { selectTheme, selectTestTheme } = appStateSelectors;
+const { setTheme, setTestTheme } = appStateActions;
+
+export default function StorageThemeProvider({ children }: ProviderProps) {
+  const { theme: currThemeColor, value: currThemeValue } = useAppStoreSelector(selectTestTheme, shallowEqual) as { theme: ThemeColor; value: ThemeValue };
   const dispatch = useAppStoreDispatch();
 
-  // 초기랜더링
-  useIsomorphicLayoutEffect(() => {
-    if (!isClient) return;
-    const storageTheme = (window.localStorage.getItem(STORAGE_NAME) ?? "").toLowerCase() as ThemeColor;
-    const isThemeColor = isValidateThemeColor(storageTheme);
+  const onChangeColorScheme = useCallback(
+    (event: MediaQueryListEvent) => {
+      event.preventDefault();
+      const { media, matches } = event;
+      const themeValue = (media === COLOR_SCHEME_QUERY.dark && matches ? "dark" : "light") as ThemeValue;
 
-    const toStorageTheme = isThemeColor ? storageTheme : DEFAULT_THEME_COLOR;
-    const toDatasetTheme = toStorageTheme === "system" ? getSystemThemeColor() : toStorageTheme;
+      document.body.dataset[DATASET_NAME] !== themeValue && (document.body.dataset[DATASET_NAME] = themeValue);
+      dispatch(setTestTheme({ theme: "system", value: themeValue }));
+    },
+    [dispatch]
+  );
 
-    // console.log({ storageTheme, isThemeColor, toStorageTheme, toDatasetTheme });
+  const onChangeStorage = useCallback(
+    (event: StorageEvent) => {
+      event.preventDefault();
+      if (event.key !== STORAGE_NAME) return;
+      const { isValidTheme, toTheme, toValue } = validateThemeData(event.newValue);
 
-    // storage가 존재하지 않거나 틀린값을 가지고 있으므로 새로운 값으로 입력
-    !isThemeColor && window.localStorage.setItem(STORAGE_NAME, toStorageTheme);
+      !isValidTheme && window.localStorage.setItem(STORAGE_NAME, toTheme);
+      document.body.dataset[DATASET_NAME] !== toValue && (document.body.dataset[DATASET_NAME] = toValue);
+      dispatch(setTestTheme({ theme: toTheme, value: toValue }));
+    },
+    [dispatch]
+  );
 
-    // body의 dataset["theme"]의 값이 일치하지 않을때 새로운 값으로 갱신
-    document.body.dataset[DATASET_NAME] !== toDatasetTheme && (document.body.dataset[DATASET_NAME] = toDatasetTheme);
+  // 초기 랜더링
+  useLayoutEffect(() => {
+    const storageTheme = (window.localStorage.getItem("theme") ?? "").toLowerCase();
+    const { isValidTheme, toTheme, toValue } = validateThemeData(storageTheme);
+    !isValidTheme && window.localStorage.setItem(STORAGE_NAME, toTheme);
 
-    dispatch(setTheme(toStorageTheme));
-
-    return () => {};
+    document.body.dataset[DATASET_NAME] !== toValue && (document.body.dataset[DATASET_NAME] = toValue);
+    dispatch(setTestTheme({ theme: toTheme, value: toValue }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // theme가 system일때 운영체제(window, mac)의 테마가 변경이 일어날때
+  // 미디어 테마 변경
   useEffect(() => {
-    if (currTheme !== "system") return;
-
-    const onChangeColorScheme = (e: MediaQueryListEvent) => {
-      const changeColorTheme = e.matches ? "dark" : "light";
-
-      if (document.body.dataset[DATASET_NAME] !== changeColorTheme) {
-        document.body.dataset[DATASET_NAME] = changeColorTheme;
-      }
-    };
-
+    if (currThemeColor !== "system") return;
     const mediaQuery = window.matchMedia(COLOR_SCHEME_QUERY.dark);
     mediaQuery.addEventListener("change", onChangeColorScheme);
     return () => mediaQuery.removeEventListener("change", onChangeColorScheme);
-  }, [currTheme]);
+  }, [currThemeColor, onChangeColorScheme]);
 
-  // localStorage가 변경이 일어날때
+  // storage 변경
   useEffect(() => {
-    const onStorageChange = (e: StorageEvent) => {
-      if (e.key !== STORAGE_NAME) return;
-      const isThemeColor = isValidateThemeColor(e.newValue);
-      const toStorageTheme = isThemeColor ? (e.newValue as ThemeColor) : DEFAULT_THEME_COLOR;
-      const toDatasetTheme = toStorageTheme === "system" ? getSystemThemeColor() : toStorageTheme;
+    window.addEventListener("storage", onChangeStorage);
+    return () => window.removeEventListener("storage", onChangeStorage);
+  }, [onChangeStorage]);
 
-      !isThemeColor && window.localStorage.setItem(STORAGE_NAME, toStorageTheme);
-      document.body.dataset[DATASET_NAME] !== toDatasetTheme && (document.body.dataset[DATASET_NAME] = toDatasetTheme);
-
-      dispatch(setTheme(toStorageTheme));
-    };
-
-    window.addEventListener("storage", onStorageChange);
-    return () => window.removeEventListener("storage", onStorageChange);
-  }, [dispatch]);
-
-  return <Fragment key={"StorageThemeProvider"}>{children}</Fragment>;
-};
-
-export default StorageThemeProvider;
+  return <Fragment key={FRAGMENT_KEY}>{children}</Fragment>;
+}
 
 export const useStorageTheme = () => {
-  const currTheme = useAppStoreSelector(selectAppStateTheme, shallowEqual) as ThemeColor;
+  const { theme: currThemeColor, value: currThemeValue } = useAppStoreSelector(selectTestTheme, shallowEqual) as { theme: ThemeColor; value: ThemeValue };
+  const currTheme = { theme: currThemeColor, value: currThemeValue };
+  const prevTheme = usePrevious(currTheme);
   const dispatch = useAppStoreDispatch();
-  const [dataset, setDataset] = useState(currTheme === "system" ? getSystemThemeColor() : currTheme);
-
-  const onChangeColorScheme = useCallback((e: MediaQueryListEvent) => {
-    const changeColorTheme = e.matches ? "dark" : "light";
-    if (document.body.dataset[DATASET_NAME] !== changeColorTheme) {
-      document.body.dataset[DATASET_NAME] = changeColorTheme;
-    }
-    setDataset(changeColorTheme);
-  }, []);
-
-  useEffect(() => {
-    if (currTheme !== "system") {
-      setDataset(currTheme);
-      return () => {};
-    } else {
-      const mediaQuery = window.matchMedia(COLOR_SCHEME_QUERY.dark);
-      mediaQuery.addEventListener("change", onChangeColorScheme);
-      return () => mediaQuery.removeEventListener("change", onChangeColorScheme);
-    }
-  }, [currTheme, onChangeColorScheme]);
 
   const applyTheme = useCallback(
     (themeColor: ThemeColor) => {
-      if (!isClient || currTheme === themeColor || !isValidateThemeColor(themeColor)) return;
-      const toDatasetTheme = themeColor === "system" ? getSystemThemeColor() : themeColor;
-      document.body.dataset.theme = toDatasetTheme;
-      window.localStorage.setItem(STORAGE_NAME, themeColor);
-      setDataset(toDatasetTheme);
-      dispatch(setTheme(themeColor));
+      const { isValidTheme, toTheme, toValue } = validateThemeData(themeColor);
+      if (!isValidTheme || themeColor === currThemeColor) return;
+      window.localStorage.setItem(STORAGE_NAME, toTheme);
+      document.body.dataset[DATASET_NAME] !== toValue && (document.body.dataset[DATASET_NAME] = toValue);
+      dispatch(setTestTheme({ theme: toTheme, value: toValue }));
     },
-    [currTheme, dispatch]
+    [currThemeColor, dispatch]
   );
 
-  return { curr: { theme: currTheme, dataset }, applyTheme };
+  return { currTheme, prevTheme, applyTheme };
 };
