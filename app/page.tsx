@@ -9,7 +9,9 @@ export default function Home() {
 
   return (
     <main className={styles.main}>
-      <Link href={"/web-safe-colors"}>web safe colors</Link>
+      <Link href={"/web-safe-colors"} title="web safe colors 페이지 이동">
+        web safe colors
+      </Link>
     </main>
   );
 }
