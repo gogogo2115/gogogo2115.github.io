@@ -8,7 +8,7 @@ const webSafeObjColors = generateWebSafeColors({ returnType: "OBJECT" }) as {
 const dataLength = webSafeObjColors.length ?? 0;
 
 export default function WebSafeColorsPage() {
-  return <div>{dataLength}</div>;
+  return <div>{dataLength <= 0 ? <div>정보를 불러올 수 없습니다.</div> : <div />}</div>;
 }
 
 // {webSafeObjColors.map((v, index) => {
