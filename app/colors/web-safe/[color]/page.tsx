@@ -12,8 +12,8 @@ const isColorHexRegex = (color?: string) => {
 
 export default function ColorsWebSafeColorPage(props: PageProps) {
   const { params } = props;
-  const { color: propsColor } = params;
+  const pramsColor = params.color;
 
-  if (!isColorHexRegex(propsColor)) return notFound();
-  return <>{propsColor}</>;
+  if (!isColorHexRegex(pramsColor)) return notFound();
+  return <>{pramsColor}</>;
 }
