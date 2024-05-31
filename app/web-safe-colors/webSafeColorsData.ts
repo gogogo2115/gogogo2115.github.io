@@ -21,21 +21,13 @@ type WebSafeColorsData = {
 export const webSafeColorsData = (): WebSafeColorsData[] => {
   let idx = 0;
   const colors: WebSafeColorsData[] = [];
-  for (const r of webSafeKeyColors) {
+  for (const b of webSafeKeyColors) {
     for (const g of webSafeKeyColors) {
-      for (const b of webSafeKeyColors) {
+      for (const r of webSafeKeyColors) {
         idx += 1;
         const key = { r, g, b } as WebSafeKeyObj;
-        const hex = {
-          r: `${r}${r}`,
-          g: `${g}${g}`,
-          b: `${b}${b}`,
-        } as WebSafeHexObj;
-        const rgb = {
-          r: parseInt(hex.r, 16),
-          g: parseInt(hex.g, 16),
-          b: parseInt(hex.b, 16),
-        } as WebSafeRgbObj;
+        const hex = { r: `${r}${r}`, g: `${g}${g}`, b: `${b}${b}` } as WebSafeHexObj;
+        const rgb = { r: parseInt(hex.r, 16), g: parseInt(hex.g, 16), b: parseInt(hex.b, 16) } as WebSafeRgbObj;
         const alpha = {
           r: parseFloat((rgb.r / 255).toFixed(1)),
           g: parseFloat((rgb.g / 255).toFixed(1)),
