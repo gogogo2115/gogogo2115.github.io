@@ -2,7 +2,8 @@
 
 import { webSafeColorsData } from "@/app/web-safe-colors/webSafeColorsData";
 
-console.log(webSafeColorsData());
+const webSafeData = webSafeColorsData();
+console.log(webSafeData);
 
 export default function WebSafeColors() {
   return <></>;
