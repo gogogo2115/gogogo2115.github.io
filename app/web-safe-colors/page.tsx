@@ -12,15 +12,7 @@ export default function WebSafeColors() {
         const dataHex = `${v.hex.r}${v.hex.g}${v.hex.b}`;
         const backgroundColor = `rgb(${v.rgb.r}, ${v.rgb.g}, ${v.rgb.b})`;
         return (
-          <div
-            key={i}
-            data-idx={v.idx}
-            data-key={dataKey}
-            data-hex={dataHex}
-            style={{
-              backgroundColor,
-            }}
-          >
+          <div key={i} data-idx={v.idx} data-key={dataKey} data-hex={dataHex} style={{ backgroundColor }}>
             {i}
           </div>
         );
