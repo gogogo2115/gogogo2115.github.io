@@ -18,7 +18,7 @@ type WebSafeColorsData = {
   alpha: WebSafeAlphaObj;
 };
 
-export const webSafeColorsData = (): WebSafeColorsData[] => {
+export const colorsWebSafeData = (): WebSafeColorsData[] => {
   let idx = 0;
   const colors: WebSafeColorsData[] = [];
   for (const b of webSafeKeyColors) {
