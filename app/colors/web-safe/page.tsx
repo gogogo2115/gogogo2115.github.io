@@ -1,12 +1,10 @@
-"use client";
+import { colorsWebSafeData } from "@/app/colors/web-safe/colorsWebSafeData";
 
-import { webSafeColorsData } from "@/app/web-safe-colors/webSafeColorsData";
+const webSafeData = colorsWebSafeData();
 
-const webSafeData = webSafeColorsData();
-
-export default function WebSafeColors() {
+export default function ColorsWebSafePage() {
   return (
-    <>
+    <div>
       {webSafeData.map((v, i) => {
         const dataKey = `${v.key.r}${v.key.g}${v.key.b}`;
         const dataHex = `${v.hex.r}${v.hex.g}${v.hex.b}`;
@@ -17,6 +15,6 @@ export default function WebSafeColors() {
           </div>
         );
       })}
-    </>
+    </div>
   );
 }
