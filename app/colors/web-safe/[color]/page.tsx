@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { isValidateWebSafeKey, isValidateWebSafeHex } from "@/app/colors/web-safe/colorsWebSafeData";
 
 type PageProps = {
   params: { color: string };
@@ -9,6 +10,9 @@ export default function ColorsWebSafeColorPage(props: PageProps) {
   const { params } = props;
   const pramsColor = params.color;
 
-  if (false) return notFound();
+  const isWebSafeKey = isValidateWebSafeKey(pramsColor);
+  const isWebSafeHex = isValidateWebSafeHex(pramsColor);
+
+  if (!isWebSafeKey && !isWebSafeHex) return notFound();
   return <>{pramsColor}</>;
 }

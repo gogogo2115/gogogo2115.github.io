@@ -47,6 +47,8 @@ export const isValidateWebSafeKey = (color?: string | WEB_SAFE_KEY_OBJ) => {
     return WEB_SAFE_KEY_ARR.includes(r) && WEB_SAFE_KEY_ARR.includes(g) && WEB_SAFE_KEY_ARR.includes(b);
   }
   if (typeof color == "string") {
+    color = color.toUpperCase();
+
     if (color.length === 3) {
       const r = WEB_SAFE_KEY_ARR.includes(color.substring(0, 1) as WEB_SAFE_KEY),
         g = WEB_SAFE_KEY_ARR.includes(color.substring(1, 2) as WEB_SAFE_KEY),
@@ -64,10 +66,12 @@ export const isValidateWebSafeHex = (color?: string | WEB_SAFE_HEX_OBJ) => {
   }
 
   if (typeof color == "string") {
+    color = color.toUpperCase();
+
     if (color.length === 6) {
       const r = WEB_SAFE_HEX_ARR.includes(color.substring(0, 2) as WEB_SAFE_HEX),
-        g = WEB_SAFE_HEX_ARR.includes(color.substring(0, 2) as WEB_SAFE_HEX),
-        b = WEB_SAFE_HEX_ARR.includes(color.substring(0, 2) as WEB_SAFE_HEX);
+        g = WEB_SAFE_HEX_ARR.includes(color.substring(2, 4) as WEB_SAFE_HEX),
+        b = WEB_SAFE_HEX_ARR.includes(color.substring(4, 6) as WEB_SAFE_HEX);
       return r && g && b;
     }
   }
