@@ -16,7 +16,9 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="ko" dir="ltr">
-      <body className={inter.className}>{children}</body>
+      <body id="__next" className={inter.className}>
+        {children}
+      </body>
     </html>
   );
 }
