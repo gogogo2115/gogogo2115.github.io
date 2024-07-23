@@ -10,6 +10,7 @@ const __dirname = path.resolve();
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  output: "export",
   sassOptions: {
     includePaths: [path.join(__dirname, "styles")],
   },
