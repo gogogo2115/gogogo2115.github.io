@@ -1,4 +1,4 @@
-// import bundleAnalyzer from "@next/bundle-analyzer";
+import bundleAnalyzer from "@next/bundle-analyzer";
 import path from "path";
 
 // const withBundleAnalyzer = bundleAnalyzer({
