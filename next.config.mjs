@@ -1,12 +1,12 @@
 import path from "path";
-// import bundleAnalyzer from "@next/bundle-analyzer";
+import bundleAnalyzer from "@next/bundle-analyzer";
 
 const __dirname = path.resolve();
 
-// const withBundleAnalyzer = bundleAnalyzer({
-//   enabled: process.env.ANALYZE === "true",
-//   openAnalyzer: false,
-// });
+const withBundleAnalyzer = bundleAnalyzer({
+  enabled: process.env.ANALYZE === "true",
+  openAnalyzer: false,
+});
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -17,5 +17,4 @@ const nextConfig = {
   },
 };
 
-// export default withBundleAnalyzer(nextConfig);
-export default nextConfig;
+export default withBundleAnalyzer(nextConfig);
