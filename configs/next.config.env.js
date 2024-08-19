@@ -11,12 +11,14 @@ const createEnvHash = (value) => {
   }
 };
 
-const PACKAGE_VERSION = "";
-const PACKAGE_NAME = "";
-const GENERATOR = "14.2.5";
+const PACKAGE_NAME = process.env.NEXT_PUBLIC_PACKAGE_NAME ?? "PACKAGE_NAME";
+const PACKAGE_VERSION = process.env.NEXT_PUBLIC_PACKAGE_VERSION ?? "0.0.0";
+
 const BUILD_AT = new Date().toISOString();
 const BUILD_TS = Date.parse(BUILD_AT).toString();
-const BUILD_HASH = createEnvHash({ BUILD_AT, BUILD_TS, PACKAGE_VERSION, PACKAGE_NAME });
+const BUILD_HASH = createEnvHash({ BUILD_AT, BUILD_TS, PACKAGE_NAME, PACKAGE_VERSION });
+
+const GENERATOR = "14.2.5";
 
 const env = {
   GENERATOR,
