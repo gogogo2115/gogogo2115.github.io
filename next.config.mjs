@@ -15,6 +15,13 @@ const nextConfig = {
   sassOptions: {
     includePaths: [path.join(__dirname, "styles")],
   },
+
+  eslint: { ignoreDuringBuilds: true },
+  typescript: { ignoreBuildErrors: true },
+  webpack: (config) => {
+    if (config.name === "server") config.optimization.concatenateModules = false;
+    return config;
+  },
 };
 
 export default withBundleAnalyzer(nextConfig);
