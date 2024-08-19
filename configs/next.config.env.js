@@ -4,7 +4,7 @@ const { createHash } = require("crypto");
 const createEnvHash = (value) => {
   try {
     const stringify = JSON.stringify({ value: value });
-    const hash = createHash("sha256").update(stringify).digest("base64");
+    const hash = createHash("sha512").update(stringify).digest("base64");
     return hash;
   } catch (e) {
     throw new Error("createEnvHash 생성 오류");
