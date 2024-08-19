@@ -1,5 +1,6 @@
 "use strict";
 const { createHash } = require("crypto");
+const { readFileSync } = require("fs");
 
 const createEnvHash = (value) => {
   try {
