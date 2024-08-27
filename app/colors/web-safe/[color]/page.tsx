@@ -1,8 +1,8 @@
 "use client";
 
-// export function generateStaticParams() {
-//   return [{ color: "1" }, { color: "2" }, { color: "3" }];
-// }
+export function generateStaticParams() {
+  return [{ color: "1" }, { color: "2" }, { color: "3" }];
+}
 
 // Three versions of this page will be statically generated
 // using the `params` returned by `generateStaticParams`
