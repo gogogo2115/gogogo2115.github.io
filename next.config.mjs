@@ -14,7 +14,7 @@ const nextConfig = {
   output: "export",
   sassOptions: { includePaths: [path.join(__dirname, "styles")] },
   eslint: { ignoreDuringBuilds: true }, // ignoreDuringBuilds : true eslint가 오류시 강제 빌드 react-query 관련 설정
-  typescript: { ignoreBuildErrors: true }, // ignoreDuringBuilds : true  eslint가 오류시 강제 빌드 react-query 관련 설정
+  typescript: { ignoreBuildErrors: true }, // ignoreDuringBuilds : true  typescript가 오류시 강제 빌드 react-query 관련 설정
   webpack: (config) => {
     /*
       config.cache = false; 관련
