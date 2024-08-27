@@ -11,7 +11,7 @@ const withBundleAnalyzer = bundleAnalyzer({
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: false,
-  // output: "export",
+  output: "export",
   sassOptions: {
     includePaths: [path.join(__dirname, "styles")],
   },
