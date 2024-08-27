@@ -9,7 +9,7 @@ export const isBoolean = (value: string = "", isStrict: boolean = true) => {
 
 const toBooleanOptions = { isErrNull: false, isStrict: true };
 
-export const toBoolean = (value: string | boolean | number, options: ToBooleanOptions = toBooleanOptions) => {
+export const toBoolean = (value: string | boolean | number | undefined | null, options: ToBooleanOptions = toBooleanOptions) => {
   value = String(value).toLowerCase();
   const { isErrNull = toBooleanOptions.isErrNull, isStrict = toBooleanOptions.isStrict } = options;
   if (isErrNull && !isBoolean(value, isStrict)) return null;
