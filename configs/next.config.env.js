@@ -20,15 +20,14 @@ const readPackageJsonFile = () => {
     const packageJson = JSON.parse(readFileSync(filePath, "utf8"));
     return packageJson;
   } catch (e) {
-    return {};
+    throw new Error("readPackageJsonFile 오류");
   }
 };
 
 const PACKAGE_JSON = readPackageJsonFile();
+// const NEXT_VERSION = PACKAGE_JSON.dependencies?.next || PACKAGE_JSON.devDependencies?.next || 'Version not found';
 const NEXT_VERSION = (PACKAGE_JSON.dependencies?.next || "").replace(/[\^~]/g, "");
 
-//     const nextVersion = packageJson.dependencies?.next || packageJson.devDependencies?.next || 'Version not found';
-const GENERATOR = "111";
 const PACKAGE_NAME = process.env.NEXT_PUBLIC_PACKAGE_NAME ?? "PACKAGE_NAME";
 const PACKAGE_VERSION = process.env.NEXT_PUBLIC_PACKAGE_VERSION ?? "0.0.0";
 
@@ -38,7 +37,6 @@ const BUILD_HASH = createEnvHash({ BUILD_AT, BUILD_TS, PACKAGE_NAME, PACKAGE_VER
 
 const env = {
   NEXT_VERSION,
-  GENERATOR,
   BUILD_AT,
   BUILD_TS,
   BUILD_HASH,
