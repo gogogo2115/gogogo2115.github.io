@@ -1,8 +1,25 @@
 "use client";
 
-import { useState } from "react";
+import { useState, MouseEvent, useMemo } from "react";
 
-export default function WebSafePageClient() {
-  const [] = useState();
-  return <>웹 색상 페이지</>;
+type WebSafePageClientProps = { data: string[] | undefined | null };
+
+export default function WebSafePageClient({ data = [] }: WebSafePageClientProps) {
+  const [selector, setSelector] = useState(0);
+
+  const dataLength = data?.length ?? 0;
+
+  return (
+    <>
+      <div>{dataLength}개의 색상</div>
+      <div>
+        {dataLength >= 1 &&
+          data?.map((v) => (
+            <div key={v} style={{ background: `#${v}` }}>
+              {v}
+            </div>
+          ))}
+      </div>
+    </>
+  );
 }
