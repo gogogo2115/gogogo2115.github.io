@@ -1,7 +1,7 @@
 import { getWebSafeHexObjData } from "@/app/colors/web-safe/data";
 import { notFound } from "next/navigation";
 
-type WebSafeFullHexPageProps = { params: { slug: string } };
+type WebSafeSlugPageProps = { params: { slug: string } };
 
 export async function generateStaticParams() {
   const data = getWebSafeHexObjData();
@@ -10,10 +10,10 @@ export async function generateStaticParams() {
   });
 }
 
-export default function WebSafeSlugPage({ params: { slug } }: WebSafeFullHexPageProps) {
-  const colorData = getWebSafeHexObjData();
-  const findColor = colorData.find(({ hex }) => `${hex.r}${hex.g}${hex.b}` === slug);
-  if (!findColor) return notFound();
+export default function WebSafeSlugPage({ params: { slug } }: WebSafeSlugPageProps) {
+  const webSafeData = getWebSafeHexObjData();
+  const isFindWebSafe = webSafeData.find(({ hex }) => `${hex.r}${hex.g}${hex.b}` === slug);
+  if (!isFindWebSafe) return notFound();
   return (
     <div>
       <div>{slug}</div>
