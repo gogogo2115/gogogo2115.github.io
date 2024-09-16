@@ -8,7 +8,7 @@ import { type WebSafeHexObjData } from "@/app/colors/web-safe/data";
 type WebSafePageClientProps = { data: WebSafeHexObjData[] | undefined | null };
 
 export default function WebSafePageClient({ data = [] }: WebSafePageClientProps) {
-  const [selector, setSelector] = useState(1);
+  const [selector, setSelector] = useState(0);
 
   const dataResult = useMemo((): WebSafeHexObjData[] => {
     try {
