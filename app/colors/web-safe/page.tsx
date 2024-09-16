@@ -1,15 +1,15 @@
 import { Metadata } from "next";
 import WebSafePageClient from "./page.client";
-import { WEB_SAFE_HEX_DATA } from "@/app/colors/web-safe/data";
+import { getWebSafeHexObjData } from "@/app/colors/web-safe/data";
+
+const data = getWebSafeHexObjData();
 
 export const metadata: Metadata = {
   title: "웹 216색상",
   description: "웹 216색상",
 };
 
-const data = WEB_SAFE_HEX_DATA();
-
-export default function colorsWebSafePage() {
+export default async function colorsWebSafePage() {
   return (
     <>
       <WebSafePageClient data={data} />
