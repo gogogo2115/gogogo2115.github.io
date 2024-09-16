@@ -10,7 +10,7 @@ export async function generateStaticParams() {
   });
 }
 
-export default function WebSafeFullHexPage({ params: { slug } }: WebSafeFullHexPageProps) {
+export default function WebSafeSlugPage({ params: { slug } }: WebSafeFullHexPageProps) {
   const colorData = getWebSafeHexObjData();
   const findColor = colorData.find(({ hex }) => `${hex.r}${hex.g}${hex.b}` === slug);
   if (!findColor) return notFound();

@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { useState, MouseEvent, useMemo } from "react";
 
 import { type WebSafeHexObjData } from "@/app/colors/web-safe/data";
+import Link from "next/link";
 
 type WebSafePageClientProps = { data: WebSafeHexObjData[] | undefined | null };
 
@@ -29,12 +30,15 @@ export default function WebSafePageClient({ data = [] }: WebSafePageClientProps)
   if (dataResultLength <= 0) return notFound(); // 결과값 없음
   return (
     <>
-      <div>{dataLength}개의 색상</div>
+      <div>총{dataLength}개의 색상</div>
       <div>
         <div>{dataResultLength}개의 색상</div>
-        {dataResult.map((v) => {
-          const { r, g, b } = v.hex;
-          return <div key={String(v)} style={{ background: `#${`${r}${g}${b}`}` }}>{`${r}${g}${b}`}</div>;
+        {dataResult.map(({ hex: { r, g, b } }, i) => {
+          return (
+            <div key={i} style={{ background: `#${`${r}${g}${b}`}` }}>
+              <Link href={`/colors/web-safe/${r}${g}${b}`}>{`${r}${g}${b}`}</Link>
+            </div>
+          );
         })}
       </div>
     </>

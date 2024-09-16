@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   description: "웹 216색상",
 };
 
-export default async function colorsWebSafePage() {
+export default async function WebSafePage() {
   return (
     <>
       <WebSafePageClient data={data} />
