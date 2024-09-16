@@ -1,9 +1,13 @@
 export type WebSafeHexData = "00" | "33" | "66" | "99" | "CC" | "FF";
-export type WebSafeHexObjData = { hex: { r: string; g: string; b: string }; int: { r: number; g: number; b: number }; isTrueSafeColor: boolean };
+export type WebSafeHexObjData = {
+  hex: { r: WebSafeHexData; g: WebSafeHexData; b: WebSafeHexData };
+  int: { r: number; g: number; b: number };
+  isTrueSafeColor: boolean;
+};
 
 // 더 명확한 변수 이름 사용
 export const WEB_SAFE_HEX_CODES = ["00", "33", "66", "99", "CC", "FF"] as const;
-export const WEB_SAFE_DECIMAL_CODES: readonly number[] = WEB_SAFE_HEX_CODES.map((hex: WebSafeHexData) => parseInt(hex, 16));
+export const WEB_SAFE_INT_CODES: readonly number[] = WEB_SAFE_HEX_CODES.map((hex: WebSafeHexData) => parseInt(hex, 16));
 
 export const TRUE_SAFE_HEX_DATA: ReadonlySet<string> = new Set([
   "000000",
