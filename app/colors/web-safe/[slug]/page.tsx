@@ -1,4 +1,6 @@
 import { getWebSafeHexObjData } from "@/app/colors/web-safe/data";
+import WebSafePageClient from "@/app/colors/web-safe/[slug]/page.client";
+
 import { notFound } from "next/navigation";
 
 type WebSafeSlugPageProps = { params: { slug: string } };
@@ -12,12 +14,7 @@ export async function generateStaticParams() {
 
 export default function WebSafeSlugPage({ params: { slug } }: WebSafeSlugPageProps) {
   const webSafeData = getWebSafeHexObjData();
-  const isFindWebSafe = webSafeData.find(({ hex }) => `${hex.r}${hex.g}${hex.b}` === slug);
-  if (!isFindWebSafe) return notFound();
-  return (
-    <div>
-      <div>{slug}</div>
-      <div>현재 준비 중입니다.</div>
-    </div>
-  );
+  const findWebSafe = webSafeData.find(({ hex }) => `${hex.r}${hex.g}${hex.b}` === slug);
+  if (!findWebSafe) return notFound();
+  return <WebSafePageClient data={findWebSafe} />;
 }
