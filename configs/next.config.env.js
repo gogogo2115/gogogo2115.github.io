@@ -25,11 +25,10 @@ const readPackageJsonFile = () => {
 };
 
 const PACKAGE_JSON = readPackageJsonFile();
-// const NEXT_VERSION = PACKAGE_JSON.dependencies?.next || PACKAGE_JSON.devDependencies?.next || 'Version not found';
 const NEXT_VERSION = (PACKAGE_JSON.dependencies?.next || "").replace(/[\^~]/g, "");
 
-const PACKAGE_NAME = process.env.NEXT_PUBLIC_PACKAGE_NAME ?? "PACKAGE_NAME";
-const PACKAGE_VERSION = process.env.NEXT_PUBLIC_PACKAGE_VERSION ?? "0.0.0";
+const PACKAGE_NAME = process.env.NEXT_PUBLIC_PACKAGE_NAME;
+const PACKAGE_VERSION = process.env.NEXT_PUBLIC_PACKAGE_VERSION;
 
 const BUILD_AT = new Date().toISOString();
 const BUILD_TS = Date.parse(BUILD_AT).toString();
@@ -40,8 +39,6 @@ const env = {
   BUILD_AT,
   BUILD_TS,
   BUILD_HASH,
-  PACKAGE_NAME,
-  PACKAGE_VERSION,
 };
 
 module.exports = env;
