@@ -1,4 +1,5 @@
 "use client";
+
 import { type ReactNode, useRef } from "react";
 import { Provider } from "react-redux";
 import { setupListeners } from "@reduxjs/toolkit/query";
@@ -12,7 +13,8 @@ export default function ReactReduxProvider({ children }: ReactReduxProviderProps
   const storeRef = useRef<AppStore | null>(null);
 
   if (!storeRef.current) {
-    storeRef.current = makeStore(); // Create the store instance the first time this renders
+    // Create the store instance the first time this renders
+    storeRef.current = makeStore();
   }
 
   useIsomorphicLayoutEffect(() => {
