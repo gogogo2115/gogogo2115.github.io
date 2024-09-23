@@ -29,5 +29,12 @@ export default function OrientationPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  return <>11</>;
+  return (
+    <div>
+      <h1>기기 방향 정보</h1>
+      <p>Alpha: {orientationData?.alpha}</p>
+      <p>Beta: {orientationData?.beta}</p>
+      <p>Gamma: {orientationData?.gamma}</p>
+    </div>
+  );
 }
