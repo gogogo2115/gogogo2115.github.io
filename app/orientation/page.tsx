@@ -1,8 +1,10 @@
 "use client";
-import { useEffect, useState } from "react";
+
+import { useState } from "react";
 import { throttle } from "lodash";
 
 import { isClient } from "@/utils/device";
+import useIsomorphicLayoutEffect from "@/hooks/useIsomorphicLayoutEffect";
 
 type OrientationData = {
   alpha: number | null;
@@ -14,9 +16,11 @@ export default function OrientationPage() {
   const client = isClient();
   const [orientationData, setOrientationData] = useState<OrientationData | null>(null);
 
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     if (client) {
       const isSupportedOrientation = typeof window.DeviceOrientationEvent === "function" || "DeviceOrientationEvent" in window;
+
+      // DeviceOrientationEvent 지원하지 않음
       if (!isSupportedOrientation) {
         setOrientationData(null);
         return () => {};
@@ -25,7 +29,7 @@ export default function OrientationPage() {
       const handleOrientation = throttle((e: DeviceOrientationEvent) => {
         let { alpha = 0, beta = 0, gamma = 0 } = e;
 
-        // console.log({ alpha, beta, gamma });
+        // console.log({ alpha, beta, gamma, absolute });
 
         alpha = Number((alpha ?? 0).toFixed(4));
         beta = Number((beta ?? 0).toFixed(4));
@@ -36,6 +40,21 @@ export default function OrientationPage() {
 
       window.addEventListener("deviceorientation", handleOrientation);
       return () => window.removeEventListener("deviceorientation", handleOrientation);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useIsomorphicLayoutEffect(() => {
+    if (client) {
+      const isSupportedMotion = typeof window.DeviceMotionEvent === "function" || "DeviceMotionEvent" in window;
+      if (!isSupportedMotion) return () => {};
+
+      const handleMotion = (e: DeviceMotionEvent) => {
+        console.log("handleMotion", e);
+      };
+
+      window.addEventListener("devicemotion", handleMotion);
+      return () => window.removeEventListener("devicemotion", handleMotion);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
