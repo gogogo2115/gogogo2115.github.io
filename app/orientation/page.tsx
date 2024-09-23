@@ -19,12 +19,9 @@ export default function OrientationPage() {
 
   useEffect(() => {
     if (client) {
-      const deviceorientation = (e: DeviceOrientationEvent) => {
-        const { alpha = 0, beta = 0, gamma = 0 } = e;
-        setOrientationData({ alpha, beta, gamma });
-      };
-      window.addEventListener("deviceorientation", deviceorientation);
-      return () => window.removeEventListener("deviceorientation", deviceorientation);
+      const aa = typeof window.DeviceMotionEvent;
+      const bb = typeof window.DeviceOrientationEvent;
+      console.log(aa, bb);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
