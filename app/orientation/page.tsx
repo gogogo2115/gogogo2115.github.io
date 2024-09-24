@@ -14,12 +14,13 @@ type OrientationData = {
 
 export default function OrientationPage() {
   const client = isClient();
-  const [orientationData, setOrientationData] = useState<OrientationData | null>({ alpha: 0, beta: 0, gamma: 0 });
+  const [orientationData, setOrientationData] = useState<OrientationData | null>(null);
 
   useIsomorphicLayoutEffect(() => {
     if (client) {
+      const isSupportedOrientation = typeof window.DeviceOrientationEvent === "function" || "DeviceOrientationEvent" in window;
       // DeviceOrientationEvent 지원하지 않음
-      if (!(typeof window.DeviceMotionEvent === "function" || "DeviceOrientationEvent" in window)) {
+      if (!isSupportedOrientation) {
         setOrientationData(null);
         return () => {};
       }
