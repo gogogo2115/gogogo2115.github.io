@@ -12,31 +12,24 @@ type OrientationData = {
   gamma: number; // -90도부터 90도(모바일 사파리: -180도~180도)까지 범위의 y축을 중심으로 디바이스의 움직임 (오른쪽/왼쪽)
 };
 
-// portrait landscape
-
 export default function OrientationPage() {
   const client = isClient();
-  const [orientationData, setOrientationData] = useState<OrientationData | null>(null);
+  const [orientationData, setOrientationData] = useState<OrientationData | null>({ alpha: 0, beta: 0, gamma: 0 });
 
   useIsomorphicLayoutEffect(() => {
     if (client) {
-      const isSupportedOrientation = typeof window.DeviceOrientationEvent === "function" || "DeviceOrientationEvent" in window;
-
       // DeviceOrientationEvent 지원하지 않음
-      if (!isSupportedOrientation) {
+      if (!(typeof window.DeviceMotionEvent === "function" || "DeviceOrientationEvent" in window)) {
         setOrientationData(null);
         return () => {};
       }
 
       const handleOrientation = throttle((e: DeviceOrientationEvent) => {
-        let { alpha = 0, beta = 0, gamma = 0 } = e;
-
+        let { alpha = 0, beta = 0, gamma = 0, absolute } = e;
         // console.log({ alpha, beta, gamma, absolute });
-
         alpha = Number((alpha ?? 0).toFixed(4));
         beta = Number((beta ?? 0).toFixed(4));
         gamma = Number((gamma ?? 0).toFixed(4));
-
         setOrientationData({ alpha, beta, gamma });
       }, 100);
 
@@ -64,7 +57,7 @@ export default function OrientationPage() {
           </div>
         </>
       ) : (
-        <>deviceorientation를 지원하지 않습니다.</>
+        <div>deviceorientation를 지원하지 않습니다.</div>
       )}
     </div>
   );
