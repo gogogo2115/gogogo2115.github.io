@@ -53,17 +53,14 @@ export default function OrientationPage() {
         <>
           <div>
             <p>Alpha: {orientationData.alpha}</p>
-            <div>0도부터 360도까지 범위의 z축을 중심으로 디바이스의 움직임</div>
           </div>
           <p />
           <div>
             <p>Beta: {orientationData.beta}</p>
-            <div>-180도부터 180도(모바일 사파리: -90도~90도)까지 범위의 x축을 중심으로 디바이스의 움직임 (앞/뒤)</div>
           </div>
           <p />
           <div>
             <p>Gamma: {orientationData.gamma}</p>
-            <div>-90도부터 90도(모바일 사파리: -180도~180도)까지 범위의 y축을 중심으로 디바이스의 움직임 (오른쪽/왼쪽)</div>
           </div>
         </>
       ) : (
