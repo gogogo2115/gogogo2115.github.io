@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { throttle } from "lodash";
 
 import { isClient } from "@/utils/device";
@@ -28,6 +28,11 @@ export default function OrientationPage() {
       const handleOrientation = throttle((e: DeviceOrientationEvent) => {
         let { alpha = 0, beta = 0, gamma = 0, absolute } = e;
         // console.log({ alpha, beta, gamma, absolute });
+        if (alpha == null || beta == null || gamma == null) {
+          const msgTarget = alpha == null ? "alpha" : beta == null ? "beta" : "gamma";
+          console.warn(`${msgTarget} 를 지원을 하지 않습니다.`);
+        }
+
         alpha = Number((alpha ?? 0).toFixed(4));
         beta = Number((beta ?? 0).toFixed(4));
         gamma = Number((gamma ?? 0).toFixed(4));
@@ -43,23 +48,25 @@ export default function OrientationPage() {
   return (
     <div>
       <h1>기기 방향 정보</h1>
-      {orientationData !== null ? (
-        <>
-          <div>
-            <p>Alpha: {orientationData.alpha}</p>
-          </div>
-          <p />
-          <div>
-            <p>Beta: {orientationData.beta}</p>
-          </div>
-          <p />
-          <div>
-            <p>Gamma: {orientationData.gamma}</p>
-          </div>
-        </>
-      ) : (
-        <div>deviceorientation를 지원하지 않습니다.</div>
-      )}
+      <Suspense fallback={<div />}>
+        {orientationData !== null ? (
+          <>
+            <div>
+              <p>Alpha: {orientationData.alpha}</p>
+            </div>
+            <p />
+            <div>
+              <p>Beta: {orientationData.beta}</p>
+            </div>
+            <p />
+            <div>
+              <p>Gamma: {orientationData.gamma}</p>
+            </div>
+          </>
+        ) : (
+          <div>deviceorientation를 지원하지 않습니다.</div>
+        )}
+      </Suspense>
     </div>
   );
 }
