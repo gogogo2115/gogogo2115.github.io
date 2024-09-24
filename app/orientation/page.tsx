@@ -7,10 +7,12 @@ import { isClient } from "@/utils/device";
 import useIsomorphicLayoutEffect from "@/hooks/useIsomorphicLayoutEffect";
 
 type OrientationData = {
-  alpha: number | null;
-  beta: number | null;
-  gamma: number | null;
+  alpha: number; // 0도부터 360도까지 범위의 z축을 중심으로 디바이스의 움직임
+  beta: number; // -180도부터 180도(모바일 사파리: -90도~90도)까지 범위의 x축을 중심으로 디바이스의 움직임 (앞/뒤)
+  gamma: number; // -90도부터 90도(모바일 사파리: -180도~180도)까지 범위의 y축을 중심으로 디바이스의 움직임 (오른쪽/왼쪽)
 };
+
+// portrait landscape
 
 export default function OrientationPage() {
   const client = isClient();
@@ -44,29 +46,25 @@ export default function OrientationPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  useIsomorphicLayoutEffect(() => {
-    if (client) {
-      const isSupportedMotion = typeof window.DeviceMotionEvent === "function" || "DeviceMotionEvent" in window;
-      if (!isSupportedMotion) return () => {};
-
-      const handleMotion = (e: DeviceMotionEvent) => {
-        console.log("handleMotion", e);
-      };
-
-      window.addEventListener("devicemotion", handleMotion);
-      return () => window.removeEventListener("devicemotion", handleMotion);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   return (
     <div>
       <h1>기기 방향 정보</h1>
       {orientationData !== null ? (
         <>
-          <p>Alpha: {orientationData?.alpha}</p>
-          <p>Beta: {orientationData?.beta}</p>
-          <p>Gamma: {orientationData?.gamma}</p>
+          <div>
+            <p>Alpha: {orientationData.alpha}</p>
+            <div>0도부터 360도까지 범위의 z축을 중심으로 디바이스의 움직임</div>
+          </div>
+          <p />
+          <div>
+            <p>Beta: {orientationData.beta}</p>
+            <div>-180도부터 180도(모바일 사파리: -90도~90도)까지 범위의 x축을 중심으로 디바이스의 움직임 (앞/뒤)</div>
+          </div>
+          <p />
+          <div>
+            <p>Gamma: {orientationData.gamma}</p>
+            <div>-90도부터 90도(모바일 사파리: -180도~180도)까지 범위의 y축을 중심으로 디바이스의 움직임 (오른쪽/왼쪽)</div>
+          </div>
         </>
       ) : (
         <>deviceorientation를 지원하지 않습니다.</>
