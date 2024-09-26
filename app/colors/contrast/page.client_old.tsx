@@ -35,7 +35,7 @@ const inputColorValue = (value: string) => {
   return /^(#)([a-fA-F0-9]{6})$/i.test(value) ? value : "#000000";
 };
 
-export default function ContrastClientPage({ defaultTextColor, defaultBackgroundColor }: ContrastClientPageProps) {
+export default function ContrastPageClient({ defaultTextColor, defaultBackgroundColor }: ContrastClientPageProps) {
   const client = isClient();
   const [textColor, setTextColor] = useState<string>(defaultTextColor);
   const [backgroundColor, setBackgroundColor] = useState<string>(defaultBackgroundColor);

@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 
 import { randomHexColor } from "@/app/colors/toColor";
-import ContrastClientPage from "./page.client";
+import ContrastPageClient from "@/app/colors/contrast/page.client";
 
 export const metadata: Metadata = {
   title: "웹 접근성",
@@ -10,5 +10,5 @@ export const metadata: Metadata = {
 
 export default function ContrastPage() {
   const props = { defaultFontColor: randomHexColor(), defaultBackgroundColor: randomHexColor() };
-  return <ContrastClientPage {...props} />;
+  return <ContrastPageClient {...props} />;
 }

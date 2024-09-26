@@ -1,3 +1,5 @@
-export default function colorsWebPage() {
-  return <>colorsWebPage</>;
+import ColorsWebPageClient from "@/app/colors/web/page.client";
+
+export default function ColorsWebPage() {
+  return <ColorsWebPageClient />;
 }

@@ -5,14 +5,14 @@ import { getWebSafeHexObjData } from "@/app/colors/web-safe/data";
 const data = getWebSafeHexObjData();
 
 export const metadata: Metadata = {
-  title: "웹 216색상",
-  description: "웹 216색상",
+  title: "웹 216 색상",
+  description: "웹 216 색상",
 };
 
 export default async function WebSafePage() {
   return (
-    <>
+    <div>
       <WebSafePageClient data={data} />
-    </>
+    </div>
   );
 }

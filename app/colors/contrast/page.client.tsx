@@ -30,7 +30,7 @@ const luminance = (r: number, g: number, b: number) => {
   return a[0] * 0.2126 + a[1] * 0.7152 + a[2] * 0.0722;
 };
 
-export default function ContrastClientPage({ defaultFontColor, defaultBackgroundColor }: ContrastClientPageProps) {
+export default function ContrastPageClient({ defaultFontColor, defaultBackgroundColor }: ContrastClientPageProps) {
   const {
     register,
     watch,
@@ -54,7 +54,6 @@ export default function ContrastClientPage({ defaultFontColor, defaultBackground
       const lum2 = luminance(bR, bG, bB);
       const ratio = (Math.max(lum1, lum2) + 0.05) / (Math.min(lum1, lum2) + 0.05);
       return Number(ratio.toFixed(3));
-      return 1;
     } catch (e) {
       return 1;
     }
@@ -139,6 +138,30 @@ export default function ContrastClientPage({ defaultFontColor, defaultBackground
           <h1>111111</h1>
           <h2>ssssss</h2>
           <div>{contrast}: 1</div>
+        </div>
+      </div>
+
+      <div>
+        <p>일반 텍스트</p>
+        <div>
+          <div>AA 4.5:1</div>
+          <div>AAA 7:1</div>
+        </div>
+      </div>
+
+      <div>
+        <p>대형 텍스트</p>
+        <div>
+          <div>AA 3:1</div>
+          <div>AAA 4.5:1</div>
+        </div>
+      </div>
+
+      <div>
+        <p>그 외 텍스트(SVG, 그래픽아이콘 등)</p>
+        <div>
+          <div>AA 3:1</div>
+          <div>AAA 4.5:1</div>
         </div>
       </div>
     </>
