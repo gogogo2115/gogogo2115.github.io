@@ -10,7 +10,7 @@ const withBundleAnalyzer = bundleAnalyzer({
 });
 
 const nodeEnv = process.env.NODE_ENV;
-const isDevelopment = nodeEnv === "development";
+// const isDevelopment = nodeEnv === "development";
 const isProduction = nodeEnv === "production";
 
 /** @type {import('next').NextConfig} */
