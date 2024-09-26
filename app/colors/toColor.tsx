@@ -1,37 +1,80 @@
-type CMYK_OBJ = {
-  c: number;
-  m: number;
-  y: number;
-  k: number;
-};
-
-type RGB_OBJ = {
-  r: number;
-  g: number;
-  b: number;
-};
-
-type HSL_OBJ = {
-  h: number;
-  s: number;
-  l: number;
-};
+type CMYK_OBJ = { c: number; m: number; y: number; k: number };
+type RGB_OBJ = { r: number; g: number; b: number };
+type HSL_OBJ = { h: number; s: number; l: number };
 
 export const isValidRGBValue = (value: number): boolean => Number.isInteger(value) && value >= 0 && value <= 255;
 export const isValidHEXValue = (value: string): boolean => /^[a-f0-9]{1, 2}$/i.test(value.trim());
 
-export const isValidHexColorValue = (value: string, isAlphaAllowed: boolean = false): boolean => {
-  if (typeof value !== "string") throw new Error("문자열 오류");
-  const regexWithOutAlpha = /^(0x|#)?([a-fA-F0-9]{3}|[a-fA-F0-9]{6})$/i;
-  const regexWithAlpha = /^(0x|#)?([a-fA-F0-9]{3}|[a-fA-F0-9]{4}|[a-fA-F0-9]{6}|[a-fA-F0-9]{8})$/i;
-  const regex = isAlphaAllowed ? regexWithAlpha : regexWithOutAlpha;
-  return regex.test(value.trim());
+export const isValidShortHexColorValue = (hexColor: string, option: { isAlphaAllowed?: boolean; includePrefix?: string } = {}) => {
+  if (typeof hexColor !== "string") return false;
+  const { isAlphaAllowed = false, includePrefix = "#" } = option;
+  const alphaCount = isAlphaAllowed ? 4 : 3;
+  const prefix = includePrefix ? includePrefix : "";
+  return new RegExp(`^${prefix}([a-f0-9]{${alphaCount}})$`, "i").test(hexColor.trim());
 };
 
-export const hexToRGB = (hexColor: string | null, isAlphaAllowed: boolean = false): RGB_OBJ | null => {
+export const isValidFullHexColorValue = (hexColor: string, option: { isAlphaAllowed?: boolean; includePrefix?: string } = {}): boolean => {
+  if (typeof hexColor !== "string") return false;
+  const { isAlphaAllowed = false, includePrefix = "#" } = option;
+  const alphaCount = isAlphaAllowed ? 8 : 6;
+  const prefix = includePrefix ? includePrefix : "";
+  return new RegExp(`^${prefix}([a-f0-9]{${alphaCount}})$`, "i").test(hexColor.trim());
+};
+
+export const isValidHexColorValue = (hexColor: string, option: { isAlphaAllowed?: boolean; includePrefix?: string } = {}): boolean => {
+  if (typeof hexColor !== "string") return false;
+  const { isAlphaAllowed = false, includePrefix = "#" } = option;
+  const alphaRegex = isAlphaAllowed ? "([a-f0-9]{3}|[a-f0-9]{4}|[a-f0-9]{6}|[a-f0-9]{8})" : "([a-f0-9]{3}|[a-f0-9]{6})";
+  const prefix = includePrefix ? includePrefix : "";
+  return new RegExp(`^${prefix}${alphaRegex}$`, "i").test(hexColor.trim());
+};
+
+export const shortHexToRGB = (hexColor: string): RGB_OBJ | null => {
+  try {
+    if (typeof hexColor !== "string") throw new Error("형식 오류 발생");
+
+    hexColor = hexColor.trim();
+    hexColor = hexColor.startsWith("#") === false ? `#${hexColor}` : hexColor;
+
+    const match = hexColor.trim().match(/^(#)?([a-f0-9]{3}|[a-f0-9]{4})$/i);
+    if (!match) throw new Error("정규식 오류 발생");
+
+    const hex = match[2];
+    return {
+      r: parseInt(hex[0] + hex[0], 16),
+      g: parseInt(hex[1] + hex[1], 16),
+      b: parseInt(hex[2] + hex[2], 16),
+    };
+  } catch (e) {
+    return null;
+  }
+};
+
+export const fullHexToRGB = (hexColor: string): RGB_OBJ | null => {
+  try {
+    if (typeof hexColor !== "string") throw new Error("형식 오류 발생");
+
+    hexColor = hexColor.trim();
+    hexColor = hexColor.startsWith("#") === false ? `#${hexColor}` : hexColor;
+
+    const match = hexColor.trim().match(/^(#)?([a-f0-9]{6}|[a-f0-9]{8})$/i);
+    if (!match) throw new Error("정규식 오류 발생");
+
+    const hex = match[2];
+    return {
+      r: parseInt(hex.slice(0, 2), 16),
+      g: parseInt(hex.slice(2, 4), 16),
+      b: parseInt(hex.slice(4, 6), 16),
+    };
+  } catch (e) {
+    return null;
+  }
+};
+
+export const hexToRGB = (hexColor: string | null | undefined, isAlphaAllowed: boolean = false): RGB_OBJ | null => {
   try {
     if (typeof hexColor !== "string") throw new Error("문자열 오류");
-    const match = hexColor.trim().match(/^(0x|#)?([a-f0-9]{3}|[a-f0-9]{4}|[a-f0-9]{6}|[a-f0-9]{8})$/i);
+    const match = hexColor.trim().match(/^(#)?([a-f0-9]{3}|[a-f0-9]{4}|[a-f0-9]{6}|[a-f0-9]{8})$/i);
 
     if (!match) throw new Error("정규식 오류 발생");
 
@@ -118,4 +161,13 @@ export const rgbToHSL = (color: RGB_OBJ): HSL_OBJ => {
   l = parseFloat((l * 100).toFixed(2));
 
   return { h, s, l };
+};
+
+export const randomHexColor = (prefix: string = "#", isLowerCase: boolean = true) => {
+  const random = () => Math.floor(Math.random() * (280 - -20 + 1)) + -20;
+  const r = Math.max(0, Math.min(255, random())).toString(16).padStart(2, "0");
+  const g = Math.max(0, Math.min(255, random())).toString(16).padStart(2, "0");
+  const b = Math.max(0, Math.min(255, random())).toString(16).padStart(2, "0");
+  if (isLowerCase) return `${prefix}${r}${g}${b}`.toLowerCase();
+  return `${prefix}${r}${g}${b}`.toUpperCase();
 };
