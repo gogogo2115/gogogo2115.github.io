@@ -17,7 +17,6 @@ export default function WebSafePageClient({ data = [] }: WebSafePageClientProps)
       if (data.length != 216) throw new Error("자료 개수의 오류 발생");
       if (selector == 0) return data; // 전체 출력
       if (selector == 1) return data.filter((v) => v.isTrueSafeColor === true); // safest web colors
-
       return data;
     } catch (e) {
       return []; // 오류 [] 처리
