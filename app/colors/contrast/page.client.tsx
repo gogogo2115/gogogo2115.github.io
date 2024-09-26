@@ -3,7 +3,7 @@
 import useIsomorphicLayoutEffect from "@/hooks/useIsomorphicLayoutEffect";
 import { ChangeEvent, MouseEvent, useMemo } from "react";
 import { useForm } from "react-hook-form";
-import { randomHexColor, fullHexToRGB, isValidFullHexColorValue } from "../toColor";
+import { randomHexColor, fullHexToRGB, isValidFullHexColor } from "../toColor";
 import { throttle } from "lodash";
 
 type ContrastClientPageProps = { defaultFontColor: string; defaultBackgroundColor: string };
@@ -53,7 +53,16 @@ export default function ContrastPageClient({ defaultFontColor, defaultBackground
       const lum1 = luminance(fR, fG, fB);
       const lum2 = luminance(bR, bG, bB);
       const ratio = (Math.max(lum1, lum2) + 0.05) / (Math.min(lum1, lum2) + 0.05);
-      return Number(ratio.toFixed(3));
+      const toString = String(ratio);
+      if (toString.indexOf(".") !== -1) {
+        const split = toString.split(".");
+        if (split.length == 1) {
+          return Number(toString);
+        } else {
+          return Number(split[0] + "." + split[1].charAt(0) + split[1].charAt(1));
+        }
+      }
+      return parseFloat(ratio.toFixed(3));
     } catch (e) {
       return 1;
     }
@@ -72,7 +81,10 @@ export default function ContrastPageClient({ defaultFontColor, defaultBackground
     const target = e.currentTarget;
     const dataTarget = target.dataset["target"] as "fontColor" | "backgroundColor";
     if (["fontColor", "backgroundColor"].includes(dataTarget)) {
-      setValue(dataTarget, randomHexColor("#"), { shouldValidate: true, shouldTouch: true, shouldDirty: true });
+      setValue(dataTarget, randomHexColor(), { shouldValidate: true, shouldTouch: true, shouldDirty: true });
+    } else {
+      setValue("fontColor", randomHexColor(), { shouldValidate: true, shouldTouch: true, shouldDirty: true });
+      setValue("backgroundColor", randomHexColor(), { shouldValidate: true, shouldTouch: true, shouldDirty: true });
     }
   }, 150);
 
@@ -112,10 +124,11 @@ export default function ContrastPageClient({ defaultFontColor, defaultBackground
 
   return (
     <>
+      <>WCAG 2.0</>
       <div>
         <div className="flex">
           <input className="w-10 h-10" type="color" data-target="fontColor" onChange={onChangePalette} value={defaultValueColor(watchFields.fontColor)} />
-          <input {...fontColorRegister} type="text" id="fontColor" maxLength={7} className="text-black h-10 outline-none p-2" defaultValue={defaultFontColor} />
+          <input {...fontColorRegister} type="text" id="fontColor" maxLength={7} className="text-black h-10 outline-none p-2" autoComplete="off" defaultValue={defaultFontColor} />
           <button type="button" className="w-10 h-10 bg-white text-black" data-target="fontColor" onClick={onClickRandomColor}>
             랜덤
           </button>
@@ -125,7 +138,7 @@ export default function ContrastPageClient({ defaultFontColor, defaultBackground
       <div>
         <div className="flex">
           <input className="w-10 h-10" type="color" data-target="backgroundColor" onChange={onChangePalette} value={defaultValueColor(watchFields.backgroundColor)} />
-          <input {...backgroundColorRegister} type="text" id="backgroundColor" maxLength={7} className="text-black h-10 outline-none p-2" defaultValue={defaultBackgroundColor} />
+          <input {...backgroundColorRegister} type="text" id="backgroundColor" maxLength={7} className="text-black h-10 outline-none p-2" autoComplete="off" defaultValue={defaultBackgroundColor} />
           <button type="button" className="w-10 h-10 bg-white text-black" data-target="backgroundColor" onClick={onClickRandomColor}>
             랜덤
           </button>
@@ -133,37 +146,59 @@ export default function ContrastPageClient({ defaultFontColor, defaultBackground
         <p className="text-red-500 h-10">{errors.backgroundColor && errors.backgroundColor.message}</p>
       </div>
 
-      <div className="flex aspect-[5/3] w-[300px] rounded-lg p-2 m-2 border-[#ffffff] border-solid border-2" style={{ backgroundColor: `${defaultValueColor(watchFields.backgroundColor)}` }}>
+      <div className="flex aspect-[5/3] w-[320px] rounded-lg p-3 m-2 border-[#ffffff] border-solid border-2" style={{ backgroundColor: `${defaultValueColor(watchFields.backgroundColor)}` }}>
         <div style={{ color: `${defaultValueColor(watchFields.fontColor)}` }}>
-          <h1>111111</h1>
-          <h2>ssssss</h2>
+          <div style={{ fontSize: "14pt" }}>일반 글자 14pt (18.5px)</div>
+          <div style={{ fontSize: "18pt" }}>대형 글자 18pt (24px)</div>
           <div>{contrast}: 1</div>
         </div>
       </div>
 
       <div>
-        <p>일반 텍스트</p>
-        <div>
-          <div>AA 4.5:1</div>
-          <div>AAA 7:1</div>
-        </div>
-      </div>
-
-      <div>
-        <p>대형 텍스트</p>
-        <div>
-          <div>AA 3:1</div>
-          <div>AAA 4.5:1</div>
-        </div>
-      </div>
-
-      <div>
-        <p>그 외 텍스트(SVG, 그래픽아이콘 등)</p>
-        <div>
-          <div>AA 3:1</div>
-          <div>AAA 4.5:1</div>
-        </div>
+        <input
+          placeholder="테스트 입력"
+          type="text"
+          className="h-10 outline-none w-[320px] rounded-lg p-3 m-2"
+          style={{ color: `${defaultValueColor(watchFields.fontColor)}`, backgroundColor: `${defaultValueColor(watchFields.backgroundColor)}` }}
+        />
       </div>
     </>
   );
+}
+{
+  /*
+  
+  
+  레벨 AA (최소 대비)
+  일반 텍스트 최소 4.5:1
+  큰 텍스트 최소 18pt 또는 굵은 텍스트 최소 14pt 최소 3:1
+
+  레벨 AAA (향상된 대비)
+  일반 텍스트 최소 7:1
+  큰 텍스트  최소 18pt 또는 굵은 텍스트 최소 14pt 최소 3:1
+  
+  
+  <div>
+<p>일반 텍스트</p>
+<div>
+  <div>AA 4.5:1</div>
+  <div>AAA 7:1</div>
+</div>
+</div>
+
+<div>
+<p>대형 텍스트</p>
+<div>
+  <div>AA 3:1</div>
+  <div>AAA 4.5:1</div>
+</div>
+</div>
+
+<div>
+<p>그 외 텍스트(SVG, 그래픽아이콘, UI 등등)</p>
+<div>
+  <div>AA 3:1</div>
+  <div>AAA 4.5:1</div>
+</div>
+</div> */
 }

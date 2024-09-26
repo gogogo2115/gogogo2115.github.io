@@ -5,7 +5,7 @@ type HSL_OBJ = { h: number; s: number; l: number };
 export const isValidRGBValue = (value: number): boolean => Number.isInteger(value) && value >= 0 && value <= 255;
 export const isValidHEXValue = (value: string): boolean => /^[a-f0-9]{1, 2}$/i.test(value.trim());
 
-export const isValidShortHexColorValue = (hexColor: string, option: { isAlphaAllowed?: boolean; includePrefix?: string } = {}) => {
+export const isValidShortHexColor = (hexColor: string, option: { isAlphaAllowed?: boolean; includePrefix?: string } = {}) => {
   if (typeof hexColor !== "string") return false;
   const { isAlphaAllowed = false, includePrefix = "#" } = option;
   const alphaCount = isAlphaAllowed ? 4 : 3;
@@ -13,7 +13,7 @@ export const isValidShortHexColorValue = (hexColor: string, option: { isAlphaAll
   return new RegExp(`^${prefix}([a-f0-9]{${alphaCount}})$`, "i").test(hexColor.trim());
 };
 
-export const isValidFullHexColorValue = (hexColor: string, option: { isAlphaAllowed?: boolean; includePrefix?: string } = {}): boolean => {
+export const isValidFullHexColor = (hexColor: string, option: { isAlphaAllowed?: boolean; includePrefix?: string } = {}): boolean => {
   if (typeof hexColor !== "string") return false;
   const { isAlphaAllowed = false, includePrefix = "#" } = option;
   const alphaCount = isAlphaAllowed ? 8 : 6;
@@ -21,12 +21,21 @@ export const isValidFullHexColorValue = (hexColor: string, option: { isAlphaAllo
   return new RegExp(`^${prefix}([a-f0-9]{${alphaCount}})$`, "i").test(hexColor.trim());
 };
 
-export const isValidHexColorValue = (hexColor: string, option: { isAlphaAllowed?: boolean; includePrefix?: string } = {}): boolean => {
+export const isValidHexColor = (hexColor: string, option: { isAlphaAllowed?: boolean; includePrefix?: string } = {}): boolean => {
   if (typeof hexColor !== "string") return false;
   const { isAlphaAllowed = false, includePrefix = "#" } = option;
   const alphaRegex = isAlphaAllowed ? "([a-f0-9]{3}|[a-f0-9]{4}|[a-f0-9]{6}|[a-f0-9]{8})" : "([a-f0-9]{3}|[a-f0-9]{6})";
   const prefix = includePrefix ? includePrefix : "";
   return new RegExp(`^${prefix}${alphaRegex}$`, "i").test(hexColor.trim());
+};
+
+export const isValidHslColor = (hsl: HSL_OBJ | undefined | null): boolean => {
+  if (typeof hsl !== "object" || hsl == null) return false;
+  const { h, s, l } = hsl;
+  const isValidHue = h >= 0 && h <= 360;
+  const isValidSaturation = s >= 0 && s <= 100;
+  const isValidLightness = l >= 0 && l <= 100;
+  return isValidHue && isValidSaturation && isValidLightness;
 };
 
 export const shortHexToRGB = (hexColor: string): RGB_OBJ | null => {
@@ -74,8 +83,11 @@ export const fullHexToRGB = (hexColor: string): RGB_OBJ | null => {
 export const hexToRGB = (hexColor: string | null | undefined, isAlphaAllowed: boolean = false): RGB_OBJ | null => {
   try {
     if (typeof hexColor !== "string") throw new Error("문자열 오류");
-    const match = hexColor.trim().match(/^(#)?([a-f0-9]{3}|[a-f0-9]{4}|[a-f0-9]{6}|[a-f0-9]{8})$/i);
 
+    hexColor = hexColor.trim();
+    hexColor = hexColor.startsWith("#") === false ? `#${hexColor}` : hexColor;
+
+    const match = hexColor.trim().match(/^(#)?([a-f0-9]{3}|[a-f0-9]{4}|[a-f0-9]{6}|[a-f0-9]{8})$/i);
     if (!match) throw new Error("정규식 오류 발생");
 
     const hex = match[2];
@@ -170,4 +182,62 @@ export const randomHexColor = (prefix: string = "#", isLowerCase: boolean = true
   const b = Math.max(0, Math.min(255, random())).toString(16).padStart(2, "0");
   if (isLowerCase) return `${prefix}${r}${g}${b}`.toLowerCase();
   return `${prefix}${r}${g}${b}`.toUpperCase();
+};
+
+export const hslToRGB = (hsl: HSL_OBJ | null | undefined): RGB_OBJ | null => {
+  try {
+    const isValid = typeof hsl === "object" && hsl !== null;
+    if (!isValid) throw new Error("오류");
+
+    let { h, s, l } = hsl;
+    if (h < 0 || h > 360) throw new Error("h값의 범위 오류");
+    if (s < 0 || s > 100) throw new Error("s값의 범위 오류");
+    if (l < 0 || l > 100) throw new Error("l값의 범위 오류");
+
+    s /= 100;
+    l /= 100;
+
+    const c = (1 - Math.abs(2 * l - 1)) * s; // Chroma
+    const x = c * (1 - Math.abs(((h / 60) % 2) - 1));
+    const m = l - c / 2;
+
+    let r = 0,
+      g = 0,
+      b = 0;
+
+    if (0 <= h && h < 60) {
+      r = c;
+      g = x;
+      b = 0;
+    } else if (60 <= h && h < 120) {
+      r = x;
+      g = c;
+      b = 0;
+    } else if (120 <= h && h < 180) {
+      r = 0;
+      g = c;
+      b = x;
+    } else if (180 <= h && h < 240) {
+      r = 0;
+      g = x;
+      b = c;
+    } else if (240 <= h && h < 300) {
+      r = x;
+      g = 0;
+      b = c;
+    } else if (300 <= h && h < 360) {
+      r = c;
+      g = 0;
+      b = x;
+    }
+
+    // 0 ~ 255 범위로 변환
+    r = Math.round((r + m) * 255);
+    g = Math.round((g + m) * 255);
+    b = Math.round((b + m) * 255);
+
+    return { r, g, b };
+  } catch (e) {
+    return null;
+  }
 };

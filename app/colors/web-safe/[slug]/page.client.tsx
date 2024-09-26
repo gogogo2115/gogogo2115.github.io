@@ -2,7 +2,7 @@
 import { useState } from "react";
 
 import { type WebSafeHexObjData } from "@/app/colors/web-safe/data";
-import { rgbToCMYK, rgbToHSL } from "@/app/colors/toColor";
+import { rgbToCMYK, rgbToHSL, hslToRGB } from "@/app/colors/toColor";
 
 type WebSafePageClientProps = { data: WebSafeHexObjData };
 
@@ -14,15 +14,14 @@ export default function WebSafePageClient({ data }: WebSafePageClientProps) {
 
   const fullHex = `#${hexR}${hexG}${hexB}`;
   const shortHex = `#${hexR[0]}${hexG[0]}${hexB[0]}`;
+
   const cssRGB = `rgb(${intR}, ${intG}, ${intB})`;
 
   const toCMYK = rgbToCMYK(data.int, true);
-  const cmyk = toCMYK != null ? `cmyk(${toCMYK.c},${toCMYK.m},${toCMYK.y},${toCMYK.k})` : null;
+  const cmyk = toCMYK != null ? `cmyk(${toCMYK.c}%,${toCMYK.m}%,${toCMYK.y}%,${toCMYK.k}%)` : null;
 
   const toHSL = rgbToHSL(data.int);
   const hsl = toHSL != null ? `hsl(${toHSL.h}, ${toHSL.s}%, ${toHSL.l}%)` : null;
-
-  console.log(hsl);
 
   return (
     <div className="p">
