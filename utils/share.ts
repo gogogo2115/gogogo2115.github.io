@@ -29,7 +29,10 @@ export const isNavigatorShareSupported = (): boolean => isNavigator() && typeof 
  */
 const areFilesSupported = (files: File[], supportedMimeTypes: string[]): boolean => {
   if (supportedMimeTypes.length === 0) return false; // 빈 배열이면 지원하지 않음
-  return files.every((file) => supportedMimeTypes.includes(file.type));
+
+  // supportedMimeTypes 및 file.type을 소문자로 변환하여 비교
+  return files.every((file) => supportedMimeTypes.map((mime) => mime.toLowerCase()).includes(file.type.toLowerCase()));
+  // return files.every((file) => supportedMimeTypes.includes(file.type)); // 대소문자 이슈가 생길 수 있어서 주석처리
 };
 
 /**
