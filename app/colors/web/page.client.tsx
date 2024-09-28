@@ -23,7 +23,7 @@ export default function ColorsWebPageClient({ data }: ColorsWebPageClientProps) 
             <div className="flex flex-row justify-between">
               <div>{name}</div>
               {isCopySupported && (
-                <button type="button" className="text-black" title={`${name} 복사`} onClick={() => copyToClipboard(name)}>
+                <button type="button" className="text-outline border-white" title={`${name} 복사`} onClick={() => copyToClipboard(name)}>
                   복사
                 </button>
               )}
@@ -31,7 +31,7 @@ export default function ColorsWebPageClient({ data }: ColorsWebPageClientProps) 
             <div className="flex flex-row justify-between">
               <div>{hex}</div>
               {isCopySupported && (
-                <button type="button" className="text-black" title={`${hex} 복사`} onClick={() => copyToClipboard(hex)}>
+                <button type="button" className="text-outline border-white" title={`${hex} 복사`} onClick={() => copyToClipboard(hex)}>
                   복사
                 </button>
               )}
@@ -39,7 +39,7 @@ export default function ColorsWebPageClient({ data }: ColorsWebPageClientProps) 
             <div className="flex flex-row justify-between">
               <div>{rgbText}</div>
               {isCopySupported && (
-                <button type="button" className="text-black" title={`${rgbText} 복사`} onClick={() => copyToClipboard(rgbText)}>
+                <button type="button" className="text-outline border-white" title={`${rgbText} 복사`} onClick={() => copyToClipboard(rgbText)}>
                   복사
                 </button>
               )}
