@@ -1,4 +1,8 @@
+export type WebSafeKeyData = "0" | "3" | "6" | "9" | "C" | "F";
 export type WebSafeHexData = "00" | "33" | "66" | "99" | "CC" | "FF";
+export type WebSafeDecData = 0 | 51 | 102 | 153 | 204 | 255;
+export type WebSafeFracData = 0 | 0.2 | 0.4 | 0.6 | 0.8 | 1;
+
 export type WebSafeHexObjData = {
   hex: { r: WebSafeHexData; g: WebSafeHexData; b: WebSafeHexData };
   int: { r: number; g: number; b: number };
