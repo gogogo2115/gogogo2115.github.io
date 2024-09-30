@@ -41,7 +41,7 @@ export default function WebSafePageClient({ data = [] }: WebSafePageClientProps)
                 className="flex flex-col justify-around min-w-32 max-w-48 aspect-[1/1.2] w-full rounded-lg pt-2 pb-3 pl-2 pr-2  border-black border-solid border-[1px] gap-2"
                 style={{ backgroundColor: `white` }}
               >
-                <div className="flex-grow-[1] rounded-md h-fit" style={{ background: `#${colorHexText}` }}>
+                <div className="flex-grow-[1] rounded-md h-fit border-black border-solid border-[1px]" style={{ background: `#${colorHexText}` }}>
                   <Link className="w-[100%] h-[100%] block" href={`/colors/web-safe/${colorHexText}`} title={`#${colorHexText} 색상의 상세보기 페이지로 이동합니다.`}>
                     <span></span>
                   </Link>
