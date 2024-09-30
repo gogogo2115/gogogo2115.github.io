@@ -68,7 +68,6 @@ export default function WebSafePageClient({ data = [] }: WebSafePageClientProps)
                     onClick={(e) => onClickCopyBtn(e, `#${colorHexText}`)}
                     data-value={`#${colorHexText}`}
                   >
-                    <span className="blind">{`#${colorHexText} 색상의 값을 복사하기`}</span>
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
                       <path
                         strokeLinecap="round"
