@@ -38,7 +38,7 @@ export default function WebSafePageClient({ data = [] }: WebSafePageClientProps)
             return (
               <div
                 key={i}
-                className="max-w-48 min-w-56 w-[80%] aspect-[1/1] rounded-lg pt-2 pb-3 pl-2 pr-2 flex justify-around flex-col border-black border-solid border-[1px] gap-2"
+                className="min-w-28 max-w-36 w-[80%] aspect-[1/1] rounded-lg pt-2 pb-3 pl-2 pr-2 flex justify-around flex-col border-black border-solid border-[1px] gap-2"
                 style={{ backgroundColor: `white` }}
               >
                 <div className="flex-grow-[1] rounded-md border-solid  border-black border-[1px] h-fit" style={{ background: `#${colorHexText}` }}>
