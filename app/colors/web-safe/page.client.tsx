@@ -1,7 +1,7 @@
 "use client";
 
 import { notFound } from "next/navigation";
-import { useState, useMemo } from "react";
+import { useState, useMemo, MouseEvent } from "react";
 
 import { type WebSafeHexObjData } from "@/app/colors/web-safe/data";
 import Link from "next/link";
@@ -22,6 +22,12 @@ export default function WebSafePageClient({ data = [] }: WebSafePageClientProps)
       return []; // 오류 [] 처리
     }
   }, [data, selector]);
+
+  const onClickCopyBtn = (e: MouseEvent<HTMLButtonElement>, text: string) => {
+    e.preventDefault();
+    alert(text);
+    return;
+  };
 
   const dataLength = data?.length ?? 0;
   const dataResultLength = dataResult.length ?? 0;
@@ -47,9 +53,15 @@ export default function WebSafePageClient({ data = [] }: WebSafePageClientProps)
                   </Link>
                 </div>
 
-                <div className="flex flex-row justify-between content-center align-middle bg-[#fff] text-black pl-2 pr-2 rounded-md">
-                  <div>{`#${colorHexText}`}</div>
-                  <button type="button" aria-label={`#${colorHexText} 색상의 값을 복사 합니다.`} title={`#${colorHexText} 색상의 값을 복사 합니다.`} onClick={() => alert("테스트 중입니다.")}>
+                <div className="flex flex-row justify-between content-center align-middle bg-[#fff] text-black pl-1 pr-1 rounded-md">
+                  <div style={{ fontWeight: 500 }}>{`#${colorHexText}`}</div>
+                  <button
+                    type="button"
+                    aria-label={`#${colorHexText} 색상의 값을 복사 합니다.`}
+                    title={`#${colorHexText} 색상의 값을 복사 합니다.`}
+                    onClick={(e) => onClickCopyBtn(e, `#${colorHexText}`)}
+                    data-value={`#${colorHexText}`}
+                  >
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
                       <path
                         strokeLinecap="round"
