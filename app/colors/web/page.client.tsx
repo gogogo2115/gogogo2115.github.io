@@ -11,11 +11,8 @@ export default function ColorsWebPageClient({ data }: ColorsWebPageClientProps) 
   return (
     <div>
       {data.map((v, i) => {
-        const {
-          name,
-          hex,
-          rgb: { r, g, b },
-        } = v;
+        const { name, hex, rgb } = v;
+        const { r, g, b } = rgb;
         const rgbText = `rgb(${r},${g},${b})`;
 
         return (
