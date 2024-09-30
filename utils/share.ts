@@ -22,6 +22,32 @@ export type Options = {
 export const isNavigatorShareSupported = (): boolean => isNavigator() && typeof navigator.share === "function" && typeof navigator.canShare === "function";
 
 /**
+ * 주어진 파일들이 브라우저에서 공유 가능한지 확인합니다.
+ *
+ * 이 함수는 `navigator.canShare`를 사용하여 브라우저가 파일 공유를 지원하는지 확인.
+ * 파일 공유가 가능한 브라우저에서, 파일 리스트가 유효한지 여부를 반환합니다.
+ *
+ * @param {File[] | undefined} files - 공유할 파일 목록 (File 객체 배열)
+ * @returns {boolean} 브라우저에서 파일을 공유할 수 있으면 true, 그렇지 않으면 false를 반환
+ *
+ * @example
+ * const file1 = new File(["Hello, world!"], "hello.txt", { type: "text/plain" });
+ * const file2 = new File(["Another file"], "another.txt", { type: "text/plain" });
+ *
+ * if (isFileShareSupported([file1, file2])) {
+ *   console.log("파일 공유가 가능합니다.");
+ * } else {
+ *   console.log("파일 공유를 지원하지 않습니다.");
+ * }
+ */
+export const isFileShareSupported = (files?: File[]): boolean => {
+  if (typeof navigator.canShare === "function") {
+    return navigator.canShare({ files });
+  }
+  return false; // canShare를 지원하지 않으면 false 반환
+};
+
+/**
  * 공유할 파일 MIME 타입 검증
  * @param {File[]} files - 공유할 파일 목록
  * @param {string[]} supportedMimeTypes - 지원되는 MIME 타입 목록

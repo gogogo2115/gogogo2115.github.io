@@ -22,8 +22,8 @@ export default function TestPage() {
       text: "이 파일들을 확인해보세요!",
       files: [file1, file2],
     };
+
     const options = {
-      supportedMimeTypes: ["text/plain"], // 지원되는 파일 형식 (MIME 타입)
       onSuccess: () => alert("성공적으로 공유되었습니다!"),
       onFailure: (error: any) => alert(`공유 실패: ${error}`),
       onCancel: () => alert("공유가 취소되었습니다."),
