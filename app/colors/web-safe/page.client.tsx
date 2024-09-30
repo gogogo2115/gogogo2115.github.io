@@ -47,7 +47,7 @@ export default function WebSafePageClient({ data = [] }: WebSafePageClientProps)
                   </Link>
                 </div>
 
-                <div className="flex flex-row justify-between content-center align-middle bg-[#fff] text-black p-2 rounded-md border-solid border-black border-[1px] items-center">
+                <div className="flex flex-row justify-between content-center align-middle bg-[#fff] text-black p-2 rounded-md">
                   <div>{`#${colorHexText}`}</div>
                   <button type="button" aria-label={`#${colorHexText} 색상의 값을 복사 합니다.`} title={`#${colorHexText} 색상의 값을 복사 합니다.`} onClick={() => alert("테스트 중입니다.")}>
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
