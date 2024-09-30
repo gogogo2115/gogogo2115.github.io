@@ -9,7 +9,7 @@ import Link from "next/link";
 type WebSafePageClientProps = { data: WebSafeHexObjData[] | undefined | null };
 
 export default function WebSafePageClient({ data = [] }: WebSafePageClientProps) {
-  const [selector, setSelector] = useState(1);
+  const [selector, setSelector] = useState(0);
 
   const dataResult = useMemo((): WebSafeHexObjData[] => {
     try {
@@ -32,16 +32,16 @@ export default function WebSafePageClient({ data = [] }: WebSafePageClientProps)
       <div>총{dataLength}개의 색상</div>
       <div>
         <div>{dataResultLength}개의 색상</div>
-        <div className="flex flex-wrap gap-2 content-between justify-start">
+        <ul className="grid gap-4 p-4 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7">
           {dataResult.map(({ hex: { r, g, b } }, i) => {
             const colorHexText = `${r}${g}${b}`;
             return (
-              <div
+              <li
                 key={i}
-                className="min-w-28 max-w-36 w-[80%] aspect-[1/1] rounded-lg pt-2 pb-3 pl-2 pr-2 flex justify-around flex-col border-black border-solid border-[1px] gap-2"
+                className="flex flex-col justify-around min-w-32 max-w-48 aspect-[1/1.2] w-full rounded-lg pt-2 pb-3 pl-2 pr-2  border-black border-solid border-[1px] gap-2"
                 style={{ backgroundColor: `white` }}
               >
-                <div className="flex-grow-[1] rounded-md border-solid  border-black border-[1px] h-fit" style={{ background: `#${colorHexText}` }}>
+                <div className="flex-grow-[1] rounded-md border-solid border-black border-[1px] h-fit" style={{ background: `#${colorHexText}` }}>
                   <Link className="w-[100%] h-[100%] block" href={`/colors/web-safe/${colorHexText}`} title={`#${colorHexText} 색상의 상세보기 페이지로 이동합니다.`}>
                     <span></span>
                   </Link>
@@ -59,10 +59,10 @@ export default function WebSafePageClient({ data = [] }: WebSafePageClientProps)
                     </svg>
                   </button>
                 </div>
-              </div>
+              </li>
             );
           })}
-        </div>
+        </ul>
       </div>
     </>
   );
