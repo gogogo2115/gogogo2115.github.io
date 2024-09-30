@@ -1,1 +1,17 @@
 @charset "UTF-8";
+
+.blind {
+  position: absolute;
+  left: -9999px;
+  clip: rect(0, 0, 0, 0);
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  font-size: 1px;
+  padding: 0;
+  border: 0;
+  color: transparent;
+  background-color: transparent;
+  white-space: nowrap;
+}

@@ -19,11 +19,11 @@ export async function generateStaticParams() {
   });
 }
 
-export async function generateMetadata({ params }: generateMetadataProps, parent: ResolvingMetadata): Promise<Metadata> {
+export async function generateMetadata({ params }: generateMetadataProps /*, parent: ResolvingMetadata*/): Promise<Metadata> {
   const slug = params.slug;
   return {
-    title: `웹 216 색상: #${slug}`,
-    description: `웹 216 색상: #${slug}`,
+    title: `웹 안전 색상 #${slug} 상세 정보`,
+    description: `웹 안전 색상 #${slug}의 값을 다른 색상 코드로 변환해주는 페이지입니다. RGB, HSL, CMYK 등으로 변환된 색상값을 확인해보세요.`,
   };
 }
 

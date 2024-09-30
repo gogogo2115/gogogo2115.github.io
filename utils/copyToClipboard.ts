@@ -18,7 +18,7 @@ export const isQueryCommandCopySupported = (): boolean => isClient() && typeof d
  */
 export const isCopyClipboardSupported = (): boolean => isNavigatorClipboardSupported() || isQueryCommandCopySupported();
 
-type Options = {
+export type Options = {
   onSuccess?: () => void;
   // eslint-disable-next-line no-unused-vars
   onFailure?: (err?: string) => void;
@@ -30,12 +30,10 @@ export const copyToClipboard = async (text?: string, options: Options | undefine
   try {
     if (typeof text !== "string" || text === "") {
       throw new Error("입력값이 존재하지 않습니다.");
-    }
-    // else if (isNavigatorClipboardSupported()) {
-    //   await navigator.clipboard.writeText(text);
-    //   onSuccess && onSuccess();
-    // }
-    else if (isCopyClipboardSupported()) {
+    } else if (isNavigatorClipboardSupported()) {
+      await navigator.clipboard.writeText(text);
+      onSuccess && onSuccess();
+    } else if (isCopyClipboardSupported()) {
       const copyClipboardID = "copyClipboardTextArea"; // 중복생성 방지용 id값 부여
       document.getElementById(copyClipboardID)?.remove(); // 중복생성 방지 제거
 

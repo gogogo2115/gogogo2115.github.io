@@ -22,6 +22,7 @@ const nextConfig = {
   typescript: { ignoreBuildErrors: true }, // ignoreDuringBuilds : true  typescript가 오류시 강제 빌드 react-query 관련 설정
   compiler: {
     removeConsole: isProduction,
+    styledComponents: true,
   },
   env,
   images: {
