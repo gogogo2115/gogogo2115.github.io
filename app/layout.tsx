@@ -3,9 +3,7 @@ import "@/styles/globals.scss";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { ReactQueryStreamedProvider } from "@/components/react-query/ReactQueryProvider";
-import { ENV_NEXT_VERSION, ENV_BUILD_AT } from "@/utils/env";
-
-console.log(ENV_BUILD_AT);
+import { ENV_NEXT_VERSION } from "@/utils/env";
 
 type RootLayoutProps = Readonly<{ children: React.ReactNode }>;
 
