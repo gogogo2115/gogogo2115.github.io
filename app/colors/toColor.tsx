@@ -2,6 +2,16 @@ type CMYK_OBJ = { c: number; m: number; y: number; k: number };
 type RGB_OBJ = { r: number; g: number; b: number };
 type HSL_OBJ = { h: number; s: number; l: number };
 
+const rgbRangePattern = "(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])";
+const rgbFullRegex = new RegExp(`^rgb(a)?\\(\\s*${rgbRangePattern}\\s*,\\s*${rgbRangePattern}\\s*,\\s*${rgbRangePattern}\\s*(,\\s*(0|1|0?\\.[0-9]+)\\s*)?\\)$`);
+
+export const rgbCssToRGB = (value: string): RGB_OBJ | null => {
+  const rgbCssRegex = new RegExp(`^rgb\\(\\s*${rgbRangePattern}\\s*,\\s*${rgbRangePattern}\\s*,\\s*${rgbRangePattern}\\s*\\)$`);
+  const match = value.match(rgbCssRegex);
+  if (!Array.isArray(match)) return null;
+  return { r: parseInt(match[1]), g: parseInt(match[2]), b: parseInt(match[3]) };
+};
+
 export const isValidRGBValue = (value: number): boolean => Number.isInteger(value) && value >= 0 && value <= 255;
 export const isValidHEXValue = (value: string): boolean => /^[a-f0-9]{1, 2}$/i.test(value.trim());
 
@@ -38,7 +48,7 @@ export const isValidHslColor = (hsl: HSL_OBJ | undefined | null): boolean => {
   return isValidHue && isValidSaturation && isValidLightness;
 };
 
-export const shortHexToRGB = (hexColor: string): RGB_OBJ | null => {
+export const shortHexToRGB = (hexColor: string | null | undefined): RGB_OBJ | null => {
   try {
     if (typeof hexColor !== "string") throw new Error("형식 오류 발생");
 
@@ -59,7 +69,7 @@ export const shortHexToRGB = (hexColor: string): RGB_OBJ | null => {
   }
 };
 
-export const fullHexToRGB = (hexColor: string): RGB_OBJ | null => {
+export const fullHexToRGB = (hexColor: string | null | undefined): RGB_OBJ | null => {
   try {
     if (typeof hexColor !== "string") throw new Error("형식 오류 발생");
 

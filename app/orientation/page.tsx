@@ -26,7 +26,7 @@ export default function OrientationPage() {
       }
 
       const handleOrientation = throttle((e: DeviceOrientationEvent) => {
-        let { alpha = 0, beta = 0, gamma = 0, absolute } = e;
+        let { alpha = 0, beta = 0, gamma = 0 } = e;
         // console.log({ alpha, beta, gamma, absolute });
         if (alpha == null || beta == null || gamma == null) {
           const msgTarget = alpha == null ? "alpha" : beta == null ? "beta" : "gamma";

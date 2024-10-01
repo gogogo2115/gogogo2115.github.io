@@ -9,14 +9,14 @@ export default function ColorsWebPageClient({ data }: ColorsWebPageClientProps) 
   const isCopySupported = isCopyClipboardSupported();
 
   return (
-    <div>
+    <div className="grid gap-4 p-4 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7">
       {data.map((v, i) => {
         const { name, hex, rgb } = v;
         const { r, g, b } = rgb;
         const rgbText = `rgb(${r},${g},${b})`;
 
         return (
-          <div key={i} className="w-[240px] h-[200px] rounded-xl p-2 block text-outline border-white border-solid border-[1px]" style={{ backgroundColor: name }}>
+          <div key={i} className="max-w-sm h-[200px] rounded-xl p-2 block text-outline border-white border-solid border-[1px]" style={{ backgroundColor: name }}>
             <div className="flex flex-row justify-between">
               <div>{name}</div>
               {isCopySupported && (
