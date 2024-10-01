@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "analyze": "cross-env ANALYZE=true next build",
-    "serve:start": "serve -p 3000 out",
+    "serve:start": "serve -p 3008 out",
     "serve:analyze": "serve -p 3006 .next/analyze"
   },
   "dependencies": {
