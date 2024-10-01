@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+
 // env.d.ts
 declare namespace NodeJS {
   interface ProcessEnv {
