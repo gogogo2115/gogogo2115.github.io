@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "analyze": "cross-env ANALYZE=true next build",
+    "serve:start": "serve -p 3008 out",
     "serve:analyze": "serve -p 3006 .next/analyze"
   },
   "dependencies": {
@@ -19,7 +20,8 @@
     "react": "^18",
     "react-dom": "^18",
     "react-hook-form": "7.53.0",
-    "react-redux": "9.1.2"
+    "react-redux": "9.1.2",
+    "styled-components": "6.1.13"
   },
   "devDependencies": {
     "@next/bundle-analyzer": "14.2.13",
