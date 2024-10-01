@@ -37,6 +37,10 @@ const nextConfig = {
     if (config.name === "server") config.optimization.concatenateModules = false; // react-query 관련 설정
     return config;
   },
+  experimental: {
+    // missingSuspenseWithCSRBailout: false,
+    scrollRestoration: true,
+  },
 };
 
 export default withBundleAnalyzer(nextConfig);
