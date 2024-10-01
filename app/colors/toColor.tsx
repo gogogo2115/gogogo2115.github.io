@@ -1,41 +1,74 @@
 type CMYK_OBJ = { c: number; m: number; y: number; k: number };
+
 type RGB_OBJ = { r: number; g: number; b: number };
+type RGBA_OBJ = { r: number; g: number; b: number; a?: number | undefined };
+
 type HSL_OBJ = { h: number; s: number; l: number };
+type HSLA_OBJ = { h: number; s: number; l: number; a?: number | undefined };
 
-const rgbRangePattern = "(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])";
-const rgbFullRegex = new RegExp(`^rgb(a)?\\(\\s*${rgbRangePattern}\\s*,\\s*${rgbRangePattern}\\s*,\\s*${rgbRangePattern}\\s*(,\\s*(0|1|0?\\.[0-9]+)\\s*)?\\)$`);
+const range0to360Pattern = "(360|3[0-5][0-9]|[12][0-9]{2}|[1-9]?[0-9])"; // 0~360
+const range0to255Pattern = "(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])"; // 0~255
+const range0to100Pattern = "(100|[1-9]?[0-9])"; // 0~100
+const rangeHexKeyPattern = "([a-f0-9A-F]{1})"; // 0~F
+const rangeHex255Pattern = "([a-f0-9A-F]{1,2})"; // 00~FF
+const frac0to1Pattern = "(0|1|0?\\.[0-9]+)"; // 0~1의 소수점
 
-export const rgbCssToRGB = (value: string): RGB_OBJ | null => {
-  const rgbCssRegex = new RegExp(`^rgb\\(\\s*${rgbRangePattern}\\s*,\\s*${rgbRangePattern}\\s*,\\s*${rgbRangePattern}\\s*\\)$`);
-  const match = value.match(rgbCssRegex);
-  if (!Array.isArray(match)) return null;
-  return { r: parseInt(match[1]), g: parseInt(match[2]), b: parseInt(match[3]) };
+export const isValidCssRgb = (value: string): boolean => {
+  const cssRgbRegex = new RegExp(`^rgb\\s*\\(\\s*${range0to255Pattern}\\s*,\\s*${range0to255Pattern}\\s*,\\s*${range0to255Pattern}\\s*\\)$`, "i");
+  return cssRgbRegex.test(value);
 };
 
-export const isValidRGBValue = (value: number): boolean => Number.isInteger(value) && value >= 0 && value <= 255;
-export const isValidHEXValue = (value: string): boolean => /^[a-f0-9]{1, 2}$/i.test(value.trim());
+export const isValidCssRgba = (value: string): boolean => {
+  const cssRgbAlphaRegex = new RegExp(`^rgba\\s*\\(\\s*${range0to255Pattern}\\s*,\\s*${range0to255Pattern}\\s*,\\s*${range0to255Pattern}\\s*(,\\s*${frac0to1Pattern}\\s*)?\\)$`, "i");
+  return cssRgbAlphaRegex.test(value);
+};
 
-export const isValidShortHexColor = (hexColor: string, option: { isAlphaAllowed?: boolean; includePrefix?: string } = {}) => {
+export const isValidCssRgbOrRgba = (value: string) => isValidCssRgb(value) || isValidCssRgba(value);
+
+export const isValidRange0to100 = (value: number | string): boolean => {
+  const toNum = typeof value === "string" ? Number(value) : value;
+  return Number.isInteger(toNum) && toNum >= 0 && toNum <= 100;
+};
+
+export const isValidRange0to255 = (value: number | string): boolean => {
+  const toNum = typeof value === "string" ? Number(value) : value;
+  return Number.isInteger(toNum) && toNum >= 0 && toNum <= 255;
+};
+
+export const isValidRange0to360 = (value: number | string): boolean => {
+  const toNum = typeof value === "string" ? Number(value) : value;
+  return Number.isInteger(toNum) && toNum >= 0 && toNum <= 360;
+};
+
+export const isValidFrac0to1 = (value: number | string) => {
+  const toNum = typeof value === "string" ? Number(value) : value;
+  return !Number.isInteger(toNum) && toNum >= 0 && toNum <= 1;
+};
+
+export const isValidRangeHEXKey = (value: string): boolean => new RegExp(`^${rangeHexKeyPattern}$`, "i").test(value.trim());
+export const isValidRangeHEX = (value: string): boolean => new RegExp(`^${rangeHex255Pattern}$`, "i").test(value.trim());
+
+export const isValidShortHexColor = (hexColor: string, option: { isAlphaAllowed?: boolean; prefixRegex?: string } = {}) => {
   if (typeof hexColor !== "string") return false;
-  const { isAlphaAllowed = false, includePrefix = "#" } = option;
+  const { isAlphaAllowed = false, prefixRegex = "#" } = option;
   const alphaCount = isAlphaAllowed ? 4 : 3;
-  const prefix = includePrefix ? includePrefix : "";
+  const prefix = prefixRegex ? prefixRegex : "";
   return new RegExp(`^${prefix}([a-f0-9]{${alphaCount}})$`, "i").test(hexColor.trim());
 };
 
-export const isValidFullHexColor = (hexColor: string, option: { isAlphaAllowed?: boolean; includePrefix?: string } = {}): boolean => {
+export const isValidFullHexColor = (hexColor: string, option: { isAlphaAllowed?: boolean; prefixRegex?: string } = {}): boolean => {
   if (typeof hexColor !== "string") return false;
-  const { isAlphaAllowed = false, includePrefix = "#" } = option;
+  const { isAlphaAllowed = false, prefixRegex = "#" } = option;
   const alphaCount = isAlphaAllowed ? 8 : 6;
-  const prefix = includePrefix ? includePrefix : "";
+  const prefix = prefixRegex ? prefixRegex : "";
   return new RegExp(`^${prefix}([a-f0-9]{${alphaCount}})$`, "i").test(hexColor.trim());
 };
 
-export const isValidHexColor = (hexColor: string, option: { isAlphaAllowed?: boolean; includePrefix?: string } = {}): boolean => {
+export const isValidHexColor = (hexColor: string, option: { isAlphaAllowed?: boolean; prefixRegex?: string } = {}): boolean => {
   if (typeof hexColor !== "string") return false;
-  const { isAlphaAllowed = false, includePrefix = "#" } = option;
+  const { isAlphaAllowed = false, prefixRegex = "#" } = option;
   const alphaRegex = isAlphaAllowed ? "([a-f0-9]{3}|[a-f0-9]{4}|[a-f0-9]{6}|[a-f0-9]{8})" : "([a-f0-9]{3}|[a-f0-9]{6})";
-  const prefix = includePrefix ? includePrefix : "";
+  const prefix = prefixRegex ? prefixRegex : "";
   return new RegExp(`^${prefix}${alphaRegex}$`, "i").test(hexColor.trim());
 };
 
@@ -250,4 +283,11 @@ export const hslToRGB = (hsl: HSL_OBJ | null | undefined): RGB_OBJ | null => {
   } catch (e) {
     return null;
   }
+};
+
+export const cssRgbToRGB = (value: string): RGB_OBJ | null => {
+  const rgbCssRegex = new RegExp(`^rgb\\s*\\(\\s*${range0to255Pattern}\\s*,\\s*${range0to255Pattern}\\s*,\\s*${range0to255Pattern}\\s*\\)$`);
+  const match = value.match(rgbCssRegex);
+  if (!Array.isArray(match)) return null;
+  return { r: parseInt(match[1]), g: parseInt(match[2]), b: parseInt(match[3]) };
 };
