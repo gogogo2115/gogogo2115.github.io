@@ -6,8 +6,11 @@ import { useForm } from "react-hook-form";
 type ContrastClientPageProps = { defaultFontColor: string; defaultBackgroundColor: string };
 type FormInputColor = { fontColor: string; backgroundColor: string };
 
+const colorValue = (value: string | undefined) => {
+  value = (value ?? "").trim();
+};
+
 export default function ContrastPageClient({ defaultFontColor, defaultBackgroundColor }: ContrastClientPageProps) {
-  //
   const defaultValues = { fontColor: defaultFontColor, backgroundColor: defaultBackgroundColor };
   const {
     register,

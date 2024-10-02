@@ -3,7 +3,7 @@
 import useIsomorphicLayoutEffect from "@/hooks/useIsomorphicLayoutEffect";
 import { ChangeEvent, MouseEvent, useMemo } from "react";
 import { useForm } from "react-hook-form";
-import { randomHexColor, fullHexToRGB, isValidFullHexColor } from "../toColor";
+import { randomHexColor, fullHexToRGB } from "../toColor";
 import { throttle } from "lodash";
 
 type ContrastClientPageProps = { defaultFontColor: string; defaultBackgroundColor: string };
@@ -47,6 +47,7 @@ export default function ContrastPageClient({ defaultFontColor, defaultBackground
       const { fontColor, backgroundColor } = watchFields,
         fontToRGB = fullHexToRGB(fontColor),
         backgroundToRGB = fullHexToRGB(backgroundColor);
+
       if (fontToRGB === null || backgroundToRGB === null) throw new Error("fontToRGB, backgroundToRGB 형식 오류 발생");
       const { r: fR, g: fG, b: fB } = fontToRGB;
       const { r: bR, g: bG, b: bB } = backgroundToRGB;
@@ -124,13 +125,28 @@ export default function ContrastPageClient({ defaultFontColor, defaultBackground
 
   return (
     <>
-      <>WCAG 2.0</>
+      <div>WCAG 2.0</div>
       <div>
         <div className="flex">
           <input className="w-10 h-10" type="color" data-target="fontColor" onChange={onChangePalette} value={defaultValueColor(watchFields.fontColor)} />
           <input {...fontColorRegister} type="text" id="fontColor" maxLength={7} className="text-black h-10 outline-none p-2" autoComplete="off" defaultValue={defaultFontColor} />
           <button type="button" className="w-10 h-10 bg-white text-black" data-target="fontColor" onClick={onClickRandomColor}>
-            랜덤
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="icon icon-tabler icons-tabler-outline icon-tabler-refresh"
+            >
+              <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+              <path d="M20 11a8.1 8.1 0 0 0 -15.5 -2m-.5 -4v4h4" />
+              <path d="M4 13a8.1 8.1 0 0 0 15.5 2m.5 4v-4h-4" />
+            </svg>
           </button>
         </div>
         <p className="text-red-500 h-10">{errors.fontColor && errors.fontColor.message}</p>
@@ -140,17 +156,57 @@ export default function ContrastPageClient({ defaultFontColor, defaultBackground
           <input className="w-10 h-10" type="color" data-target="backgroundColor" onChange={onChangePalette} value={defaultValueColor(watchFields.backgroundColor)} />
           <input {...backgroundColorRegister} type="text" id="backgroundColor" maxLength={7} className="text-black h-10 outline-none p-2" autoComplete="off" defaultValue={defaultBackgroundColor} />
           <button type="button" className="w-10 h-10 bg-white text-black" data-target="backgroundColor" onClick={onClickRandomColor}>
-            랜덤
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="icon icon-tabler icons-tabler-outline icon-tabler-refresh"
+            >
+              <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+              <path d="M20 11a8.1 8.1 0 0 0 -15.5 -2m-.5 -4v4h4" />
+              <path d="M4 13a8.1 8.1 0 0 0 15.5 2m.5 4v-4h-4" />
+            </svg>
           </button>
         </div>
         <p className="text-red-500 h-10">{errors.backgroundColor && errors.backgroundColor.message}</p>
       </div>
 
-      <div className="flex aspect-[5/3] w-[320px] rounded-lg p-3 m-2 border-[#ffffff] border-solid border-2" style={{ backgroundColor: `${defaultValueColor(watchFields.backgroundColor)}` }}>
+      <div
+        className="flex flex-col justify-between content-start aspect-[5/3] w-[80%] max-w-[480px] rounded-lg p-3 border-[#ffffff] border-solid border-2"
+        style={{ backgroundColor: `${defaultValueColor(watchFields.backgroundColor)}` }}
+      >
         <div style={{ color: `${defaultValueColor(watchFields.fontColor)}` }}>
           <div style={{ fontSize: "14pt" }}>일반 글자 14pt (18.5px)</div>
           <div style={{ fontSize: "18pt" }}>대형 글자 18pt (24px)</div>
           <div>{contrast}: 1</div>
+        </div>
+
+        <div style={{ color: `${defaultValueColor(watchFields.fontColor)}` }}>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill={`none`}
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="icon icon-tabler icons-tabler-outline icon-tabler-share"
+          >
+            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+            <path d="M6 12m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0" />
+            <path d="M18 6m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0" />
+            <path d="M18 18m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0" />
+            <path d="M8.7 10.7l6.6 -3.4" />
+            <path d="M8.7 13.3l6.6 3.4" />
+          </svg>
         </div>
       </div>
 
@@ -158,9 +214,30 @@ export default function ContrastPageClient({ defaultFontColor, defaultBackground
         <input
           placeholder="테스트 입력"
           type="text"
+          maxLength={100}
           className="h-10 outline-none w-[320px] rounded-lg p-3 m-2"
           style={{ color: `${defaultValueColor(watchFields.fontColor)}`, backgroundColor: `${defaultValueColor(watchFields.backgroundColor)}` }}
         />
+      </div>
+
+      <div>
+        <div>
+          <div>일반 폰트</div>
+          <div>AA</div>
+          <div>AAA</div>
+        </div>
+
+        <div>
+          <div>대형 폰트</div>
+          <div>AA</div>
+          <div>AAA</div>
+        </div>
+
+        <div>
+          <div>ui svg 기타등등</div>
+          <div>AA</div>
+          <div>AAA</div>
+        </div>
       </div>
     </>
   );
