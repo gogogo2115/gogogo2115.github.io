@@ -1,5 +1,8 @@
 {
   "name": "gogogo2115.github.io",
+  "homepage": "https://gogogo2115.github.io",
+  "author": "gogogo2115",
+  "description": "개인 블로그",
   "version": "0.1.0",
   "private": true,
   "scripts": {
