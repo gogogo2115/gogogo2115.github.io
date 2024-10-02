@@ -9,7 +9,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "serve:start": "serve -p 3006 out",
+    "serve:analyze": "serve -p 3008 .next/analyze"
   },
   "dependencies": {
     "next": "14.2.14",
@@ -17,14 +19,17 @@
     "react-dom": "^18"
   },
   "devDependencies": {
+    "@next/bundle-analyzer": "14.2.14",
     "@svgr/webpack": "8.1.0",
     "@types/node": "^22",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "cross-env": "7.0.3",
     "eslint": "^8",
     "eslint-config-next": "14.2.14",
     "postcss": "^8",
     "sass": "1.79.4",
+    "serve": "14.2.3",
     "tailwindcss": "^3.4.13",
     "typescript": "^5"
   }
