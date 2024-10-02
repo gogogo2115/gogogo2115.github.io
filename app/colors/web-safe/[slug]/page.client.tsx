@@ -1,16 +1,15 @@
 "use client";
-import { useState } from "react";
+// import { useState } from "react";
 
 import { type WebSafeHexObjData } from "@/app/colors/web-safe/data";
-import { rgbToCMYK, rgbToHSL, hslToRGB } from "@/app/colors/toColor";
+import { rgbToCMYK, rgbToHSL } from "@/app/colors/toColor";
 
 type WebSafePageClientProps = { data: WebSafeHexObjData };
 
 export default function WebSafePageClient({ data }: WebSafePageClientProps) {
-  const {
-    hex: { r: hexR, g: hexG, b: hexB },
-    int: { r: intR, g: intG, b: intB },
-  } = data;
+  const { hex, int } = data;
+  const { r: hexR, g: hexG, b: hexB } = hex;
+  const { r: intR, g: intG, b: intB } = int;
 
   const fullHex = `#${hexR}${hexG}${hexB}`;
   const shortHex = `#${hexR[0]}${hexG[0]}${hexB[0]}`;
@@ -25,6 +24,8 @@ export default function WebSafePageClient({ data }: WebSafePageClientProps) {
 
   return (
     <div className="p">
+      <div></div>
+
       <div className="flex flex-row justify-between">
         <span>{fullHex}</span>
         <button type="button" title={`${fullHex} 복사하기`} data-color={fullHex}>
