@@ -1,23 +1,37 @@
 "use client";
 
-import { useState, useMemo, MouseEvent } from "react";
+import { useState, useMemo, MouseEvent, Suspense } from "react";
+
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 
 import { type WebSafeHexObjData } from "@/app/colors/web-safe/data";
 import { copyToClipboard } from "@/utils/copyToClipboard";
+import useIsomorphicLayoutEffect from "@/hooks/useIsomorphicLayoutEffect";
 
 type WebSafePageClientProps = { data: WebSafeHexObjData[] | undefined | null };
 
 export default function WebSafePageClient({ data = [] }: WebSafePageClientProps) {
-  const [selector, setSelector] = useState(0);
+  const searchParams = useSearchParams();
+  const getSelector = searchParams.get("selector");
+  const [selector, setSelector] = useState<string | number | null>();
+
   const dataResult = useMemo((): WebSafeHexObjData[] => {
     try {
       if (!Array.isArray(data)) throw new Error("자료 타입의 오류 발생");
       if (data.length != 216) throw new Error("자료 개수의 오류 발생");
       if (selector == 0) return data; // 전체 출력
-      if (selector == 1) return data.filter(({ isTrueSafeColor }) => isTrueSafeColor === true); // safest web colors
-      if (selector == 2) return data.filter(({ hex: { r, g, b } }) => r == g && g == b);
+      if (selector == 1) return data.filter(({ isTrueSafeColor }) => isTrueSafeColor === true); // safest web colors 안전색 22종
+      if (selector == 2) return data.filter(({ hex: { r, g, b } }) => r == g && g == b); // gray 회색 계열
+
+      if (selector == 3) return data.filter(({ int: { r, g, b } }) => r > g && r > b);
+      if (selector == 4) return data.filter(({ int: { r, g, b } }) => g > r && g > b);
+      if (selector == 5) return data.filter(({ int: { r, g, b } }) => b > r && b > g);
+
+      if (selector == 6) return data.filter(({ int: { r, g, b } }) => r + g + b > (255 * 3) / 2); // 밝은 색
+      if (selector == 7) return data.filter(({ int: { r, g, b } }) => !(r + g + b > (255 * 3) / 2)); // 어두운 색
+
       return data;
     } catch (e) {
       return []; // 오류 [] 처리
@@ -36,10 +50,9 @@ export default function WebSafePageClient({ data = [] }: WebSafePageClientProps)
 
   const dataLength = data?.length ?? 0;
   const dataResultLength = dataResult.length ?? 0;
-
   if (dataResultLength <= 0) return notFound(); // 결과값 없음
   return (
-    <>
+    <Suspense fallback={<>loading</>}>
       <div>
         <div>총{dataLength}개의 색상</div>
         <div>{dataResultLength}개의 색상</div>
@@ -49,10 +62,10 @@ export default function WebSafePageClient({ data = [] }: WebSafePageClientProps)
             return (
               <li
                 key={i}
-                className="flex flex-col justify-around min-w-32 max-w-48 aspect-[1/1.2] w-full rounded-lg pt-2 pb-3 pl-2 pr-2 border-black border-solid border-[1px] gap-2 mr-auto ml-auto"
+                className="flex flex-col justify-around min-w-32 max-w-48 w-full aspect-[1/1] rounded-lg pt-2 pb-3 pl-2 pr-2 border-black border-solid border-[1px] gap-2 mr-auto ml-auto"
                 style={{ backgroundColor: `white` }}
               >
-                <div className="flex-grow-[1] rounded-md h-fit border-black border-solid border-[1px]" style={{ background: `#${colorHexText}` }}>
+                <div className="flex-grow-[1] h-fit aspect-[1/1] border-black border-solid border-[1px] rounded-md" style={{ backgroundColor: `#${colorHexText}` }}>
                   <Link className="w-[100%] h-[100%] block" href={`/colors/web-safe/${colorHexText}`} title={`#${colorHexText} 색상의 상세보기 페이지로 이동합니다.`}>
                     <span></span>
                   </Link>
@@ -60,7 +73,6 @@ export default function WebSafePageClient({ data = [] }: WebSafePageClientProps)
 
                 <div className="flex flex-row justify-between content-center align-middle bg-[#fff] text-black pl-1 pr-1 rounded-md">
                   <div style={{ fontWeight: 500 }}>{`#${colorHexText}`}</div>
-
                   <button
                     type="button"
                     aria-label={`#${colorHexText} 색상의 값을 복사 합니다.`}
@@ -82,6 +94,6 @@ export default function WebSafePageClient({ data = [] }: WebSafePageClientProps)
           })}
         </ul>
       </div>
-    </>
+    </Suspense>
   );
 }
