@@ -25,6 +25,7 @@
   },
   "devDependencies": {
     "@next/bundle-analyzer": "14.2.13",
+    "@svgr/webpack": "8.1.0",
     "@tanstack/react-query-devtools": "5.56.2",
     "@types/lodash": "4.17.9",
     "@types/node": "^22",
