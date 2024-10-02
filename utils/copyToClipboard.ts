@@ -69,7 +69,8 @@ export const copyToClipboard = async (text?: string, options: Options | undefine
       const isCommandEnabled = document?.queryCommandEnabled("copy") ?? false;
       const isCommandCopy = document?.execCommand("Copy") ?? false;
 
-      // window.getSelection()?.removeAllRanges(); //내용 제거  // 스크롤 이동으로 주석처리
+      textArea.blur(); // 포커스 아웃
+      window.getSelection()?.removeAllRanges(); //내용 제거
       document.getElementById(copyClipboardID)?.remove(); // document.body.removeChild(textArea); // 속성 제거
 
       if (isCommandEnabled && isCommandCopy) {
