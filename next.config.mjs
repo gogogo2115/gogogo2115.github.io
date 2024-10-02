@@ -1,8 +1,15 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  reactStrictMode: true,
+  reactStrictMode: false,
   output: "export",
   webpack(config) {
+    /*
+      config.cache = false; 관련
+      [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: Unable to snapshot resolve dependencies
+      윈도우에서 빌드시 발생 됨 캐시관련 오류 제거
+    */
+    config.cache = false;
+
     config.module.rules.push({
       test: /\.svg$/i, // svg 추가
       use: ["@svgr/webpack"],
