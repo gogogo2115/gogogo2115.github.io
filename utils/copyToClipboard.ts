@@ -33,7 +33,7 @@ export const copyToClipboard = async (text?: string, options: Options | undefine
     } else if (isNavigatorClipboardSupported()) {
       await navigator.clipboard.writeText(text);
       onSuccess && onSuccess();
-    } else if (isCopyClipboardSupported()) {
+    } else if (isQueryCommandCopySupported()) {
       const copyClipboardID = "copyClipboardTextArea"; // 중복생성 방지용 id값 부여
       document.getElementById(copyClipboardID)?.remove(); // 중복생성 방지 제거
 
