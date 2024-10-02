@@ -33,13 +33,19 @@ const nextConfig = {
       config.cache = false; 관련
       [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: Unable to snapshot resolve dependencies
     */
-    config.cache = false;
+    config.cache = false; // 캐시관련 오류 제거
     if (config.name === "server") config.optimization.concatenateModules = false; // react-query 관련 설정
+    config.module.rules.push({ test: /\.svg$/i, issuer: /\.[jt]sx?$/, use: ["@svgr/webpack"] }); // svg
     return config;
   },
   experimental: {
-    // missingSuspenseWithCSRBailout: false,
+    missingSuspenseWithCSRBailout: false,
     scrollRestoration: true,
+    turbo: {
+      rules: {
+        "*.svg": { loaders: ["@svgr/webpack"], as: "*.js" },
+      },
+    },
   },
 };
 
