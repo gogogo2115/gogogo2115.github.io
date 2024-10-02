@@ -6,24 +6,28 @@ type RGBA_OBJ = { r: number; g: number; b: number; a?: number | undefined };
 type HSL_OBJ = { h: number; s: number; l: number };
 type HSLA_OBJ = { h: number; s: number; l: number; a?: number | undefined };
 
+type HEX_OBJ = { r: string; g: string; b: string };
+type HEXA_OBJ = { r: string; g: string; b: string; a?: string | undefined };
+
 const range0to360Pattern = "(360|3[0-5][0-9]|[12][0-9]{2}|[1-9]?[0-9])"; // 0~360
 const range0to255Pattern = "(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])"; // 0~255
 const range0to100Pattern = "(100|[1-9]?[0-9])"; // 0~100
 const rangeHexKeyPattern = "([a-f0-9A-F]{1})"; // 0~F
 const rangeHex255Pattern = "([a-f0-9A-F]{1,2})"; // 00~FF
-const frac0to1Pattern = "(0|1|0?\\.[0-9]+)"; // 0~1의 소수점
+const rangeFrac0to1Pattern = "(0|1|0?\\.[0-9]+)"; // 0~1의 소수점
+
+const cssRgbRegex = new RegExp(`^rgb\\s*\\(\\s*${range0to255Pattern}\\s*,\\s*${range0to255Pattern}\\s*,\\s*${range0to255Pattern}\\s*\\)$`, "i");
+const cssRgbaRegex = new RegExp(`^rgba\\s*\\(\\s*${range0to255Pattern}\\s*,\\s*${range0to255Pattern}\\s*,\\s*${range0to255Pattern}\\s*(,\\s*${rangeFrac0to1Pattern}\\s*)?\\)$`, "i");
 
 export const isValidCssRgb = (value: string): boolean => {
-  const cssRgbRegex = new RegExp(`^rgb\\s*\\(\\s*${range0to255Pattern}\\s*,\\s*${range0to255Pattern}\\s*,\\s*${range0to255Pattern}\\s*\\)$`, "i");
-  return cssRgbRegex.test(value);
+  return typeof value === "string" ? cssRgbRegex.test(value) : false;
 };
 
 export const isValidCssRgba = (value: string): boolean => {
-  const cssRgbAlphaRegex = new RegExp(`^rgba\\s*\\(\\s*${range0to255Pattern}\\s*,\\s*${range0to255Pattern}\\s*,\\s*${range0to255Pattern}\\s*(,\\s*${frac0to1Pattern}\\s*)?\\)$`, "i");
-  return cssRgbAlphaRegex.test(value);
+  return typeof value === "string" ? cssRgbaRegex.test(value) : false;
 };
 
-export const isValidCssRgbOrRgba = (value: string) => isValidCssRgb(value) || isValidCssRgba(value);
+export const isValidCssRgbOrRgba = (value: string): boolean => isValidCssRgb(value) || isValidCssRgba(value);
 
 export const isValidRange0to100 = (value: number | string): boolean => {
   const toNum = typeof value === "string" ? Number(value) : value;
@@ -40,13 +44,13 @@ export const isValidRange0to360 = (value: number | string): boolean => {
   return Number.isInteger(toNum) && toNum >= 0 && toNum <= 360;
 };
 
-export const isValidFrac0to1 = (value: number | string) => {
+export const isValidRangeFrac0to1 = (value: number | string): boolean => {
   const toNum = typeof value === "string" ? Number(value) : value;
   return !Number.isInteger(toNum) && toNum >= 0 && toNum <= 1;
 };
 
 export const isValidRangeHEXKey = (value: string): boolean => new RegExp(`^${rangeHexKeyPattern}$`, "i").test(value.trim());
-export const isValidRangeHEX = (value: string): boolean => new RegExp(`^${rangeHex255Pattern}$`, "i").test(value.trim());
+export const isValidRangeHEX255 = (value: string): boolean => new RegExp(`^${rangeHex255Pattern}$`, "i").test(value.trim());
 
 export const isValidShortHexColor = (hexColor: string, option: { isAlphaAllowed?: boolean; prefixRegex?: string } = {}) => {
   if (typeof hexColor !== "string") return false;
@@ -249,45 +253,68 @@ export const hslToRGB = (hsl: HSL_OBJ | null | undefined): RGB_OBJ | null => {
       b = 0;
 
     if (0 <= h && h < 60) {
-      r = c;
-      g = x;
-      b = 0;
+      (r = c), (g = x), (b = 0);
     } else if (60 <= h && h < 120) {
-      r = x;
-      g = c;
-      b = 0;
+      (r = x), (g = c), (b = 0);
     } else if (120 <= h && h < 180) {
-      r = 0;
-      g = c;
-      b = x;
+      (r = 0), (g = c), (b = x);
     } else if (180 <= h && h < 240) {
-      r = 0;
-      g = x;
-      b = c;
+      (r = 0), (g = x), (b = c);
     } else if (240 <= h && h < 300) {
-      r = x;
-      g = 0;
-      b = c;
+      (r = x), (g = 0), (b = c);
     } else if (300 <= h && h < 360) {
-      r = c;
-      g = 0;
-      b = x;
+      (r = c), (g = 0), (b = x);
     }
 
     // 0 ~ 255 범위로 변환
     r = Math.round((r + m) * 255);
     g = Math.round((g + m) * 255);
     b = Math.round((b + m) * 255);
-
     return { r, g, b };
   } catch (e) {
     return null;
   }
 };
 
-export const cssRgbToRGB = (value: string): RGB_OBJ | null => {
-  const rgbCssRegex = new RegExp(`^rgb\\s*\\(\\s*${range0to255Pattern}\\s*,\\s*${range0to255Pattern}\\s*,\\s*${range0to255Pattern}\\s*\\)$`);
-  const match = value.match(rgbCssRegex);
-  if (!Array.isArray(match)) return null;
-  return { r: parseInt(match[1]), g: parseInt(match[2]), b: parseInt(match[3]) };
+// rgb() rgba() 작업
+export const cssRgbToRGB = (value: string): RGB_OBJ | RGBA_OBJ | null => {
+  // rgb
+  const rgbMatch = value.match(cssRgbRegex);
+  if (Array.isArray(rgbMatch)) return { r: parseInt(rgbMatch[1]), g: parseInt(rgbMatch[2]), b: parseInt(rgbMatch[3]) };
+
+  // rgba
+  const rgbaMatch = value.match(cssRgbaRegex);
+  if (Array.isArray(rgbaMatch)) return { r: parseInt(rgbaMatch[1]), g: parseInt(rgbaMatch[2]), b: parseInt(rgbaMatch[3]), a: parseFloat(rgbaMatch[5] ?? "1") };
+
+  // 해당사항 없음
+  return null;
+};
+
+export const cssRgbToHex = (value: string): HEX_OBJ | HEXA_OBJ | null => {
+  // rgb
+  const rgbMatch = value.match(cssRgbRegex);
+  if (Array.isArray(rgbMatch)) {
+    const r = parseInt(rgbMatch[1]).toString(16).padStart(2, "0"),
+      g = parseInt(rgbMatch[2]).toString(16).padStart(2, "0"),
+      b = parseInt(rgbMatch[3]).toString(16).padStart(2, "0");
+    return { r, g, b };
+  }
+
+  // rgba
+  const rgbaMatch = value.match(cssRgbaRegex);
+  if (Array.isArray(rgbaMatch)) {
+    const r = parseInt(rgbaMatch[1]).toString(16).padStart(2, "0"),
+      g = parseInt(rgbaMatch[2]).toString(16).padStart(2, "0"),
+      b = parseInt(rgbaMatch[3]).toString(16).padStart(2, "0"),
+      a =
+        typeof rgbaMatch[5] !== "undefined" &&
+        Math.round(parseFloat(rgbaMatch[5]) * 255)
+          .toString(16)
+          .padStart(2, "0");
+
+    return { r, g, b, ...(a && { a }) };
+  }
+
+  // 해당사항 없음
+  return null;
 };
