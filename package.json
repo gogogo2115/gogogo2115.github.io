@@ -10,7 +10,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "analyze": "cross-env ANALYZE=true next build",
+    "build:analyze": "cross-env ANALYZE=true next build",
     "serve:start": "npx serve -p 3006 out",
     "serve:analyze": "npx serve -p 3008 .next/analyze"
   },
