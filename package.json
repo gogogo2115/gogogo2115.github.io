@@ -11,8 +11,8 @@
     "start": "next start",
     "lint": "next lint",
     "analyze": "cross-env ANALYZE=true next build",
-    "serve:start": "serve -p 3006 out",
-    "serve:analyze": "serve -p 3008 .next/analyze"
+    "serve:start": "npx serve -p 3006 out",
+    "serve:analyze": "npx serve -p 3008 .next/analyze"
   },
   "dependencies": {
     "next": "14.2.14",
@@ -30,8 +30,7 @@
     "eslint-config-next": "14.2.14",
     "postcss": "^8",
     "sass": "1.79.4",
-    "serve": "14.2.3",
-    "tailwindcss": "^3.4.13",
+    "tailwindcss": "^3.4.1",
     "typescript": "^5"
   }
 }
