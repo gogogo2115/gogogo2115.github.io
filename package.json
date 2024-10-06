@@ -15,6 +15,7 @@
     "serve:analyze": "npx serve -p 3008 .next/analyze"
   },
   "dependencies": {
+    "lodash": "4.17.21",
     "next": "14.2.14",
     "react": "^18",
     "react-dom": "^18"
@@ -22,6 +23,7 @@
   "devDependencies": {
     "@next/bundle-analyzer": "14.2.14",
     "@svgr/webpack": "8.1.0",
+    "@types/lodash": "4.17.10",
     "@types/node": "^22",
     "@types/react": "^18",
     "@types/react-dom": "^18",
