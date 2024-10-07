@@ -1,9 +1,18 @@
+type HEX_OBJ = { r: string; g: string; b: string };
+type RGB_OBJ = { r: number; g: number; b: number };
+
+/**
+ * 웹 색상을 이름, 16진수 값, RGB 값으로 표현한 타입입니다.
+ */
 export type WebData = {
   name: string;
-  hex: { r: string; g: string; b: string };
-  rgb: { r: number; g: number; b: number };
+  hex: HEX_OBJ;
+  rgb: RGB_OBJ;
 };
 
+/**
+ * 웹 색상들의 배열로, 각 색상은 이름, 16진수 값, RGB 값을 포함합니다.
+ */
 export const data: WebData[] = [
   // Pink colors
   { name: "MediumVioletRed", hex: { r: "C7", g: "15", b: "85" }, rgb: { r: 199, g: 21, b: 133 } },
