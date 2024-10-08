@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import useIsomorphicLayoutEffect from "@/hooks/useIsomorphicLayoutEffect";
 
 const useHistoryLength = () => {
   const [historyLength, setHistoryLength] = useState(0);
 
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     const { length = 0 } = window.history;
     setHistoryLength(length);
   }, []);
