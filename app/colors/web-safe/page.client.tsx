@@ -18,15 +18,17 @@ export default function WebSafePageClient({ data }: WebSafePageClientProps) {
 
   return (
     <div>
-      <ul>
+      <ul className="grid gap-4 p-4 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7">
         {selectorData.map((v, i) => {
           const { r, g, b } = v.hex;
           const rgb = getOptimalFontColor(v.rgb);
           const fullHex = `${r}${g}${b}`;
           const cssColor = `rgb(${rgb.r},${rgb.g},${rgb.b})`;
           return (
-            <li key={i} className="max-w-40 aspect-[3/2]" style={{ backgroundColor: `#${fullHex}`, color: cssColor }}>
-              <Link href={`/colors/web-safe/${fullHex}`}>{fullHex}</Link>
+            <li key={i} className="min-w-40 max-w-56 aspect-[3/2] p-2 border-solid border-black border-[2px]" style={{ backgroundColor: `#${fullHex}`, color: cssColor }}>
+              <Link className="text-bold text-bold" href={`/colors/web-safe/${fullHex}`}>
+                {fullHex}
+              </Link>
             </li>
           );
         })}
