@@ -60,15 +60,20 @@ const isValidRange0to255 = (value?: string | number | null | undefined) => {
   }
 };
 
+const clampRGB = (value: number) => {
+  const roundedValue = Math.round(value);
+  return Math.min(Math.max(roundedValue, 0), 255);
+};
+
 /**
  * 상대 명도를 계산합니다.
  * @param color - RGB 색상 객체
  * @returns 상대 명도
  */
 const getLuminance = ({ r, g, b }: RGB_OBJ) => {
-  const rsrgb = r / 255;
-  const gsrgb = g / 255;
-  const bsrgb = b / 255;
+  const rsrgb = clampRGB(r) / 255;
+  const gsrgb = clampRGB(g) / 255;
+  const bsrgb = clampRGB(b) / 255;
   const rLinear = rsrgb <= 0.03928 ? rsrgb / 12.92 : Math.pow((rsrgb + 0.055) / 1.055, 2.4);
   const gLinear = gsrgb <= 0.03928 ? gsrgb / 12.92 : Math.pow((gsrgb + 0.055) / 1.055, 2.4);
   const bLinear = bsrgb <= 0.03928 ? bsrgb / 12.92 : Math.pow((bsrgb + 0.055) / 1.055, 2.4);
@@ -102,6 +107,11 @@ const AVAILABLE_FONT_COLORS: RGB_OBJ[] = [
   // 필요한 색상 추가 가능
 ];
 
+/**
+ * 배경색과 대비하여 가장 높은 대비 비율을 가진 폰트 색상을 반환합니다.
+ * @param backgroundColor - 배경색 RGB 객체
+ * @returns 폰트 색상과 대비 비율을 포함한 RGB 객체
+ */
 export const getOptimalFontColor = (backgroundColor: RGB_OBJ): OptimalFontColor => {
   let maxContrast = 0;
   let optimalFontColor: OptimalFontColor = { ...AVAILABLE_FONT_COLORS[0], contrast: 0 };
