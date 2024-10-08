@@ -3,7 +3,7 @@
  * @param { array } array 입력한 배열
  * @returns { array } 섞인 배열 결과값
  */
-const arrayShuffle = (array) => {
+const arrayShuffle = <T>(array: T[]): T[] => {
   if (Array.isArray(array)) {
     const n = array.length - 1;
     for (let i = n; i > 0; i--) {
@@ -14,4 +14,5 @@ const arrayShuffle = (array) => {
   }
   return [];
 };
+
 export default arrayShuffle;
