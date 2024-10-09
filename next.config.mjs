@@ -1,5 +1,8 @@
+import path from "path";
 import bundleAnalyzer from "@next/bundle-analyzer";
 import env from "./utils/config-env/index.js";
+
+const __dirname = path.resolve();
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -8,6 +11,12 @@ const nextConfig = {
   reactStrictMode: false,
   output: "export",
   env,
+  compiler: {
+    styledComponents: true,
+  },
+  sassOptions: {
+    includePaths: [path.join(__dirname, "styles")],
+  },
   webpack(config) {
     /*
       config.cache = false; 관련
