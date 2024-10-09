@@ -1,9 +1,13 @@
 import bundleAnalyzer from "@next/bundle-analyzer";
+import env from "./utils/config-env/index.js";
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  compress: true,
+  poweredByHeader: false,
   reactStrictMode: false,
   output: "export",
+  env,
   webpack(config) {
     /*
       config.cache = false; 관련
