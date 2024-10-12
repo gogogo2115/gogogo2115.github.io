@@ -15,6 +15,8 @@
     "serve:analyze": "npx serve -p 3008 .next/analyze"
   },
   "dependencies": {
+    "@tanstack/react-query": "5.59.13",
+    "@tanstack/react-query-next-experimental": "5.59.13",
     "lodash": "4.17.21",
     "next": "14.2.15",
     "react": "^18",
@@ -25,6 +27,7 @@
   "devDependencies": {
     "@next/bundle-analyzer": "14.2.15",
     "@svgr/webpack": "8.1.0",
+    "@tanstack/react-query-devtools": "5.59.13",
     "@types/lodash": "4.17.10",
     "@types/node": "^22",
     "@types/react": "^18",
