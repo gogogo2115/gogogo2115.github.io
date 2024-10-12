@@ -1,4 +1,5 @@
 import "@/styles/globals.scss";
+import { ReactQueryStreamedProvider } from "@/components/react-query/ReactQueryProvider";
 
 import type { ReactNode } from "react";
 import type { Metadata } from "next";
@@ -30,7 +31,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="ko" dir="ltr">
       <body id="__next" className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        {children}
+        <ReactQueryStreamedProvider>{children}</ReactQueryStreamedProvider>
       </body>
     </html>
   );
