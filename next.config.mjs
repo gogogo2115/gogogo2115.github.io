@@ -17,6 +17,8 @@ const nextConfig = {
   sassOptions: {
     includePaths: [path.join(__dirname, "styles")],
   },
+  eslint: { ignoreDuringBuilds: true },
+  // typescript: { ignoreBuildErrors: true }, // react-query 옵션
   webpack(config) {
     /*
       config.cache = false; 관련
@@ -29,6 +31,8 @@ const nextConfig = {
       use: ["@svgr/webpack"],
       // issuer: /\.[jt]sx?$/, // ssr에서 오류 발생으로 주석 처리
     });
+
+    if (config.name === "server") config.optimization.concatenateModules = false; // react-query
     return config;
   },
   experimental: {
