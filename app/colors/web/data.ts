@@ -14,6 +14,8 @@ export type WebData = {
  * 웹 색상들의 배열로, 각 색상은 이름, 16진수 값, RGB 값을 포함합니다.
  */
 export const data: WebData[] = [
+  // { name: "transparent", hex: { r: "", g: "", b: "" }, rgb: { r: NaN, g: NaN, b: NaN } },
+
   // Pink colors
   { name: "MediumVioletRed", hex: { r: "C7", g: "15", b: "85" }, rgb: { r: 199, g: 21, b: 133 } },
   { name: "DeepPink", hex: { r: "FF", g: "14", b: "93" }, rgb: { r: 255, g: 20, b: 147 } },
