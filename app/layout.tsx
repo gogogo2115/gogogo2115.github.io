@@ -26,10 +26,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko" dir="ltr">
-      <body
-        id="__next"
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+      <body id="__next" className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         {children}
       </body>
     </html>
