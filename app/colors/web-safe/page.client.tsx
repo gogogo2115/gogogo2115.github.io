@@ -2,8 +2,8 @@
 
 import { useMemo, useState } from "react";
 import { type WebSafeData } from "./data";
-import Link from "next/link";
-import { getOptimalFontColor } from "../color";
+
+import ColorWebSafePalette from "@/components/ColorWebSafePalette";
 
 type WebSafePageClientProps = { data: WebSafeData[] };
 
@@ -18,19 +18,10 @@ export default function WebSafePageClient({ data }: WebSafePageClientProps) {
 
   return (
     <div>
-      <ul className="grid gap-4 p-4 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7">
+      <div>웹 안전색</div>
+      <ul className="grid gap-4 p-4 grid-cols-1 xs:grid-cols-1 2xs:grid-cols-1 3xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5">
         {selectorData.map((v, i) => {
-          const { r, g, b } = v.hex;
-          const rgb = getOptimalFontColor(v.rgb);
-          const fullHex = `${r}${g}${b}`;
-          const cssColor = `rgb(${rgb.r},${rgb.g},${rgb.b})`;
-          return (
-            <li key={i} className="min-w-40 max-w-56 aspect-[3/2] p-2 border-solid border-black border-[2px]" style={{ backgroundColor: `#${fullHex}`, color: cssColor }}>
-              <Link className="text-bold text-bold" href={`/colors/web-safe/${fullHex}`}>
-                {fullHex}
-              </Link>
-            </li>
-          );
+          return <ColorWebSafePalette key={i} data={v} />;
         })}
       </ul>
     </div>

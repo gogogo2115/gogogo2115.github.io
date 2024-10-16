@@ -1,5 +1,10 @@
 "use client";
+import { RGB_OBJ } from "../../colors/color";
 
-export default function ContrastPageClient() {
+type ContrastPageClientProps = {
+  test?: string;
+};
+
+export default function ContrastPageClient({}: ContrastPageClientProps) {
   return <>11</>;
 }

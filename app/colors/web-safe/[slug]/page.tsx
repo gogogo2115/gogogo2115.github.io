@@ -24,6 +24,7 @@ export async function generateMetadata({ params: { slug } }: WebSafeSlugPageProp
 export function generateViewport({ params: { slug } }: WebSafeSlugPageProps) {
   return {
     themeColor: `#${slug}`,
+    title: `웹 안전색 #${slug} 상세 정보`,
   };
 }
 

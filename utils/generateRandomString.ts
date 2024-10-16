@@ -1,0 +1,15 @@
+import arrayShuffle from "./arrayShuffle.js";
+
+const defaultCharacters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+const charactersShuffle = arrayShuffle(defaultCharacters.split("")).join("");
+
+const generateRandomString = (length: number = 8, characters: string = charactersShuffle): string => {
+  let result = "";
+  for (let i = 0; i < length; i++) {
+    const randomIndex = Math.floor(Math.random() * characters.length);
+    result += characters.charAt(randomIndex);
+  }
+  return result;
+};
+
+export default generateRandomString;

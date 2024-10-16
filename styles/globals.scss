@@ -24,4 +24,20 @@ body {
   .text-balance {
     text-wrap: balance;
   }
+
+  .blind {
+    padding: 0;
+    margin: -1px;
+    width: 1px;
+    height: 1px;
+    font-size: 4px;
+    background-color: transparent;
+    color: transparent;
+    position: absolute;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+    outline: none;
+  }
 }
