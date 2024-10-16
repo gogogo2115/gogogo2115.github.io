@@ -9,7 +9,10 @@
     "lint": "next lint",
     "test": "jest",
     "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage"
+    "test:coverage": "jest --coverage",
+    "build:analyze": "cross-env ANALYZE=true next build",
+    "serve:start": "npx serve -p 3006 out",
+    "serve:analyze": "npx serve -p 3008 .next/analyze"
   },
   "dependencies": {
     "next": "14.2.15",
@@ -17,12 +20,14 @@
     "react-dom": "^18"
   },
   "devDependencies": {
+    "@next/bundle-analyzer": "14.2.15",
     "@testing-library/dom": "10.4.0",
     "@testing-library/jest-dom": "6.5.0",
     "@testing-library/react": "16.0.1",
     "@types/node": "^22",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "cross-env": "7.0.3",
     "eslint": "^8",
     "eslint-config-next": "14.2.15",
     "jest": "29.7.0",
