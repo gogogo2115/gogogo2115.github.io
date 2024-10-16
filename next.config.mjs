@@ -1,10 +1,12 @@
 import path from "path";
 import bundleAnalyzer from "@next/bundle-analyzer";
+import env from "./utils/config.env.js";
 
 const __dirname = path.resolve();
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  env,
   sassOptions: {
     includePaths: [path.join(__dirname, "styles")],
   },
