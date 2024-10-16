@@ -1,11 +1,14 @@
 import path from "path";
 import bundleAnalyzer from "@next/bundle-analyzer";
 import env from "./utils/config.env.js";
+import isNodeEnv from "./utils/isNodeEnv.js";
 
+const { IS_DEVELOPMENT } = isNodeEnv;
 const __dirname = path.resolve();
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  poweredByHeader: IS_DEVELOPMENT,
   env,
   sassOptions: {
     includePaths: [path.join(__dirname, "styles")],
