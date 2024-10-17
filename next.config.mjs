@@ -8,6 +8,7 @@ const __dirname = path.resolve();
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  output: "export",
   poweredByHeader: IS_DEVELOPMENT,
   env,
   sassOptions: {
