@@ -9,7 +9,7 @@ const __dirname = path.resolve();
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: "export",
-  reactStrictMode: IS_DEVELOPMENT,
+  reactStrictMode: false, //IS_DEVELOPMENT,
   poweredByHeader: IS_DEVELOPMENT,
   env,
   sassOptions: {
@@ -22,6 +22,7 @@ const nextConfig = {
   },
   experimental: {
     scrollRestoration: true,
+    missingSuspenseWithCSRBailout: false, // useSearchParams 누락 문제 오류 처리(권장하는 방식은 아님 빌드시 로그에는 오류가 호출 됨 Suspense를 사용 15버전에서는 제거됨)
     // turbo: {// github.io 배포 시 작동 여부 불투명 주석 처리
     //   rules: { "*.svg": { loaders: ["@svgr/webpack"], as: "*.js" } },
     // },
