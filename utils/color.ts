@@ -1,13 +1,31 @@
+/* RGB (Red, Green, Blue) */
 export type RGB_OBJ = { r: number; g: number; b: number };
 export type RGBA_OBJ = { r: number; g: number; b: number; a?: number };
 
+/* RGB (Red, Green, Blue) */
 export type HEX_OBJ = { r: string; g: string; b: string };
 export type HEXA_OBJ = { r: string; g: string; b: string; a?: string };
 
+/* HSL (Hue, Saturation, Lightness) */
 export type HSL_OBJ = { h: number; s: number; l: number };
-export type HSLA_OBJ = { h: number; s: number; l: number };
+export type HSLA_OBJ = { h: number; s: number; l: number; a?: number };
 
-export type HSV_OBJ = { h: number; s: number; l: number };
+/* HWB (Hue, Whiteness, Blackness) */
+export type HWB_OBJ = { h: number; w: number; b: number };
+
+export type HSV_OBJ = { h: number; s: number; v: number };
+
+/* LAB (Lightness, A-axis, B-axis) */
+export type LAB_OBJ = { l: number; a: number; b: number };
+
+/* LCH (Lightness, Chroma, Hue) */
+export type LCH_OBJ = { l: number; c: number; h: number };
+
+/* Oklab (Lightness, A-axis, B-axis) */
+export type OKLAB_OBJ = { l: number; a: number; b: number };
+
+/* Oklch (Lightness, Chroma, Hue) */
+export type OKLCH_OBJ = { l: number; c: number; h: number };
 
 export const clamp = (value: number, min: number = 0, max: number = 0, defaultValue: number = 0): number => {
   // if (min === undefined) min = -Infinity;
