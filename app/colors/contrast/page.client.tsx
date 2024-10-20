@@ -1,8 +1,8 @@
 "use client";
 
-import { getContrastRatio, hexColorToRgbObj, isValidHexColor, RGB_OBJ, setInputColorValue } from "@/utils/color";
+import { getContrastRatio, randHexColor, isValidHexColor, setInputColorValue } from "@/utils/color";
 
-import { ChangeEvent, Suspense, useMemo } from "react";
+import { ChangeEvent, MouseEvent, Suspense, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { useSearchParams } from "next/navigation";
 
@@ -75,7 +75,7 @@ const Component = ({ fontHexColor, backHexColor }: ContrastPageClientProps) => {
 
   const onChangeColor = (e: ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
-    const target = e.target;
+    const target = e.currentTarget;
     const dataColor = target.dataset["color"] as "fontColor" | "backColor"; // data 확인
     if (["fontColor", "backColor"].includes(dataColor)) {
       // 결과값 오류 발생 방지
@@ -93,12 +93,16 @@ const Component = ({ fontHexColor, backHexColor }: ContrastPageClientProps) => {
     }
   };
 
+  const onClickRandomColor = (e: MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    const target = e.currentTarget;
+    const dataColor = target.dataset["color"] as "fontColor" | "backColor"; // data 확인
+    if (["fontColor", "backColor"].includes(dataColor)) {
+      setValue(dataColor, randHexColor("#"));
+    }
+  };
+
   const contrastData = useMemo(() => {
-    // // const toFontRgbObj
-    // console.log("useMemo", fontRgbObj, backRgbObj, getContrastRatio(fontRgbObj, backRgbObj));
-
-    // return getContrastRatio(fontRgbObj, backRgbObj);
-
     return 1;
   }, [watchFontColor, watchBackColor]);
 
@@ -110,8 +114,11 @@ const Component = ({ fontHexColor, backHexColor }: ContrastPageClientProps) => {
             글자 색상
           </label>
           <div className="flex">
-            <input type="color" className="w-8 h-8 aspect-[1/1] cursor-pointer" data-color="fontColor" onChange={onChangeColor} readOnly defaultValue={setInputColorValue(watchFontColor)} />
+            <input type="color" className="w-8 h-8 aspect-[1/1] cursor-pointer" data-color="fontColor" onChange={onChangeColor} readOnly value={setInputColorValue(watchFontColor)} />
             <input {...registerFontColor} {...inputFontColorAttr} />
+            <button type="button" data-color="fontColor" onClick={onClickRandomColor}>
+              랜덤
+            </button>
           </div>
           <div className="h-6">{errors.fontColor && errors.fontColor.message}</div>
         </div>
@@ -121,8 +128,11 @@ const Component = ({ fontHexColor, backHexColor }: ContrastPageClientProps) => {
             배경 색상
           </label>
           <div className="flex">
-            <input type="color" className="w-8 h-8 aspect-[1/1] cursor-pointer" data-color="backColor" onChange={onChangeColor} readOnly defaultValue={setInputColorValue(watchBackColor)} />
+            <input type="color" className="w-8 h-8 aspect-[1/1] cursor-pointer" data-color="backColor" onChange={onChangeColor} readOnly value={setInputColorValue(watchBackColor)} />
             <input {...registerBackColor} {...inputBackColorAttr} />
+            <button type="button" data-color="backColor" onClick={onClickRandomColor}>
+              랜덤
+            </button>
           </div>
           <div className="h-6">{errors.backColor && errors.backColor.message}</div>
         </div>
