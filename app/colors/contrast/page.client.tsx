@@ -1,120 +1,132 @@
 "use client";
 
-import { randHexObj, type HEX_OBJ } from "@/utils/color";
-import { tree } from "next/dist/build/templates/app-page";
+import { getContrastRatio, hexColorToRgbObj, isValidHexColor, RGB_OBJ, setInputColorValue } from "@/utils/color";
 
-import { ChangeEvent, MouseEvent, Suspense, useMemo, useState } from "react";
-// import { useSearchParams } from "next/navigation";
+import { ChangeEvent, Suspense, useMemo } from "react";
 import { useForm } from "react-hook-form";
+import { useSearchParams } from "next/navigation";
 
-type ContrastPageClientProps = { fontHexObj: HEX_OBJ; backHexObj: HEX_OBJ };
-type Form = { fontColor: string; backColor: string };
+type ContrastPageClientProps = { fontHexColor: string; backHexColor: string };
+type ContrastFormInput = { fontColor: string; backColor: string };
 
-export default function ContrastPageClient({ fontHexObj, backHexObj }: ContrastPageClientProps) {
+/**
+ * 페이지 시작
+ */
+export default function ContrastPageClient({ fontHexColor, backHexColor }: ContrastPageClientProps) {
   return (
     <Suspense>
-      <Component fontHexObj={fontHexObj} backHexObj={backHexObj} />
+      <Component fontHexColor={fontHexColor} backHexColor={backHexColor} />
     </Suspense>
   );
 }
 
-const Component = ({ fontHexObj, backHexObj }: ContrastPageClientProps) => {
-  // const searchParams = useSearchParams();
-  // const search1 = searchParams.get("fontColor");
-  // const search2 = searchParams.get("backColor");
+const Component = ({ fontHexColor, backHexColor }: ContrastPageClientProps) => {
+  const searchParams = useSearchParams();
+  const search1 = searchParams.get("fontColor");
+  const search2 = searchParams.get("backColor");
 
-  const propsFontHexColor = (prefix = "") => `${prefix}${fontHexObj.r}${fontHexObj.g}${fontHexObj.b}`;
-  const propsBackHexColor = (prefix = "") => `${prefix}${backHexObj.r}${backHexObj.g}${backHexObj.b}`;
+  const defaultFontColor = () => (isValidHexColor(fontHexColor) ? fontHexColor : "#ffffff");
+  const defaultBackColor = () => (isValidHexColor(backHexColor) ? backHexColor : "#000000");
+
+  console.log("setInputColorValue", setInputColorValue("rgba(101,201,255, 11)"));
 
   const {
     register,
-    watch,
-    getValues,
+    setError,
     setValue,
+    watch,
     formState: { errors },
-  } = useForm<Form>({
+  } = useForm<ContrastFormInput>({
     mode: "onChange",
-    defaultValues: { fontColor: propsFontHexColor("#"), backColor: propsBackHexColor("#") },
+    defaultValues: { fontColor: defaultFontColor(), backColor: defaultBackColor() },
   });
 
-  const inputTextAttrs = { type: "text", className: "text-black", minLength: 1, maxLength: 50, required: true };
-  const fontInputTextAttr = { ...inputTextAttrs, placeholder: "글자 색상", id: "fontColor", name: "fontColor" };
-  const backInputTextAttr = { ...inputTextAttrs, placeholder: "배경 색상", id: "backColor", name: "backColor" };
-
   const { fontColor: watchFontColor, backColor: watchBackColor } = watch();
-  // const { fontColor: getFontColor, backColor: getBackColor } = getValues();
 
-  console.log(watchFontColor, watchBackColor);
+  const inputAttr = { type: "text", className: "text-black outline-none", minLength: 1, maxLength: 30, required: true },
+    inputFontColorAttr = { ...inputAttr, id: "fontColor", name: "fontColor", placeholder: "글자 색상" },
+    inputBackColorAttr = { ...inputAttr, id: "backColor", name: "backColor", placeholder: "배경 색상" };
 
   const registerFontColor = register("fontColor", {
-    required: { value: fontInputTextAttr.required, message: "hex 글자 색상값을 넣어주세요." },
-    minLength: { value: fontInputTextAttr.minLength, message: `${fontInputTextAttr.minLength}` },
-    maxLength: { value: fontInputTextAttr.maxLength, message: `${fontInputTextAttr.maxLength}` },
+    required: { value: inputFontColorAttr.required, message: "HEX 글자 색상값을 넣어주세요." },
+    minLength: { value: inputFontColorAttr.minLength, message: `글자 색상 ${inputFontColorAttr.minLength}자 이상을 입력해주세요.` },
+    maxLength: { value: inputFontColorAttr.maxLength, message: `글자 색상 ${inputFontColorAttr.maxLength}자 이하로 입력해주세요.` },
     validate: {
-      isFullHexColor: (v) => {
-        return /^(#|%23)?([0-9a-fA-F]{6})$/i.test(v) ? true : "형식 오류가 발생하였습니다.";
-      },
+      s: (v) => v !== "" || "HEX 글자 색상값을 넣어주세요.",
+    },
+    onBlur: (e: ChangeEvent<HTMLInputElement>) => {
+      const target = e.target;
+      const value = target.value;
     },
   });
 
   const registerBackColor = register("backColor", {
-    required: { value: backInputTextAttr.required, message: "hex 배경 색상값을 넣어주세요." },
-    minLength: { value: backInputTextAttr.minLength, message: `${backInputTextAttr.minLength}` },
-    maxLength: { value: backInputTextAttr.maxLength, message: `${backInputTextAttr.maxLength}` },
+    required: { value: inputBackColorAttr.required, message: "HEX 베경 색상값을 넣어주세요." },
+    minLength: { value: inputBackColorAttr.minLength, message: `베경 색상 ${inputBackColorAttr.minLength}자 이상을 입력해주세요.` },
+    maxLength: { value: inputBackColorAttr.maxLength, message: `베경 색상 ${inputBackColorAttr.maxLength}자 이하로 입력해주세요.` },
     validate: {
-      isFullHexColor: (v) => {
-        return /^(#|%23)?([0-9a-fA-F]{6})$/i.test(v) ? true : "형식 오류가 발생하였습니다.";
-      },
+      s: (v) => v !== "" || "HEX 베경 색상값을 넣어주세요.",
+    },
+    onBlur: (e: ChangeEvent<HTMLInputElement>) => {
+      const target = e.target;
+      const value = target.value;
     },
   });
 
-  const contrastData = useMemo(() => {}, []);
+  const onChangeColor = (e: ChangeEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    const target = e.target;
+    const dataColor = target.dataset["color"] as "fontColor" | "backColor"; // data 확인
+    if (["fontColor", "backColor"].includes(dataColor)) {
+      // 결과값 오류 발생 방지
+      const targetType = target.type.toLowerCase();
+      if (targetType !== "color") {
+        setError(dataColor, { message: "색상 선택 입력 오류" }, { shouldFocus: true });
+        return;
+      }
+
+      const value = target.value.toUpperCase();
+      if (isValidHexColor(value)) {
+        setValue(dataColor, value);
+        return;
+      }
+    }
+  };
+
+  const contrastData = useMemo(() => {
+    // // const toFontRgbObj
+    // console.log("useMemo", fontRgbObj, backRgbObj, getContrastRatio(fontRgbObj, backRgbObj));
+
+    // return getContrastRatio(fontRgbObj, backRgbObj);
+
+    return 1;
+  }, [watchFontColor, watchBackColor]);
 
   return (
     <>
       <form noValidate autoComplete="off" autoCapitalize="off">
         <div className="flex flex-col">
-          <label htmlFor={fontInputTextAttr.id}>글자색</label>
-          <div className="flex flex-row">
-            <input type="color" />
-            <input {...fontInputTextAttr} {...registerFontColor} />
+          <label htmlFor={inputFontColorAttr.id} className="select-none cursor-pointer">
+            글자 색상
+          </label>
+          <div className="flex">
+            <input type="color" className="w-8 h-8 aspect-[1/1] cursor-pointer" data-color="fontColor" onChange={onChangeColor} readOnly defaultValue={setInputColorValue(watchFontColor)} />
+            <input {...registerFontColor} {...inputFontColorAttr} />
           </div>
-          <div className="h-4">{errors.fontColor && errors.fontColor.message}</div>
+          <div className="h-6">{errors.fontColor && errors.fontColor.message}</div>
         </div>
 
         <div className="flex flex-col">
-          <label htmlFor={backInputTextAttr.id}>배경색</label>
-          <div className="flex flex-row">
-            <input type="color" />
-            <input {...backInputTextAttr} {...registerBackColor} />
+          <label htmlFor={inputBackColorAttr.id} className="select-none cursor-pointer">
+            배경 색상
+          </label>
+          <div className="flex">
+            <input type="color" className="w-8 h-8 aspect-[1/1] cursor-pointer" data-color="backColor" onChange={onChangeColor} readOnly defaultValue={setInputColorValue(watchBackColor)} />
+            <input {...registerBackColor} {...inputBackColorAttr} />
           </div>
-          <div className="h-4">{errors.backColor && errors.backColor.message}</div>
+          <div className="h-6">{errors.backColor && errors.backColor.message}</div>
         </div>
-
-        <button>11</button>
       </form>
-      <div>
-        <div>
-          <div>명암비</div>
-          <div>1:1</div>
-        </div>
-        <div>
-          일반 글자
-          <div>AA(4.5:1)</div>
-          <div>AAA(7:1)</div>
-        </div>
-        <div>
-          대형 글자
-          <div>AA(3:1)</div>
-          <div>AAA(4.5:1)</div>
-        </div>
-        <div>
-          <div>svg/아이콘</div>
-          <div>AA(3:1)</div>
-          <div>AA(4.5:1)</div>
-        </div>
-      </div>
-      <div></div>
     </>
   );
 };
