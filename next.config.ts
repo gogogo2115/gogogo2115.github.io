@@ -2,11 +2,15 @@ import path from "path";
 import type { NextConfig } from "next";
 import bundleAnalyzer from "@next/bundle-analyzer";
 
+import { IS_DEVELOPMENT } from "@/utils/isNodeEnv";
+import env from "@/utils/config.env";
+
 const nextConfig: NextConfig = {
   /* config options here */
   output: "export",
-  reactStrictMode: false, // IS_DEVELOPMENT,
-  poweredByHeader: false, // IS_DEVELOPMENT,
+  reactStrictMode: IS_DEVELOPMENT,
+  poweredByHeader: IS_DEVELOPMENT,
+  env,
   sassOptions: {
     includePaths: [path.join(__dirname, "styles")],
     implementation: "sass-embedded",
