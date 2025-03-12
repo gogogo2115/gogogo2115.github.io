@@ -9,5 +9,5 @@ export const IS_NOT_DEVELOPMENT = !IS_DEVELOPMENT;
 export const IS_TEST = NODE_ENV === "test";
 export const IS_NOT_TEST = !IS_TEST;
 
-const environment = { IS_PRODUCTION, IS_DEVELOPMENT, IS_TEST };
-export default environment;
+const ENVIRONMENT = { IS_PRODUCTION, IS_DEVELOPMENT, IS_TEST };
+export default ENVIRONMENT;
