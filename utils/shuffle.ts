@@ -14,6 +14,8 @@ export const arrayShuffle = <T>(arr: T[]): T[] => {
 };
 
 export const stringShuffle = (str: string, options: StringShuffleOptions = {}): string => {
+  if (!str || typeof str !== "string") return "";
+
   let processedStr = str;
 
   if (options.removeWhitespace) {
