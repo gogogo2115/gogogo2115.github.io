@@ -20,6 +20,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
     <html lang="ko-KR" suppressHydrationWarning>
       <body id="__next" className={`${geistSans.variable} ${geistMono.variable} antialiased`} suppressHydrationWarning>
         {children}
+        <div id="root_modal"></div>
       </body>
     </html>
   );
