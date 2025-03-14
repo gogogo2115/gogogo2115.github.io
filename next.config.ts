@@ -5,6 +5,7 @@ import ENV_CONFIG from "./utils/envConfig";
 const nextConfig: NextConfig = {
   /* config options here */
   output: "export",
+  generateBuildId: async () => `build-${ENV_CONFIG.BUILD_ISO.replace(/[:.]/g, "-")}`,
   env: ENV_CONFIG,
   webpack(config) {
     config.module.rules.push({ test: /\.svg$/i, issuer: /\.[jt]sx?$/, use: ["@svgr/webpack"] });
