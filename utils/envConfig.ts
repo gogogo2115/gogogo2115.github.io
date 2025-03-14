@@ -88,7 +88,7 @@ if (!validateRSAKey({ publicKey: BUILD_PUBLIC_KEY, privateKey: BUILD_PRIVATE_KEY
   throw new Error("생성된 RSA 키 검증 실패");
 }
 
-const CONFIG_ENV = {
+const ENV_CONFIG = {
   PACKAGE_NAME: getPackageValue("name"),
   PACKAGE_VERSION: getPackageValue("version"),
   PACKAGE_NEXT_VERSION: getPackageValue("next"),
@@ -99,4 +99,4 @@ const CONFIG_ENV = {
   BUILD_PRIVATE_KEY,
 };
 
-export default CONFIG_ENV;
+export default ENV_CONFIG;
