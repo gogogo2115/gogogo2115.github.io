@@ -4,6 +4,6 @@ export const buildPublicKey = ((): string => {
 })();
 
 export const buildPrivateKey = ((): string => {
-  const key = (typeof window !== "undefined" ? process.env.BUILD_PRIVATE_KEY ?? "" : "").trim();
+  const key = (typeof window === "undefined" ? process.env.BUILD_PRIVATE_KEY ?? "" : "").trim();
   return key;
 })();
