@@ -12,6 +12,8 @@
     "serve:analyze": "npx serve -p 3008 .next/analyze"
   },
   "dependencies": {
+    "@tanstack/react-query": "5.68.0",
+    "@tanstack/react-query-next-experimental": "5.68.0",
     "classnames": "2.5.1",
     "next": "15.2.2",
     "react": "^19.0.0",
@@ -23,6 +25,7 @@
     "@next/bundle-analyzer": "15.2.2",
     "@svgr/webpack": "8.1.0",
     "@tailwindcss/postcss": "^4",
+    "@tanstack/react-query-devtools": "5.68.0",
     "@types/node": "^22",
     "@types/react": "^19",
     "@types/react-dom": "^19",
