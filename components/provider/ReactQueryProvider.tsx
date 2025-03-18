@@ -1,12 +1,11 @@
 "use client";
 
 import type { ReactNode } from "react";
-
-import { IS_DEVELOPMENT } from "@/utils/environment";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { ReactQueryStreamedHydration } from "@tanstack/react-query-next-experimental";
 
+import { IS_DEVELOPMENT } from "@/utils/environment";
 import { getQueryClient } from "@/lib/getQueryClient";
 
 type ReactQueryProviderProps = { children: ReactNode };
