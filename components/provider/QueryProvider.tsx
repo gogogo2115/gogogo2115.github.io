@@ -2,15 +2,15 @@
 
 import type { ReactNode } from "react";
 import { QueryClientProvider } from "@tanstack/react-query";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { ReactQueryStreamedHydration } from "@tanstack/react-query-next-experimental";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
-import { IS_DEVELOPMENT } from "@/utils/environment";
+import { IS_DEVELOPMENT } from "@/utils/envNode";
 import { getQueryClient } from "@/lib/getQueryClient";
 
 type ReactQueryProviderProps = { children: ReactNode };
 
-export const ReactQueryPrefetchingProvider = ({ children }: ReactQueryProviderProps) => {
+export const QueryPrefetchingProvider = ({ children }: ReactQueryProviderProps) => {
   const queryClient = getQueryClient();
   return (
     <QueryClientProvider client={queryClient}>
@@ -20,7 +20,7 @@ export const ReactQueryPrefetchingProvider = ({ children }: ReactQueryProviderPr
   );
 };
 
-export const ReactQueryStreamingProvider = ({ children }: ReactQueryProviderProps) => {
+export const QueryStreamingProvider = ({ children }: ReactQueryProviderProps) => {
   const queryClient = getQueryClient();
   return (
     <QueryClientProvider client={queryClient}>
