@@ -2,6 +2,7 @@ import "@/styles/globals.css";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { QueryStreamingProvider } from "@/components/provider/QueryProvider";
+import StoreProvider from "@/components/provider/StoreProvider";
 
 type RootLayoutProps = Readonly<{ children: React.ReactNode }>;
 
@@ -16,13 +17,15 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
-    <html lang="ko-KR" suppressHydrationWarning>
-      <body id="__next" className={`${geistSans.variable} ${geistMono.variable} antialiased`} suppressHydrationWarning>
-        <QueryStreamingProvider>
-          {children}
-          <div id="root_modal" />
-        </QueryStreamingProvider>
-      </body>
-    </html>
+    <StoreProvider>
+      <html lang="ko-KR" suppressHydrationWarning>
+        <body id="__next" className={`${geistSans.variable} ${geistMono.variable} antialiased`} suppressHydrationWarning>
+          <QueryStreamingProvider>
+            {children}
+            <div id="root_modal" />
+          </QueryStreamingProvider>
+        </body>
+      </html>
+    </StoreProvider>
   );
 }
