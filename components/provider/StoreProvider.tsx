@@ -5,7 +5,7 @@ import { useEffect, useRef } from "react";
 import { Provider } from "react-redux";
 import { setupListeners } from "@reduxjs/toolkit/query";
 
-import { makeStore, AppStore } from "@/store";
+import { makeStore, AppStore } from "@/lib/store";
 
 type StoreProviderProps = { readonly children: ReactNode };
 
