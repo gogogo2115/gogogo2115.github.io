@@ -46,5 +46,10 @@ export const settingsSlice = createSlice({
       return state;
     }),
   }),
-  selectors: {},
+  selectors: {
+    selectSettings: (state) => state,
+  },
 });
+
+export const { setTheme, setFontSize, setFontFamily } = settingsSlice.actions;
+export const { selectSettings } = settingsSlice.selectors;
