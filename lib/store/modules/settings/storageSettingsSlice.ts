@@ -14,7 +14,7 @@ const getInitialSettings = (): SettingsState => {
       return DEFAULT_INITIAL_STATE;
     }
     const { theme, fontSize, fontFamily } = JSON.parse(settings) as Partial<SettingsState>;
-    return { theme: clampTheme(theme), fontSize: clampFontSize(fontSize), fontFamily: clampFontFamily(fontFamily) };
+    return { ...DEFAULT_INITIAL_STATE, theme: clampTheme(theme), fontSize: clampFontSize(fontSize), fontFamily: clampFontFamily(fontFamily) };
   } catch {
     return DEFAULT_INITIAL_STATE;
   }
