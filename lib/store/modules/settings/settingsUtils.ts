@@ -42,3 +42,9 @@ export const clampFontSize = (fontSize: unknown): FontSize => {
 export const clampFontFamily = (fontFamily: unknown): FontFamily => {
   return isValidFontFamily(fontFamily) ? fontFamily : DEFAULT_FONT_FAMILY;
 };
+
+export const getMatchMediaTheme = (): "dark" | "light" => {
+  if (typeof window === undefined || !("matchMedia" in window)) return "light";
+  const { matches } = window.matchMedia("(prefers-color-scheme: dark)");
+  return matches ? "dark" : "light";
+};
