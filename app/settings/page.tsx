@@ -1,5 +1,14 @@
 "use client";
 
+import { useAppDispatch, useAppSelector } from "@/lib/store";
+
 export default function SettingsPage() {
-  return <></>;
+  const settings = useAppSelector((state) => state);
+  const dispatch = useAppDispatch();
+
+  return (
+    <>
+      <div></div>
+    </>
+  );
 }
