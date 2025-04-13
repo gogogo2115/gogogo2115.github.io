@@ -2,8 +2,8 @@ export type Theme = "dark" | "light" | "system" | "gray";
 export type FontSize = 1 | 2 | 3 | 4 | 5 | 6;
 export type SettingsState = { theme: Theme; fontSize: FontSize };
 
-export const DEFAULT_THEME: Theme = "system";
-export const DEFAULT_FONT_SIZE: FontSize = 3;
+export const DEFAULT_THEME: Theme = "system"; // theme의 기본값
+export const DEFAULT_FONT_SIZE: FontSize = 3; // fontSize의 기본값
 export const DEFAULT_SETTINGS: SettingsState = {
   theme: DEFAULT_THEME,
   fontSize: DEFAULT_FONT_SIZE,
