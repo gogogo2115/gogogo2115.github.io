@@ -2,7 +2,7 @@ export type Theme = "dark" | "light" | "system" | "gray";
 export type FontSize = 1 | 2 | 3 | 4 | 5 | 6;
 export type SettingsState = { theme: Theme; fontSize: FontSize };
 
-export const DEFAULT_THEME: Theme = "dark";
+export const DEFAULT_THEME: Theme = "system";
 export const DEFAULT_FONT_SIZE: FontSize = 3;
 export const DEFAULT_SETTINGS: SettingsState = {
   theme: DEFAULT_THEME,
@@ -14,7 +14,9 @@ export const isValidTheme = (theme: unknown): theme is Theme => {
 };
 
 export const isValidFontSize = (fontSize: unknown): fontSize is FontSize => {
-  return typeof fontSize === "number" && [1, 2, 3, 4, 5, 6].includes(fontSize as FontSize);
+  if (typeof fontSize === "number") return [1, 2, 3, 4, 5, 6].includes(fontSize as FontSize);
+  if (typeof fontSize === "string") return ["1", "2", "3", "4", "5", "6"].includes(fontSize as string);
+  return false;
 };
 
 export const clampTheme = (theme: unknown): Theme => {
@@ -22,7 +24,9 @@ export const clampTheme = (theme: unknown): Theme => {
 };
 
 export const clampFontSize = (fontSize: unknown): FontSize => {
-  return isValidFontSize(fontSize) ? fontSize : DEFAULT_FONT_SIZE;
+  if (isValidFontSize(fontSize)) return Number(fontSize) as FontSize;
+  const { max, min } = Math;
+  return max(1, min(6, typeof fontSize !== "number" || isNaN(fontSize) ? DEFAULT_FONT_SIZE : fontSize)) as FontSize;
 };
 
 export const getMatchMediaTheme = (): "dark" | "light" => {
