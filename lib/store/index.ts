@@ -4,12 +4,11 @@ import { useDispatch, useSelector, useStore } from "react-redux";
 
 import { rootReducer } from "./rootReducer";
 
-export const makeStore = () => {
-  return configureStore({
+export const makeStore = () =>
+  configureStore({
     reducer: rootReducer,
     devTools: process.env.NODE_ENV === "development",
   });
-};
 
 // export type RootState = ReturnType<typeof rootReducer>;
 export type RootState = ReturnType<AppStore["getState"]>;
