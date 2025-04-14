@@ -10,9 +10,10 @@ export const makeStore = () =>
     devTools: process.env.NODE_ENV === "development",
   });
 
-// export type RootState = ReturnType<typeof rootReducer>;
-export type RootState = ReturnType<AppStore["getState"]>;
 export type AppStore = ReturnType<typeof makeStore>;
+
+// export type RootState = ReturnType<typeof rootReducer>; // 1. RootState를 rootReducer를 사용하는 방식
+export type RootState = ReturnType<AppStore["getState"]>; // 2. AppStore에서 getState로 사용하는 방식
 export type AppDispatch = AppStore["dispatch"];
 export type AppThunk<ThunkReturnType = void> = ThunkAction<ThunkReturnType, RootState, unknown, Action>;
 
