@@ -9,7 +9,6 @@ type StoreProviderProps = { readonly children: ReactNode };
 
 export const StoreProvider = ({ children }: StoreProviderProps) => {
   const storeRef = useRef<AppStore | null>(null);
-
   if (!storeRef.current) {
     storeRef.current = makeStore();
   }
