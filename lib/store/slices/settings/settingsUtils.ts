@@ -36,3 +36,9 @@ export const getMatchMediaTheme = (): "dark" | "light" => {
   const { matches } = window.matchMedia("(prefers-color-scheme: dark)");
   return matches ? "dark" : "light";
 };
+
+export const updateDocument = (state: SettingsState) => {
+  if (typeof document !== "undefined") {
+    document.body.setAttribute("data-theme", state.theme === "system" ? getMatchMediaTheme() : "light");
+  }
+};
