@@ -42,3 +42,11 @@ export const updateDocument = (state: SettingsState) => {
     document.body.setAttribute("data-theme", state.theme === "system" ? getMatchMediaTheme() : "light");
   }
 };
+
+export const divideFontSizeByTwo = (fontSize: FontSize): FontSize => {
+  return Math.floor(fontSize / 2) as FontSize;
+};
+
+export const divideFontSizeByThree = (fontSize: FontSize): FontSize => {
+  return Math.floor(fontSize / 3) as FontSize;
+};
