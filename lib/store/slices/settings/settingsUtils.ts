@@ -16,9 +16,8 @@ export const isValidTheme = (theme: unknown): theme is Theme => {
 };
 
 export const isValidFontSize = (fontSize: unknown): fontSize is FontSize => {
-  if (typeof fontSize === "number") return [1, 2, 3, 4, 5, 6].includes(fontSize as FontSize);
-  if (typeof fontSize === "string") return ["1", "2", "3", "4", "5", "6"].includes(fontSize as string);
-  return false;
+  const validFontSizes: FontSize[] = [1, 2, 3, 4, 5, 6];
+  return (typeof fontSize === "number" && validFontSizes.includes(fontSize as FontSize)) || (typeof fontSize === "string" && validFontSizes.map(String).includes(fontSize));
 };
 
 export const clampTheme = (theme: unknown): Theme => {
@@ -27,8 +26,9 @@ export const clampTheme = (theme: unknown): Theme => {
 
 export const clampFontSize = (fontSize: unknown): FontSize => {
   if (isValidFontSize(fontSize)) return Number(fontSize) as FontSize;
+  const numFontSize = typeof fontSize === "number" && !isNaN(fontSize) ? fontSize : DEFAULT_FONT_SIZE;
   const { max, min, floor } = Math;
-  return max(1, min(6, floor(typeof fontSize !== "number" || isNaN(fontSize) ? DEFAULT_FONT_SIZE : fontSize))) as FontSize;
+  return max(1, min(6, floor(numFontSize))) as FontSize;
 };
 
 export const getMatchMediaTheme = (): "dark" | "light" => {
