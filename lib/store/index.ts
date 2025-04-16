@@ -7,7 +7,7 @@ import { rootReducer } from "./rootReducer";
 export const makeStore = () =>
   configureStore({
     reducer: rootReducer,
-    devTools: process.env.NODE_ENV === "development",
+    devTools: process.env.NODE_ENV !== "production",
   });
 
 export type AppStore = ReturnType<typeof makeStore>;
