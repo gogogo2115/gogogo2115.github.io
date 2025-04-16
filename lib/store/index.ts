@@ -2,7 +2,8 @@ import type { Action, ThunkAction } from "@reduxjs/toolkit";
 import { configureStore } from "@reduxjs/toolkit";
 import { useDispatch, useSelector, useStore } from "react-redux";
 
-import { rootReducer } from "./rootReducer";
+// rootReducer
+import { rootReducer } from "@/lib/store/rootReducer";
 
 export const makeStore = () =>
   configureStore({
