@@ -10,6 +10,7 @@
     "lint": "next lint",
     "test": "jest",
     "test:watch": "jest --watch",
+    "test:ci": "jest --ci",
     "serve:start": "npx serve -p 3006 ./out"
   },
   "dependencies": {
