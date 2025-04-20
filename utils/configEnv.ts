@@ -4,7 +4,7 @@ const isServer = typeof window === "undefined";
 const isNotServer = !isServer;
 
 if (isNotServer) {
-  throw new Error("use serverL보안상 서버환경에서만 실행이 가능합니다.");
+  throw new Error("configEnv 보안상 서버환경에서만 실행이 가능합니다.");
 }
 
 export const CONFIG_ENV = {
