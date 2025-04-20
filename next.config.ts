@@ -1,13 +1,10 @@
 import type { NextConfig } from "next";
+import { CONFIG_ENV } from "@/utils/configEnv";
 
 const nextConfig: NextConfig = {
-  /* config options here */
   output: "export",
-  env: {
-    BUILD_RAND_KEY: "",
-    BUILD_DATE_ISO: new Date().toISOString(),
-    NEXT_PUBLIC_BUILD_DATE_ISO: new Date().toISOString(),
-  },
+  env: CONFIG_ENV,
+  basePath: "./",
 };
 
 export default nextConfig;
