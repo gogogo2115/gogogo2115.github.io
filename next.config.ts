@@ -1,9 +1,11 @@
 import type { NextConfig } from "next";
-import { CONFIG_ENV } from "./utils/configEnv";
 
 const nextConfig: NextConfig = {
   output: "export",
-  env: CONFIG_ENV,
+  env: {
+    MY_ENV_VAR: "ㅁㅁㅁㅁ",
+    NEXT_PUBLIC_API_URL: "ㅁㅇㅁㄴㅇㅁㅇ",
+  },
 };
 
 export default nextConfig;
