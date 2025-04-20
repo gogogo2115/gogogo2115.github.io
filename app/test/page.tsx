@@ -6,6 +6,7 @@ const buildDate2 = (
 export default function TestPage() {
   return (
     <>
+      <div>{process.env.NODE_ENV}</div>
       <div>buildDate1: {buildDate1}</div>
       <div>buildDate2: {buildDate2}</div>
     </>

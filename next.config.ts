@@ -4,7 +4,6 @@ import { CONFIG_ENV } from "@/utils/configEnv";
 const nextConfig: NextConfig = {
   output: "export",
   env: CONFIG_ENV,
-  basePath: "./",
 };
 
 export default nextConfig;
