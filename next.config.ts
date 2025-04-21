@@ -1,4 +1,6 @@
 import type { NextConfig } from "next";
+import bundleAnalyzer from "@next/bundle-analyzer";
+
 import { CONFIG_ENV } from "@/utils/configEnv";
 
 const nextConfig: NextConfig = {
@@ -8,7 +10,7 @@ const nextConfig: NextConfig = {
     implementation: "sass-embedded",
   },
   webpack: (config) => {
-    config.module.rules.push({ test: /\.svg$/i, issuer: /\.[jt]sx?$/, use: ["@svgr/webpack"] });
+    config.module.rules.push({ test: /\.svg$/i, use: ["@svgr/webpack"] });
     return config;
   },
   turbopack: {
@@ -18,4 +20,9 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+const withBundleAnalyzer = bundleAnalyzer({
+  enabled: process.env.ANALYZE === "true",
+  openAnalyzer: false,
+});
+
+export default withBundleAnalyzer(nextConfig);

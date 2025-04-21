@@ -3,10 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "next dev",
+    "dev:turbopack": "next dev --turbopack",
     "build": "next build",
+    "build:analyzer": "cross-env ANALYZE=true next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "serve:start": "npx serve -p 3006 ./out",
+    "serve:analyze": "npx serve -p 3008 .next/analyze"
   },
   "dependencies": {
     "classnames": "2.5.1",
@@ -17,11 +21,13 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@next/bundle-analyzer": "15.3.1",
     "@svgr/webpack": "8.1.0",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^22",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "cross-env": "7.0.3",
     "eslint": "^9",
     "eslint-config-next": "15.3.1",
     "sass": "1.86.3",
