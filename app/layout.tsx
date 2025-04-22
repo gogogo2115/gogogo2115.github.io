@@ -2,8 +2,8 @@ import "@/styles/globals.css";
 import type { ReactNode } from "react";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { QueryStreamingProvider } from "@/lib/query/provider";
-import { StoreProvider } from "@/lib/store/provider";
+import { QueryStreamingProvider } from "@/components/providers/QueryProvider";
+import { StoreProvider } from "@/components/providers/StoreProvider";
 
 type RootLayoutProps = Readonly<{ children: ReactNode }>;
 
