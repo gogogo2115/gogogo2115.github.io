@@ -2,5 +2,5 @@
 "use client";
 
 export function SettingsScript() {
-  return <script key="SettingsScript" id="SettingsScript" src="/settingScript.js" />;
+  return <script key="SettingsScript" id="SettingsScript" src="/settingsScript.js" />;
 }
