@@ -1,12 +1,11 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { NAME } from "./settingsUtils";
 
 export const getInitialState = () => {
   return { theme: "system", fontSize: 3 };
 };
 
 export const settingsSlice = createSlice({
-  name: NAME,
+  name: "settings",
   initialState: getInitialState(),
   reducers: (create) => ({}),
   selectors: {
