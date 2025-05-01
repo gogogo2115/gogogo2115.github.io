@@ -1,8 +1,8 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
 import { NAME } from "./settingsUtils";
 
 export const getInitialState = () => {
-  return;
+  return { theme: "system", fontSize: 3 };
 };
 
 export const settingsSlice = createSlice({
