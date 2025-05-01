@@ -42,3 +42,6 @@ next-env.d.ts
 
 # api 관련 업로드 방지
 /app/api/
+
+# 작업용 메모 파일
+/MEMO.md
