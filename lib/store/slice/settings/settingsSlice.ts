@@ -1,7 +1,11 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 export const getInitialState = () => {
-  return { theme: "system", fontSize: 3 };
+  try {
+    return { theme: "system", fontSize: 3 };
+  } catch (e) {
+    return { theme: "system", fontSize: 3 };
+  }
 };
 
 export const settingsSlice = createSlice({
