@@ -1,5 +1,5 @@
-import { createSlice } from "@reduxjs/toolkit";
-import { clampTheme, clampFontSize, DEFAULT_THEME, DEFAULT_FONT_SIZE, NAME, InitialState } from "./settingsUtils";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { clampTheme, clampFontSize, DEFAULT_THEME, DEFAULT_FONT_SIZE, NAME, InitialState, Theme } from "./settingsUtils";
 
 export const getInitialState = (): InitialState => {
   try {
@@ -18,11 +18,16 @@ export const getInitialState = (): InitialState => {
 export const settingsSlice = createSlice({
   name: NAME,
   initialState: getInitialState(),
-  reducers: (create) => ({}),
+  reducers: (create) => ({
+    setTheme: create.reducer((state, actions: PayloadAction<Theme>) => {
+      const actionTheme = clampTheme(actions.payload);
+      state.theme = actionTheme;
+    }),
+  }),
   selectors: {
     selectStoreSettings: (state) => state,
   },
 });
 
 export const { selectStoreSettings } = settingsSlice.selectors;
-export const {} = settingsSlice.actions;
+export const { setTheme } = settingsSlice.actions;
