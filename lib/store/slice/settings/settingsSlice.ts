@@ -7,9 +7,7 @@ export const getInitialState = (): InitialState => {
     const settings = (window.localStorage.getItem(NAME) ?? "").trim();
     if (!settings) throw new Error(`localStorage ${name}값이 존재하지 않습니다.`);
     const parsed = JSON.parse(settings) as Partial<InitialState>;
-    const theme = clampTheme(parsed.theme);
-    const fontSize = clampFontSize(parsed.fontSize);
-    return { theme: theme, fontSize: fontSize };
+    return { theme: clampTheme(parsed.theme), fontSize: clampFontSize(parsed.fontSize) };
   } catch {
     return { theme: DEFAULT_THEME, fontSize: DEFAULT_FONT_SIZE };
   }
@@ -22,6 +20,7 @@ export const settingsSlice = createSlice({
     setTheme: create.reducer((state, actions: PayloadAction<Theme>) => {
       const actionTheme = clampTheme(actions.payload);
       state.theme = actionTheme;
+      document.body.setAttribute("data-theme", actionTheme);
     }),
   }),
   selectors: {
