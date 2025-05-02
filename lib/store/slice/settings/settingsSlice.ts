@@ -20,6 +20,7 @@ export const settingsSlice = createSlice({
     setTheme: create.reducer((state, actions: PayloadAction<Theme>) => {
       const actionTheme = clampTheme(actions.payload);
       state.theme = actionTheme;
+      document.body.setAttribute("data-theme", actionTheme);
     }),
   }),
   selectors: {
