@@ -15,8 +15,11 @@ export const DEFAULT_INITIAL_STATE: InitialState = {
 };
 
 // 유틸 상수
-export const VALID_THEMES: Set<Theme> = new Set(["dark", "light", "system", "gray"]);
-export const VALID_FONT_SIZES: Set<FontSize> = new Set([1, 2, 3, 4, 5, 6]);
+export const VALID_THEMES = new Set(["dark", "light", "system", "gray"] as const);
+export const VALID_FONT_SIZES = new Set([1, 2, 3, 4, 5, 6] as const);
+
+export const MIN_FONT_SIZE = Math.min(...VALID_FONT_SIZES);
+export const MAX_FONT_SIZE = Math.max(...VALID_FONT_SIZES);
 
 export const getMediaTheme = (): Extract<Theme, "dark" | "light"> => {
   if (typeof window === "undefined" || !("matchMedia" in window)) return "light";
@@ -25,26 +28,30 @@ export const getMediaTheme = (): Extract<Theme, "dark" | "light"> => {
 };
 
 export const isValidTheme = (theme: unknown): theme is Theme => {
-  const toLower = typeof theme === "string" ? theme.toLowerCase().trim() : theme;
-  return typeof toLower === "string" && VALID_THEMES.has(toLower as Theme);
+  if (typeof theme !== "string") return false;
+  const toLowerCase = theme.toLowerCase().trim();
+  return VALID_THEMES.has(toLowerCase as Theme);
 };
 
 export const isValidFontSize = (fontSize: unknown): fontSize is FontSize => {
-  const n = Number(fontSize);
-  return Number.isInteger(n) && VALID_FONT_SIZES.has(n as FontSize);
+  if (typeof fontSize !== "number" && typeof fontSize !== "string") return false;
+  const toString = typeof fontSize === "string" ? fontSize.trim() : String(fontSize);
+  const toNumber = Number(toString);
+  return !isNaN(toNumber) && VALID_FONT_SIZES.has(toNumber as FontSize);
 };
 
 export const clampTheme = (theme: unknown): Theme => {
-  const toLower = typeof theme === "string" ? theme.toLowerCase().trim() : theme;
-  return isValidTheme(toLower) ? toLower : DEFAULT_THEME;
+  if (isValidTheme(theme)) return theme.toLowerCase().trim() as Theme;
+  return DEFAULT_THEME;
 };
 
 export const clampFontSize = (fontSize: unknown): FontSize => {
-  const parsed = typeof fontSize === "string" ? Number(fontSize) : fontSize;
-  if (typeof parsed !== "number" || isNaN(parsed) || !Number.isFinite(parsed)) return DEFAULT_FONT_SIZE;
-  return Math.max(1, Math.min(6, Math.floor(parsed))) as FontSize;
+  if (typeof fontSize !== "number" && typeof fontSize !== "string") return DEFAULT_FONT_SIZE;
+  const toString = typeof fontSize === "string" ? fontSize.trim() : String(fontSize);
+  const toNumber = Number(toString);
+  if (isNaN(toNumber) || !Number.isFinite(toNumber)) return DEFAULT_FONT_SIZE;
+  return Math.max(MIN_FONT_SIZE, Math.min(MAX_FONT_SIZE, Math.floor(toNumber))) as FontSize;
 };
 
-// export const getFontSizeDivBy2 = (fontSize: FontSize): FontSize => (fontSize / 2) as FontSize;
-
-// export const getFontSizeDivBy3 = (fontSize: FontSize): FontSize => (fontSize / 3) as FontSize;
+// // export const getFontSizeDivBy2 = (fontSize: FontSize): FontSize => (fontSize / 2) as FontSize;
+// // export const getFontSizeDivBy3 = (fontSize: FontSize): FontSize => (fontSize / 3) as FontSize;
