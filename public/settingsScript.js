@@ -28,5 +28,5 @@
     de.setAttribute("data-font-size", st.fontSize);
     const dk = et === "dark" || et === "gray";
     de.style.colorScheme = dk ? "dark" : "light";
-  } catch (_) {}
+  } catch {}
 })(["light", "dark", "system", "gray"], [1, 2, 3, 4, 5, 6], "settings", "system", 3);
