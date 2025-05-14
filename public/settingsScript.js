@@ -10,16 +10,15 @@
   };
   const gs = () => {
     try {
-      const s = JSON.parse((window.localStorage.getItem(kn) ?? "{}").trim());
-      const t = ct(s.theme);
-      const f = cf(s.fontSize);
-      return { theme: t, fontSize: f };
+      const rw = (window.localStorage.getItem(kn) ?? "").trim();
+      const s = rw ? JSON.parse(rw.trim()) : {};
+      return { theme: ct(s.theme), fontSize: cf(s.fontSize) };
     } catch {
       return { theme: dt, fontSize: df };
     }
   };
   const mt = () => {
-    return "matchMedia" in window ? (window.matchMedia("(prefers-color-scheme:dark)").matches ? "dark" : "light") : "light";
+    return "matchMedia" in window ? (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light") : "light";
   };
   try {
     const st = gs();
@@ -27,12 +26,7 @@
     const de = document.documentElement;
     de.setAttribute("data-theme", et);
     de.setAttribute("data-font-size", st.fontSize);
-    if (et === "dark") {
-      de.style.colorScheme = "dark";
-    } else if (et === "light" || et === "gray") {
-      de.style.colorScheme = "light";
-    } else {
-      de.style.colorScheme = "";
-    }
+    const dk = et === "dark" || et === "gray";
+    de.style.colorScheme = dk ? "dark" : "light";
   } catch (e) {}
 })(["light", "dark", "system", "gray"], [1, 2, 3, 4, 5, 6], "settings", "system", 3);
