@@ -34,6 +34,7 @@ const getConfigPackage = (key: string): string => {
       name: PACKAGE_JSON.name ?? "",
       version: PACKAGE_JSON.version ?? "",
       next: PACKAGE_JSON.dependencies?.next?.replace(/[\^~]/g, ""),
+      react: PACKAGE_JSON.dependencies?.react?.replace(/[\^~]/g, ""),
     };
 
     const value = (keyMap[key] ?? "").trim();
@@ -122,6 +123,7 @@ export const CONFIG_ENV = {
   NEXT_PUBLIC_CONFIG_PACKAGE_NAME: getConfigPackage("name"),
   NEXT_PUBLIC_CONFIG_PACKAGE_VERSION: getConfigPackage("version"),
   NEXT_PUBLIC_CONFIG_NEXT_VERSION: getConfigPackage("next"),
+  NEXT_PUBLIC_CONFIG_REACT_VERSION: getConfigPackage("react"),
 
   BUILD_RAND_KEY: generateBuildRandKey({ start: `${(process.env.NODE_ENV ?? "unknown").slice(0, 1)}-` }),
   BUILD_DATE_ISO: new Date().toISOString(),
