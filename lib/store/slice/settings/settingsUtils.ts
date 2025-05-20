@@ -68,22 +68,20 @@ export const getInitialSettingsState = (): SettingsState => {
   }
 };
 
-export const updateDocument = (state: SettingsState) => {
+export const updateToDocument = (settingsState: SettingsState) => {
   try {
     if (typeof window === "undefined" || typeof document === "undefined" || !document.documentElement) return;
     const de = document.documentElement;
-    const et = state.theme === "system" ? getMediaTheme() : state.theme;
+    const et = settingsState.theme === "system" ? getMediaTheme() : settingsState.theme;
     de.setAttribute("data-theme", et);
-    de.setAttribute("data-font-size", String(state.fontSize));
-    const isDarkScheme = et === "dark" || et === "gray";
-    de.style.colorScheme = isDarkScheme ? "dark" : "light";
+    de.style.colorScheme = et === "dark" || et === "gray" ? "dark" : "light";
   } catch {}
 };
 
-export const saveStorage = (state: SettingsState) => {
+export const saveToStorage = (settingsState: SettingsState) => {
   try {
     if (typeof window === "undefined" || !("localStorage" in window)) return;
-    window.localStorage.setItem(DEFAULT_KEY_NAME, JSON.stringify(state));
+    window.localStorage.setItem(DEFAULT_KEY_NAME, JSON.stringify(settingsState));
   } catch {}
 };
 
