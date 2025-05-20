@@ -25,10 +25,14 @@ export const isValidFontSize = (fontSize: unknown): fontSize is FontSize => {
 };
 
 export const isValidSettingsState = (settingsState: unknown): settingsState is SettingsState => {
-  if (typeof settingsState !== "object" || settingsState === null) return false;
-  if (!("theme" in settingsState) || !isValidTheme(settingsState.theme)) return false;
-  if (!("fontSize" in settingsState) || !isValidFontSize(settingsState.fontSize)) return false;
-  return true;
+  try {
+    if (typeof settingsState !== "object" || settingsState === null) return false;
+    if (!("theme" in settingsState) || !isValidTheme(settingsState.theme)) return false;
+    if (!("fontSize" in settingsState) || !isValidFontSize(settingsState.fontSize)) return false;
+    return true;
+  } catch {
+    return false;
+  }
 };
 
 export const clampTheme = (theme: unknown): Theme => {
@@ -43,10 +47,14 @@ export const clampFontSize = (fontSize: unknown): FontSize => {
 };
 
 export const clampSettingsState = (settingsState: unknown): SettingsState => {
-  if (typeof settingsState !== "object" || settingsState === null) return DEFAULT_SETTINGS_STATE;
-  const theme = clampTheme("theme" in settingsState ? settingsState.theme : DEFAULT_THEME);
-  const fontSize = clampFontSize("fontSize" in settingsState ? settingsState.fontSize : DEFAULT_FONT_SIZE);
-  return { theme, fontSize };
+  try {
+    if (typeof settingsState !== "object" || settingsState === null) return DEFAULT_SETTINGS_STATE;
+    const theme = clampTheme("theme" in settingsState ? settingsState.theme : DEFAULT_THEME);
+    const fontSize = clampFontSize("fontSize" in settingsState ? settingsState.fontSize : DEFAULT_FONT_SIZE);
+    return { theme, fontSize };
+  } catch {
+    return DEFAULT_SETTINGS_STATE;
+  }
 };
 
 export const getMediaTheme = (): Extract<Theme, "dark" | "light"> => {
@@ -64,7 +72,7 @@ export const getInitialSettingsState = (): SettingsState => {
     return clampSettingsState(parsed);
   } catch {
     return DEFAULT_SETTINGS_STATE;
-  } finally {
+    // } finally {
   }
 };
 
@@ -84,6 +92,3 @@ export const saveToStorage = (settingsState: SettingsState) => {
     window.localStorage.setItem(DEFAULT_KEY_NAME, JSON.stringify(settingsState));
   } catch {}
 };
-
-// export const getFontSizeDivBy2 = (fontSize: FontSize): FontSize => Math.ceil(fontSize / 2) as FontSize;
-// export const getFontSizeDivBy3 = (fontSize: FontSize): FontSize => Math.ceil(fontSize / 3) as FontSize;
