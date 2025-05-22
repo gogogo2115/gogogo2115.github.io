@@ -98,7 +98,6 @@ export const updateDocumentSettings = (settings: Settings) => {
 export const saveStorageSettings = (settings: Settings) => {
   try {
     if (typeof window === "undefined" || !("localStorage" in window)) return;
-    const { setItem } = window.localStorage;
-    setItem(DEFAULT_KEY_NAME, JSON.stringify(settings));
+    window.localStorage.setItem(DEFAULT_KEY_NAME, JSON.stringify(settings));
   } catch {}
 };
