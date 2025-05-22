@@ -1,5 +1,5 @@
 import { createSlice, current, PayloadAction } from "@reduxjs/toolkit";
-import { clampFontSize, clampTheme, DEFAULT_KEY_NAME, FontSize, getInitialSettings, saveStorageSettings, Settings, Theme, updateDocumentSettings } from "./settingsUtils";
+import { clampFontSize, clampTheme, DEFAULT_KEY_NAME, FontSize, getInitialSettings, saveStorageSettings, Settings, Theme, updateDocumentSettings } from "@/lib/store/slice/settings/settingsUtils";
 
 type SettingsAction<T> = { value: T; saveStorage?: boolean; updateDocument?: boolean };
 
@@ -23,6 +23,7 @@ export const settingsSlice = createSlice({
         saveStorageSettings(currentState);
       }
     }),
+
     setTheme: create.reducer((state, actions: PayloadAction<SettingsAction<Theme>>) => {
       const { value, updateDocument, saveStorage } = actions.payload;
       state.theme = clampTheme(value);
@@ -34,6 +35,7 @@ export const settingsSlice = createSlice({
         saveStorageSettings(currentState);
       }
     }),
+
     setFontSize: create.reducer((state, actions: PayloadAction<SettingsAction<FontSize>>) => {
       const { value, updateDocument, saveStorage } = actions.payload;
       state.fontSize = clampFontSize(value);
@@ -45,6 +47,20 @@ export const settingsSlice = createSlice({
         saveStorageSettings(currentState);
       }
     }),
+
+    setIncrementFontSize: create.reducer((state) => {
+      state.fontSize = clampFontSize(state.fontSize + 1);
+      const currentState = current(state);
+      updateDocumentSettings(currentState);
+      saveStorageSettings(currentState);
+    }),
+
+    setDecrementFontSize: create.reducer((state) => {
+      state.fontSize = clampFontSize(state.fontSize - 1);
+      const currentState = current(state);
+      updateDocumentSettings(currentState);
+      saveStorageSettings(currentState);
+    }),
   }),
   selectors: {
     selectSettings: (state) => state,
@@ -53,17 +69,3 @@ export const settingsSlice = createSlice({
 
 export const { setTheme } = settingsSlice.actions;
 export const { selectSettings } = settingsSlice.selectors;
-
-// setIncrementFontSize: create.reducer((state) => {
-//   state.fontSize = clampFontSize(state.fontSize + 1);
-//   const currentState = current(state);
-//   updateToDocument(currentState);
-//   saveToStorage(currentState);
-// }),
-
-// setDecrementFontSize: create.reducer((state) => {
-//   state.fontSize = clampFontSize(state.fontSize - 1);
-//   const currentState = current(state);
-//   updateToDocument(currentState);
-//   saveToStorage(currentState);
-// }),
