@@ -1,12 +1,15 @@
 "use client";
 
-import { useAppDispatch } from "@/lib/store";
-import { setTheme } from "@/lib/store/slice/settings/settingsSlice";
+import { useAppDispatch, useAppSelector } from "@/lib/store";
+import { selectSettings, setTheme } from "@/lib/store/slice/settings/settingsSlice";
 import { isValidTheme } from "@/lib/store/slice/settings/settingsUtils";
 import { MouseEvent } from "react";
 
 export default function SettingsPage() {
+  const settings = useAppSelector(selectSettings);
   const dispatch = useAppDispatch();
+
+  console.log(settings);
 
   const handleThemeChange = (ev: MouseEvent<HTMLButtonElement>) => {
     ev.preventDefault();
@@ -19,17 +22,24 @@ export default function SettingsPage() {
 
   return (
     <div>
-      <button onClick={handleThemeChange} data-theme="dark">
-        dark
-      </button>
-      /
-      <button onClick={handleThemeChange} data-theme="light">
-        light
-      </button>
-      /
-      <button onClick={handleThemeChange} data-theme="system">
-        system
-      </button>
+      <div>
+        <button onClick={handleThemeChange} data-theme="dark">
+          dark
+        </button>
+        /
+        <button onClick={handleThemeChange} data-theme="light">
+          light
+        </button>
+        /
+        <button onClick={handleThemeChange} data-theme="system">
+          system
+        </button>
+      </div>
+
+      <div>
+        <button></button>
+        <button></button>
+      </div>
     </div>
   );
 }
