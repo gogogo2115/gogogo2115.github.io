@@ -5,6 +5,7 @@ type SettingsAction<T> = { value: T; saveStorage?: boolean; updateDocument?: boo
 
 const initialState = () => {
   const state = getInitialSettings();
+  // updateDocumentSettings(state);
   return state;
 };
 
@@ -13,7 +14,7 @@ export const settingsSlice = createSlice({
   initialState: initialState(),
   reducers: (create) => ({
     setSettings: create.reducer((state, actions: PayloadAction<SettingsAction<Settings>>) => {
-      const { value, updateDocument, saveStorage } = actions.payload;
+      const { value, updateDocument = true, saveStorage = true } = actions.payload; // 기본 값 모두 변경 및 저장
       state = value;
       const currentState = current(state);
       if (updateDocument) {
@@ -25,7 +26,7 @@ export const settingsSlice = createSlice({
     }),
 
     setTheme: create.reducer((state, actions: PayloadAction<SettingsAction<Theme>>) => {
-      const { value, updateDocument, saveStorage } = actions.payload;
+      const { value, updateDocument = true, saveStorage = true } = actions.payload; // 기본 값 모두 변경 및 저장
       state.theme = clampTheme(value);
       const currentState = current(state);
       if (updateDocument) {
@@ -37,7 +38,7 @@ export const settingsSlice = createSlice({
     }),
 
     setFontSize: create.reducer((state, actions: PayloadAction<SettingsAction<FontSize>>) => {
-      const { value, updateDocument, saveStorage } = actions.payload;
+      const { value, updateDocument = true, saveStorage = true } = actions.payload; // 기본 값 모두 변경 및 저장
       state.fontSize = clampFontSize(value);
       const currentState = current(state);
       if (updateDocument) {
@@ -48,18 +49,28 @@ export const settingsSlice = createSlice({
       }
     }),
 
-    setIncrementFontSize: create.reducer((state) => {
+    setIncrementFontSize: create.reducer((state, actions: PayloadAction<{ saveStorage?: boolean; updateDocument?: boolean } | undefined>) => {
       state.fontSize = clampFontSize(state.fontSize + 1);
       const currentState = current(state);
-      updateDocumentSettings(currentState);
-      saveStorageSettings(currentState);
+      const { updateDocument = true, saveStorage = true } = { ...actions.payload };
+      if (updateDocument) {
+        updateDocumentSettings(currentState);
+      }
+      if (saveStorage) {
+        saveStorageSettings(currentState);
+      }
     }),
 
-    setDecrementFontSize: create.reducer((state) => {
+    setDecrementFontSize: create.reducer((state, actions: PayloadAction<{ saveStorage?: boolean; updateDocument?: boolean } | undefined>) => {
       state.fontSize = clampFontSize(state.fontSize - 1);
       const currentState = current(state);
-      updateDocumentSettings(currentState);
-      saveStorageSettings(currentState);
+      const { updateDocument = true, saveStorage = true } = { ...actions.payload };
+      if (updateDocument) {
+        updateDocumentSettings(currentState);
+      }
+      if (saveStorage) {
+        saveStorageSettings(currentState);
+      }
     }),
   }),
   selectors: {
@@ -67,5 +78,5 @@ export const settingsSlice = createSlice({
   },
 });
 
-export const { setTheme } = settingsSlice.actions;
+export const { setSettings, setTheme, setFontSize, setIncrementFontSize, setDecrementFontSize } = settingsSlice.actions;
 export const { selectSettings } = settingsSlice.selectors;
