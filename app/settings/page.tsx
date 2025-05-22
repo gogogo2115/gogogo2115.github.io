@@ -13,7 +13,7 @@ export default function SettingsPage() {
     const target = ev.currentTarget;
     const theme = target.dataset["theme"] ?? "";
     if (isValidTheme(theme)) {
-      dispatch(setTheme(theme));
+      dispatch(setTheme({ value: theme, updateDocument: true, saveStorage: true }));
     }
   };
 
