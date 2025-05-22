@@ -1,12 +1,12 @@
 export type Theme = "dark" | "light" | "system" | "gray";
 export type FontSize = 1 | 2 | 3 | 4 | 5 | 6;
-export type SettingsState = { theme: Theme; fontSize: FontSize };
+export type Settings = { theme: Theme; fontSize: FontSize };
 
 // 기본값
 export const DEFAULT_KEY_NAME = "settings";
 export const DEFAULT_THEME: Theme = "light";
 export const DEFAULT_FONT_SIZE: FontSize = 3;
-export const DEFAULT_SETTINGS_STATE: SettingsState = { theme: DEFAULT_THEME, fontSize: DEFAULT_FONT_SIZE };
+export const DEFAULT_SETTINGS: Settings = { theme: DEFAULT_THEME, fontSize: DEFAULT_FONT_SIZE };
 
 // 유틸 상수
 export const VALID_THEMES = new Set(["dark", "light", "system", "gray"] as const);
@@ -24,13 +24,16 @@ export const isValidFontSize = (fontSize: unknown): fontSize is FontSize => {
   return !isNaN(toNumber) && VALID_FONT_SIZES.has(toNumber as FontSize);
 };
 
-export const isValidSettingsState = (settingsState: unknown): settingsState is SettingsState => {
+export const isValidSettings = (settings: unknown): settings is Settings => {
   try {
-    if ((typeof settingsState !== "object" && typeof settingsState !== "string") || settingsState === null) return false;
-    const toJson = typeof settingsState === "string" ? JSON.parse(settingsState) : settingsState;
-    if (!("theme" in toJson) || !isValidTheme(toJson.theme)) return false;
-    if (!("fontSize" in toJson) || !isValidFontSize(toJson.fontSize)) return false;
-    return true;
+    if ((typeof settings !== "object" && typeof settings !== "string") || settings === null) throw new TypeError(`isValidSettings: 입력값 오류`);
+    const toJson = typeof settings === "string" ? JSON.parse(settings) : settings;
+    if (typeof toJson === "object" && toJson !== null) {
+      if (!("theme" in toJson) || !isValidTheme(toJson.theme)) return false;
+      if (!("fontSize" in toJson) || !isValidFontSize(toJson.fontSize)) return false;
+      return true;
+    }
+    return false;
   } catch {
     return false;
   }
@@ -47,10 +50,10 @@ export const clampFontSize = (fontSize: unknown): FontSize => {
   return Math.max(MIN_FONT_SIZE, Math.min(MAX_FONT_SIZE, Math.floor(toNumber))) as FontSize;
 };
 
-export const clampSettingsState = (settingsState: unknown): SettingsState => {
+export const clampSettings = (settings: unknown): Settings => {
   try {
-    if ((typeof settingsState !== "object" && typeof settingsState !== "string") || settingsState === null) return DEFAULT_SETTINGS_STATE;
-    const toJson = typeof settingsState === "string" ? JSON.parse(settingsState) : settingsState;
+    if ((typeof settings !== "object" && typeof settings !== "string") || settings === null) throw new TypeError(`clampSettings: 입력값 오류`);
+    const toJson = typeof settings === "string" ? JSON.parse(settings) : settings;
 
     let theme: unknown = DEFAULT_THEME;
     let fontSize: unknown = DEFAULT_FONT_SIZE;
@@ -61,7 +64,7 @@ export const clampSettingsState = (settingsState: unknown): SettingsState => {
     }
     return { theme: clampTheme(theme), fontSize: clampFontSize(fontSize) };
   } catch {
-    return DEFAULT_SETTINGS_STATE;
+    return DEFAULT_SETTINGS;
   }
 };
 
@@ -71,30 +74,31 @@ export const getMediaTheme = (): Extract<Theme, "dark" | "light"> => {
   return mediaQuery.matches ? "dark" : "light";
 };
 
-export const getInitialSettingsState = (): SettingsState => {
+export const getInitialSettings = (): Settings => {
   try {
-    if (typeof window === "undefined" || !("localStorage" in window)) throw new Error(`localStorage를 지원하지 않거나 사용이 불가능한 환경입니다.`);
+    if (typeof window === "undefined" || !("localStorage" in window)) throw new Error(`getInitialSettings: localStorage를 지원하지 않거나 사용이 불가능한 환경입니다.`);
     const value = (window.localStorage.getItem(DEFAULT_KEY_NAME) ?? "").trim();
-    if (!value) throw new Error(`localStorage ${DEFAULT_KEY_NAME}값이 존재하지 않습니다.`);
-    return clampSettingsState(value);
+    if (!value) throw new Error(`getInitialSettings: localStorage ${DEFAULT_KEY_NAME}값이 존재하지 않습니다.`);
+    return clampSettings(value);
   } catch {
-    return DEFAULT_SETTINGS_STATE;
+    return DEFAULT_SETTINGS;
   }
 };
 
-export const updateDocument = (settingsState: SettingsState) => {
+export const updateDocumentSettings = (settings: Settings) => {
   try {
     if (typeof window === "undefined" || typeof document === "undefined" || !document.documentElement) return;
     const de = document.documentElement;
-    const systemTheme = settingsState.theme === "system" ? getMediaTheme() : settingsState.theme;
+    const systemTheme = settings.theme === "system" ? getMediaTheme() : settings.theme;
     de.setAttribute("data-theme", systemTheme);
     de.style.colorScheme = systemTheme === "dark" || systemTheme === "gray" ? "dark" : "light";
   } catch {}
 };
 
-export const saveLocalStorage = (settingsState: SettingsState) => {
+export const saveStorageSettings = (settings: Settings) => {
   try {
     if (typeof window === "undefined" || !("localStorage" in window)) return;
-    window.localStorage.setItem(DEFAULT_KEY_NAME, JSON.stringify(settingsState));
+    const { setItem } = window.localStorage;
+    setItem(DEFAULT_KEY_NAME, JSON.stringify(settings));
   } catch {}
 };
