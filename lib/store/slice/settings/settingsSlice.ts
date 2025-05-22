@@ -5,7 +5,7 @@ type SettingsAction<T> = { value: T; saveStorage?: boolean; updateDocument?: boo
 
 const initialState = () => {
   const state = getInitialSettings();
-  // updateDocumentSettings(state);
+  updateDocumentSettings(state);
   return state;
 };
 
@@ -14,7 +14,7 @@ export const settingsSlice = createSlice({
   initialState: initialState(),
   reducers: (create) => ({
     setSettings: create.reducer((state, actions: PayloadAction<SettingsAction<Settings>>) => {
-      const { value, updateDocument = true, saveStorage = true } = actions.payload; // 기본 값 모두 변경 및 저장
+      const { value, updateDocument = true, saveStorage = true } = actions.payload; // 기본 값: 모두 변경 및 저장
       state = value;
       const currentState = current(state);
       if (updateDocument) {
@@ -26,7 +26,7 @@ export const settingsSlice = createSlice({
     }),
 
     setTheme: create.reducer((state, actions: PayloadAction<SettingsAction<Theme>>) => {
-      const { value, updateDocument = true, saveStorage = true } = actions.payload; // 기본 값 모두 변경 및 저장
+      const { value, updateDocument = true, saveStorage = true } = actions.payload; // 기본 값: 모두 변경 및 저장
       state.theme = clampTheme(value);
       const currentState = current(state);
       if (updateDocument) {
@@ -38,7 +38,7 @@ export const settingsSlice = createSlice({
     }),
 
     setFontSize: create.reducer((state, actions: PayloadAction<SettingsAction<FontSize>>) => {
-      const { value, updateDocument = true, saveStorage = true } = actions.payload; // 기본 값 모두 변경 및 저장
+      const { value, updateDocument = true, saveStorage = true } = actions.payload; // 기본 값: 모두 변경 및 저장
       state.fontSize = clampFontSize(value);
       const currentState = current(state);
       if (updateDocument) {
@@ -52,7 +52,7 @@ export const settingsSlice = createSlice({
     setIncrementFontSize: create.reducer((state, actions: PayloadAction<{ saveStorage?: boolean; updateDocument?: boolean } | undefined>) => {
       state.fontSize = clampFontSize(state.fontSize + 1);
       const currentState = current(state);
-      const { updateDocument = true, saveStorage = true } = { ...actions.payload };
+      const { updateDocument = true, saveStorage = true } = { ...actions.payload }; // 기본 값: 모두 변경 및 저장
       if (updateDocument) {
         updateDocumentSettings(currentState);
       }
@@ -64,7 +64,7 @@ export const settingsSlice = createSlice({
     setDecrementFontSize: create.reducer((state, actions: PayloadAction<{ saveStorage?: boolean; updateDocument?: boolean } | undefined>) => {
       state.fontSize = clampFontSize(state.fontSize - 1);
       const currentState = current(state);
-      const { updateDocument = true, saveStorage = true } = { ...actions.payload };
+      const { updateDocument = true, saveStorage = true } = { ...actions.payload }; // 기본 값: 모두 변경 및 저장
       if (updateDocument) {
         updateDocumentSettings(currentState);
       }
