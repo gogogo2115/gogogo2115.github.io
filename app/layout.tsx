@@ -28,8 +28,8 @@ export default function RootLayout({ children }: RootLayoutProps) {
         <StoreProvider>
           <SettingsScript />
           <QueryStreamingProvider>{children}</QueryStreamingProvider>
+          <div id="root_modal" />
         </StoreProvider>
-        <div id="root_modal" />
       </body>
     </html>
   );
