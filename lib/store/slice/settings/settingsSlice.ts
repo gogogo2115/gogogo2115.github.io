@@ -1,11 +1,10 @@
 import { createSlice, current, PayloadAction } from "@reduxjs/toolkit";
-import { clampFontSize, clampTheme, DEFAULT_KEY_NAME, FontSize, getInitialSettings, saveStorageSettings, Settings, Theme, updateDocumentSettings } from "@/lib/store/slice/settings/settingsUtils";
+import { clampFontSize, clampSettings, DEFAULT_KEY_NAME, FontSize, getInitialSettings, saveStorageSettings, Settings, Theme, updateDocumentSettings } from "@/lib/store/slice/settings/settingsUtils";
 
 type SettingsAction<T> = { value: T; saveStorage?: boolean; updateDocument?: boolean };
 
 const initialState = () => {
   const state = getInitialSettings();
-  updateDocumentSettings(state);
   return state;
 };
 
@@ -15,61 +14,62 @@ export const settingsSlice = createSlice({
   reducers: (create) => ({
     setSettings: create.reducer((state, actions: PayloadAction<SettingsAction<Settings>>) => {
       const { value, updateDocument = true, saveStorage = true } = actions.payload; // 기본 값: 모두 변경 및 저장
-      state = value;
-      const currentState = current(state);
+      state.theme = value.theme;
+      state.fontSize = value.fontSize;
+      const currentSettings = current(state);
       if (updateDocument) {
-        updateDocumentSettings(currentState);
+        updateDocumentSettings(currentSettings);
       }
       if (saveStorage) {
-        saveStorageSettings(currentState);
+        saveStorageSettings(currentSettings);
       }
     }),
 
     setTheme: create.reducer((state, actions: PayloadAction<SettingsAction<Theme>>) => {
       const { value, updateDocument = true, saveStorage = true } = actions.payload; // 기본 값: 모두 변경 및 저장
-      state.theme = clampTheme(value);
-      const currentState = current(state);
+      state.theme = value;
+      const currentSettings = current(state);
       if (updateDocument) {
-        updateDocumentSettings(currentState);
+        updateDocumentSettings(currentSettings);
       }
       if (saveStorage) {
-        saveStorageSettings(currentState);
+        saveStorageSettings(currentSettings);
       }
     }),
 
     setFontSize: create.reducer((state, actions: PayloadAction<SettingsAction<FontSize>>) => {
       const { value, updateDocument = true, saveStorage = true } = actions.payload; // 기본 값: 모두 변경 및 저장
-      state.fontSize = clampFontSize(value);
-      const currentState = current(state);
+      state.fontSize = value;
+      const currentSettings = current(state);
       if (updateDocument) {
-        updateDocumentSettings(currentState);
+        updateDocumentSettings(currentSettings);
       }
       if (saveStorage) {
-        saveStorageSettings(currentState);
+        saveStorageSettings(currentSettings);
       }
     }),
 
     setIncrementFontSize: create.reducer((state, actions: PayloadAction<{ saveStorage?: boolean; updateDocument?: boolean } | undefined>) => {
-      state.fontSize = clampFontSize(state.fontSize + 1);
-      const currentState = current(state);
       const { updateDocument = true, saveStorage = true } = { ...actions.payload }; // 기본 값: 모두 변경 및 저장
+      state.fontSize = clampFontSize(state.fontSize + 1);
+      const currentSettings = current(state);
       if (updateDocument) {
-        updateDocumentSettings(currentState);
+        updateDocumentSettings(currentSettings);
       }
       if (saveStorage) {
-        saveStorageSettings(currentState);
+        saveStorageSettings(currentSettings);
       }
     }),
 
     setDecrementFontSize: create.reducer((state, actions: PayloadAction<{ saveStorage?: boolean; updateDocument?: boolean } | undefined>) => {
-      state.fontSize = clampFontSize(state.fontSize - 1);
-      const currentState = current(state);
       const { updateDocument = true, saveStorage = true } = { ...actions.payload }; // 기본 값: 모두 변경 및 저장
+      state.fontSize = clampFontSize(state.fontSize - 1);
+      const currentSettings = current(state);
       if (updateDocument) {
-        updateDocumentSettings(currentState);
+        updateDocumentSettings(currentSettings);
       }
       if (saveStorage) {
-        saveStorageSettings(currentState);
+        saveStorageSettings(currentSettings);
       }
     }),
   }),
