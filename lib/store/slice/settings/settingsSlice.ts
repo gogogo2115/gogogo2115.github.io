@@ -5,6 +5,7 @@ type SettingsAction<T> = { value: T; saveStorage?: boolean; updateDocument?: boo
 
 const initialState = () => {
   const state = getInitialSettings();
+  updateDocumentSettings(state);
   return state;
 };
 
