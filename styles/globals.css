@@ -1,5 +1,5 @@
 @import "tailwindcss";
-@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *, [data-theme=gray], [data-theme=gray] *));
 
 :root {
   --background: #ffffff;
@@ -25,7 +25,8 @@ html[data-theme="light"] {
   --foreground: #171717;
 }
 
-html[data-theme="dark"] {
+html[data-theme="dark"],
+html[data-theme="gray"] {
   --background: #0a0a0a;
   --foreground: #ededed;
 }
