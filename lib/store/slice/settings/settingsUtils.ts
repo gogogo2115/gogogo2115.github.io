@@ -89,9 +89,12 @@ export const updateDocumentSettings = (settings: Settings) => {
   try {
     if (typeof window === "undefined" || typeof document === "undefined" || !document.documentElement) return;
     const de = document.documentElement;
+    const getDataTheme = de.getAttribute("data-theme") ?? "";
     const systemTheme = settings.theme === "system" ? getMediaTheme() : settings.theme;
-    de.setAttribute("data-theme", systemTheme);
-    de.style.colorScheme = systemTheme === "dark" || systemTheme === "gray" ? "dark" : "light";
+    if (getDataTheme !== systemTheme) {
+      de.setAttribute("data-theme", systemTheme);
+      de.style.colorScheme = systemTheme === "dark" || systemTheme === "gray" ? "dark" : "light";
+    }
   } catch {}
 };
 
