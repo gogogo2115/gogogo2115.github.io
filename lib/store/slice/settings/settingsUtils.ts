@@ -4,7 +4,7 @@ export type Settings = { theme: Theme; fontSize: FontSize };
 
 // 기본값
 export const DEFAULT_KEY_NAME = "settings";
-export const DEFAULT_THEME: Theme = "light";
+export const DEFAULT_THEME: Theme = "system";
 export const DEFAULT_FONT_SIZE: FontSize = 3;
 export const DEFAULT_SETTINGS: Settings = { theme: DEFAULT_THEME, fontSize: DEFAULT_FONT_SIZE };
 
