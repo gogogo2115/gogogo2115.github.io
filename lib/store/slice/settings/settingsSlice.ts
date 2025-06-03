@@ -10,6 +10,11 @@ const initialState = () => {
   return state;
 };
 
+const syncSettings = (state: Settings, option: UpdateOption) => {
+  if (option.updateDocument) updateDocumentSettings(state);
+  if (option.setStorage) setStorageSettings(state);
+};
+
 export const settingsSlice = createSlice({
   name: DEFAULT_KEY,
   initialState: initialState(),
@@ -21,9 +26,7 @@ export const settingsSlice = createSlice({
       if (state.theme === newTheme) return; // 변경 없으면 아무 것도 하지 않음
 
       state.theme = newTheme;
-      const currentSettings = current(state);
-      if (updateDocument) updateDocumentSettings(currentSettings);
-      if (setStorage) setStorageSettings(currentSettings);
+      syncSettings(current(state), { updateDocument, setStorage });
     }),
 
     setFontSize: create.reducer((state, action: PayloadAction<SettingsAction<FontSize>>) => {
@@ -32,9 +35,7 @@ export const settingsSlice = createSlice({
       if (state.fontSize === newFontSize) return; // 변경 없으면 아무 것도 하지 않음
 
       state.fontSize = newFontSize;
-      const currentSettings = current(state);
-      if (updateDocument) updateDocumentSettings(currentSettings);
-      if (setStorage) setStorageSettings(currentSettings);
+      syncSettings(current(state), { updateDocument, setStorage });
     }),
 
     setIncrementFontSize: create.reducer((state, action: PayloadAction<UpdateOption | undefined>) => {
@@ -43,9 +44,7 @@ export const settingsSlice = createSlice({
       if (state.fontSize === newFontSize) return; // 변경 없으면 아무 것도 하지 않음
 
       state.fontSize = newFontSize;
-      const currentSettings = current(state);
-      if (updateDocument) updateDocumentSettings(currentSettings);
-      if (setStorage) setStorageSettings(currentSettings);
+      syncSettings(current(state), { updateDocument, setStorage });
     }),
 
     setDecrementFontSize: create.reducer((state, action: PayloadAction<UpdateOption | undefined>) => {
@@ -54,9 +53,7 @@ export const settingsSlice = createSlice({
       if (state.fontSize === newFontSize) return; // 변경 없으면 아무 것도 하지 않음
 
       state.fontSize = newFontSize;
-      const currentSettings = current(state);
-      if (updateDocument) updateDocumentSettings(currentSettings);
-      if (setStorage) setStorageSettings(currentSettings);
+      syncSettings(current(state), { updateDocument, setStorage });
     }),
 
     setSettings: create.reducer((state, action: PayloadAction<SettingsAction<Partial<Settings>>>) => {
@@ -67,9 +64,7 @@ export const settingsSlice = createSlice({
 
       state.theme = newTheme;
       state.fontSize = newFontSize;
-      const currentSettings = current(state);
-      if (updateDocument) updateDocumentSettings(currentSettings);
-      if (setStorage) setStorageSettings(currentSettings);
+      syncSettings(current(state), { updateDocument, setStorage });
     }),
   }),
   selectors: {
