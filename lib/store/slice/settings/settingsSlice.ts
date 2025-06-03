@@ -1,77 +1,75 @@
 import { createSlice, current, PayloadAction } from "@reduxjs/toolkit";
-import { clampFontSize, DEFAULT_KEY_NAME, FontSize, getInitialSettings, saveStorageSettings, Settings, Theme, updateDocumentSettings } from "@/lib/store/slice/settings/settingsUtils";
+import { clampFontSize, clampTheme, DEFAULT_KEY, FontSize, getStorageSettings, setStorageSettings, Settings, Theme, updateDocumentSettings } from "@/lib/store/slice/settings/settingsUtils";
 
-type SettingsAction<T> = { value: T; saveStorage?: boolean; updateDocument?: boolean };
+type SettingsAction<T> = { value: T; setStorage?: boolean; updateDocument?: boolean };
+type UpdateOption = { setStorage?: boolean; updateDocument?: boolean };
 
 const initialState = () => {
-  const state = getInitialSettings();
+  const state = getStorageSettings({ initializeOnError: true });
   updateDocumentSettings(state);
   return state;
 };
 
 export const settingsSlice = createSlice({
-  name: DEFAULT_KEY_NAME,
+  name: DEFAULT_KEY,
   initialState: initialState(),
   reducers: (create) => ({
-    setSettings: create.reducer((state, actions: PayloadAction<SettingsAction<Settings>>) => {
-      const { value, updateDocument = true, saveStorage = true } = actions.payload; // 기본 값: 모두 변경 및 저장
-      state.theme = value.theme;
-      state.fontSize = value.fontSize;
+    setTheme: create.reducer((state, action: PayloadAction<SettingsAction<Theme>>) => {
+      const { value, setStorage, updateDocument } = action.payload;
+      const newTheme = clampTheme(value);
+
+      if (state.theme === newTheme) return; // 변경 없으면 아무 것도 하지 않음
+
+      state.theme = newTheme;
       const currentSettings = current(state);
-      if (updateDocument) {
-        updateDocumentSettings(currentSettings);
-      }
-      if (saveStorage) {
-        saveStorageSettings(currentSettings);
-      }
+      if (updateDocument) updateDocumentSettings(currentSettings);
+      if (setStorage) setStorageSettings(currentSettings);
     }),
 
-    setTheme: create.reducer((state, actions: PayloadAction<SettingsAction<Theme>>) => {
-      const { value, updateDocument = true, saveStorage = true } = actions.payload; // 기본 값: 모두 변경 및 저장
-      state.theme = value;
+    setFontSize: create.reducer((state, action: PayloadAction<SettingsAction<FontSize>>) => {
+      const { value, setStorage, updateDocument } = action.payload;
+      const newFontSize = clampFontSize(value);
+      if (state.fontSize === newFontSize) return; // 변경 없으면 아무 것도 하지 않음
+
+      state.fontSize = newFontSize;
       const currentSettings = current(state);
-      if (updateDocument) {
-        updateDocumentSettings(currentSettings);
-      }
-      if (saveStorage) {
-        saveStorageSettings(currentSettings);
-      }
+      if (updateDocument) updateDocumentSettings(currentSettings);
+      if (setStorage) setStorageSettings(currentSettings);
     }),
 
-    setFontSize: create.reducer((state, actions: PayloadAction<SettingsAction<FontSize>>) => {
-      const { value, updateDocument = true, saveStorage = true } = actions.payload; // 기본 값: 모두 변경 및 저장
-      state.fontSize = value;
+    setIncrementFontSize: create.reducer((state, action: PayloadAction<UpdateOption | undefined>) => {
+      const { setStorage, updateDocument } = action.payload ?? {};
+      const newFontSize = clampFontSize(state.fontSize + 1);
+      if (state.fontSize === newFontSize) return; // 변경 없으면 아무 것도 하지 않음
+
+      state.fontSize = newFontSize;
       const currentSettings = current(state);
-      if (updateDocument) {
-        updateDocumentSettings(currentSettings);
-      }
-      if (saveStorage) {
-        saveStorageSettings(currentSettings);
-      }
+      if (updateDocument) updateDocumentSettings(currentSettings);
+      if (setStorage) setStorageSettings(currentSettings);
     }),
 
-    setIncrementFontSize: create.reducer((state, actions: PayloadAction<{ saveStorage?: boolean; updateDocument?: boolean } | undefined>) => {
-      const { updateDocument = true, saveStorage = true } = { ...actions.payload }; // 기본 값: 모두 변경 및 저장
-      state.fontSize = clampFontSize(state.fontSize + 1);
+    setDecrementFontSize: create.reducer((state, action: PayloadAction<UpdateOption | undefined>) => {
+      const { setStorage, updateDocument } = action.payload ?? {};
+      const newFontSize = clampFontSize(state.fontSize - 1);
+      if (state.fontSize === newFontSize) return; // 변경 없으면 아무 것도 하지 않음
+
+      state.fontSize = newFontSize;
       const currentSettings = current(state);
-      if (updateDocument) {
-        updateDocumentSettings(currentSettings);
-      }
-      if (saveStorage) {
-        saveStorageSettings(currentSettings);
-      }
+      if (updateDocument) updateDocumentSettings(currentSettings);
+      if (setStorage) setStorageSettings(currentSettings);
     }),
 
-    setDecrementFontSize: create.reducer((state, actions: PayloadAction<{ saveStorage?: boolean; updateDocument?: boolean } | undefined>) => {
-      const { updateDocument = true, saveStorage = true } = { ...actions.payload }; // 기본 값: 모두 변경 및 저장
-      state.fontSize = clampFontSize(state.fontSize - 1);
+    setSettings: create.reducer((state, action: PayloadAction<SettingsAction<Partial<Settings>>>) => {
+      const { value, setStorage, updateDocument } = action.payload;
+      const newTheme = clampTheme(value.theme);
+      const newFontSize = clampFontSize(value.fontSize);
+      if (state.theme === newTheme && state.fontSize === newFontSize) return;
+
+      state.theme = newTheme;
+      state.fontSize = newFontSize;
       const currentSettings = current(state);
-      if (updateDocument) {
-        updateDocumentSettings(currentSettings);
-      }
-      if (saveStorage) {
-        saveStorageSettings(currentSettings);
-      }
+      if (updateDocument) updateDocumentSettings(currentSettings);
+      if (setStorage) setStorageSettings(currentSettings);
     }),
   }),
   selectors: {
@@ -79,5 +77,5 @@ export const settingsSlice = createSlice({
   },
 });
 
-export const { setSettings, setTheme, setFontSize, setIncrementFontSize, setDecrementFontSize } = settingsSlice.actions;
+export const { setTheme, setFontSize, setIncrementFontSize, setDecrementFontSize, setSettings } = settingsSlice.actions;
 export const { selectSettings } = settingsSlice.selectors;
