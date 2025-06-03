@@ -22,7 +22,6 @@ export const settingsSlice = createSlice({
     setTheme: create.reducer((state, action: PayloadAction<SettingsAction<Theme>>) => {
       const { value, setStorage, updateDocument } = action.payload;
       const newTheme = clampTheme(value);
-
       if (state.theme === newTheme) return; // 변경 없으면 아무 것도 하지 않음
 
       state.theme = newTheme;
