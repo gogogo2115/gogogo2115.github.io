@@ -1,16 +1,17 @@
+// 타입 정의
 export type Theme = "dark" | "light" | "system" | "gray";
 export type FontSize = 1 | 2 | 3 | 4 | 5 | 6;
 export type Settings = { theme: Theme; fontSize: FontSize };
 
-// 기본값
-export const DEFAULT_KEY = "settings";
+// 기본값 상수
+export const DEFAULT_KEY = "settings"; // localStorage key
 export const DEFAULT_THEME: Theme = "system";
 export const DEFAULT_FONT_SIZE: FontSize = 3;
 export const DEFAULT_SETTINGS: Settings = { theme: DEFAULT_THEME, fontSize: DEFAULT_FONT_SIZE };
 
-// 유틸 상수
-export const VALID_THEMES = new Set(["dark", "light", "system", "gray"] as const);
-export const VALID_FONT_SIZES = new Set([1, 2, 3, 4, 5, 6] as const);
+// 유틸리티 상수 (유효성 검사용 Set 객체)
+export const VALID_THEMES = new Set<Theme>(["dark", "light", "system", "gray"]);
+export const VALID_FONT_SIZES = new Set<FontSize>([1, 2, 3, 4, 5, 6]);
 export const MIN_FONT_SIZE = Math.min(...VALID_FONT_SIZES) as FontSize;
 export const MAX_FONT_SIZE = Math.max(...VALID_FONT_SIZES) as FontSize;
 
@@ -25,13 +26,13 @@ const parseFontSize = (fontSize: unknown): number | undefined => {
 };
 
 export const isValidTheme = (theme: unknown): theme is Theme => {
-  const value = normalizeTheme(theme);
-  return value !== undefined && VALID_THEMES.has(value as Theme);
+  const normalized = normalizeTheme(theme);
+  return normalized !== undefined && VALID_THEMES.has(normalized as Theme);
 };
 
 export const isValidFontSize = (fontSize: unknown): fontSize is FontSize => {
-  const value = parseFontSize(fontSize);
-  return value !== undefined && VALID_FONT_SIZES.has(Math.floor(value) as FontSize);
+  const parsed = parseFontSize(fontSize);
+  return parsed !== undefined && VALID_FONT_SIZES.has(Math.floor(parsed) as FontSize);
 };
 
 export const isValidSettings = (settings: unknown): settings is Settings => {
