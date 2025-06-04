@@ -13,7 +13,6 @@ const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
 
 const NEXT_VERSION = `Next.js ${process.env.NEXT_PUBLIC_CONFIG_NEXT_VERSION ?? ""}`.trim();
-// const BUILD_RAND_KEY = (process.env.BUILD_RAND_KEY ?? "unknown").replace(/\s+/g, "");
 
 export const metadata: Metadata = {
   title: "gogogo2115.github.io",
@@ -28,8 +27,8 @@ export default function RootLayout({ children }: RootLayoutProps) {
         <StoreProvider>
           <SettingsScript />
           <QueryStreamingProvider>{children}</QueryStreamingProvider>
+          <div id="root_modal" />
         </StoreProvider>
-        <div id="root_modal" />
       </body>
     </html>
   );

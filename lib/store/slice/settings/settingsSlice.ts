@@ -1,49 +1,69 @@
 import { createSlice, current, PayloadAction } from "@reduxjs/toolkit";
-import { clampFontSize, clampTheme, DEFAULT_KEY_NAME, FontSize, getInitialSettings, saveStorageSettings, Settings, Theme, updateDocumentSettings } from "./settingsUtils";
+import { clampFontSize, clampTheme, DEFAULT_KEY, FontSize, getStorageSettings, setStorageSettings, Settings, Theme, updateDocumentSettings } from "@/lib/store/slice/settings/settingsUtils";
 
-type SettingsAction<T> = { value: T; saveStorage?: boolean; updateDocument?: boolean };
+type SettingsAction<T> = { value: T; setStorage?: boolean; updateDocument?: boolean };
+type UpdateOption = { setStorage?: boolean; updateDocument?: boolean };
 
 const initialState = () => {
-  const state = getInitialSettings();
+  const state = getStorageSettings({ initializeOnError: true });
+  updateDocumentSettings(state);
   return state;
 };
 
+const syncSettings = (state: Settings, option: UpdateOption) => {
+  if (option.updateDocument) updateDocumentSettings(state);
+  if (option.setStorage) setStorageSettings(state);
+};
+
 export const settingsSlice = createSlice({
-  name: DEFAULT_KEY_NAME,
+  name: DEFAULT_KEY,
   initialState: initialState(),
   reducers: (create) => ({
-    setSettings: create.reducer((state, actions: PayloadAction<SettingsAction<Settings>>) => {
-      const { value, updateDocument, saveStorage } = actions.payload;
-      state = value;
-      const currentState = current(state);
-      if (updateDocument) {
-        updateDocumentSettings(currentState);
-      }
-      if (saveStorage) {
-        saveStorageSettings(currentState);
-      }
+    setTheme: create.reducer((state, action: PayloadAction<SettingsAction<Theme>>) => {
+      const { value, setStorage, updateDocument } = action.payload;
+      const newTheme = clampTheme(value);
+      if (state.theme === newTheme) return; // 변경 없으면 아무 것도 하지 않음
+
+      state.theme = newTheme;
+      syncSettings(current(state), { updateDocument, setStorage });
     }),
-    setTheme: create.reducer((state, actions: PayloadAction<SettingsAction<Theme>>) => {
-      const { value, updateDocument, saveStorage } = actions.payload;
-      state.theme = clampTheme(value);
-      const currentState = current(state);
-      if (updateDocument) {
-        updateDocumentSettings(currentState);
-      }
-      if (saveStorage) {
-        saveStorageSettings(currentState);
-      }
+
+    setFontSize: create.reducer((state, action: PayloadAction<SettingsAction<FontSize>>) => {
+      const { value, setStorage, updateDocument } = action.payload;
+      const newFontSize = clampFontSize(value);
+      if (state.fontSize === newFontSize) return; // 변경 없으면 아무 것도 하지 않음
+
+      state.fontSize = newFontSize;
+      syncSettings(current(state), { updateDocument, setStorage });
     }),
-    setFontSize: create.reducer((state, actions: PayloadAction<SettingsAction<FontSize>>) => {
-      const { value, updateDocument, saveStorage } = actions.payload;
-      state.fontSize = clampFontSize(value);
-      const currentState = current(state);
-      if (updateDocument) {
-        updateDocumentSettings(currentState);
-      }
-      if (saveStorage) {
-        saveStorageSettings(currentState);
-      }
+
+    setIncrementFontSize: create.reducer((state, action: PayloadAction<UpdateOption | undefined>) => {
+      const { setStorage, updateDocument } = action.payload ?? {};
+      const newFontSize = clampFontSize(state.fontSize + 1);
+      if (state.fontSize === newFontSize) return; // 변경 없으면 아무 것도 하지 않음
+
+      state.fontSize = newFontSize;
+      syncSettings(current(state), { updateDocument, setStorage });
+    }),
+
+    setDecrementFontSize: create.reducer((state, action: PayloadAction<UpdateOption | undefined>) => {
+      const { setStorage, updateDocument } = action.payload ?? {};
+      const newFontSize = clampFontSize(state.fontSize - 1);
+      if (state.fontSize === newFontSize) return; // 변경 없으면 아무 것도 하지 않음
+
+      state.fontSize = newFontSize;
+      syncSettings(current(state), { updateDocument, setStorage });
+    }),
+
+    setSettings: create.reducer((state, action: PayloadAction<SettingsAction<Partial<Settings>>>) => {
+      const { value, setStorage, updateDocument } = action.payload;
+      const newTheme = clampTheme(value.theme);
+      const newFontSize = clampFontSize(value.fontSize);
+      if (state.theme === newTheme && state.fontSize === newFontSize) return;
+
+      state.theme = newTheme;
+      state.fontSize = newFontSize;
+      syncSettings(current(state), { updateDocument, setStorage });
     }),
   }),
   selectors: {
@@ -51,19 +71,5 @@ export const settingsSlice = createSlice({
   },
 });
 
-export const { setTheme } = settingsSlice.actions;
+export const { setTheme, setFontSize, setIncrementFontSize, setDecrementFontSize, setSettings } = settingsSlice.actions;
 export const { selectSettings } = settingsSlice.selectors;
-
-// setIncrementFontSize: create.reducer((state) => {
-//   state.fontSize = clampFontSize(state.fontSize + 1);
-//   const currentState = current(state);
-//   updateToDocument(currentState);
-//   saveToStorage(currentState);
-// }),
-
-// setDecrementFontSize: create.reducer((state) => {
-//   state.fontSize = clampFontSize(state.fontSize - 1);
-//   const currentState = current(state);
-//   updateToDocument(currentState);
-//   saveToStorage(currentState);
-// }),
