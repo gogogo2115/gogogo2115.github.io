@@ -8,6 +8,9 @@ export default function TestPage() {
     share(
       { url: "http://naver.com", text: "안녕하세요", title: "반갑습니다" },
       {
+        onNotSupported: () => {
+          alert("공유 미지원");
+        },
         onSuccess: () => {
           alert("공유성공");
         },
