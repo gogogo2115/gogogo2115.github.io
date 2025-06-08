@@ -2,7 +2,7 @@
 type Options = {
   onNotSupported?: () => void; // 클립보드 복사 기능이 지원되지 않을 때 호출되는 콜백 함수
   onSuccess?: () => void; // 복사 성공 시 호출되는 콜백 함수
-  onFailure?: (msg: string, err?: unknown) => void; // 복사 실패 시 호출되는 콜백 함수
+  onFailure?: (err?: unknown) => void; // 복사 실패 시 호출되는 콜백 함수
 };
 
 /**
@@ -37,19 +37,27 @@ export const isCopyToClipboardSupported = (): boolean => {
  */
 export const copyToClipboard = async (txt: string = "", options: Options = {}): Promise<void> => {
   const { onNotSupported, onSuccess, onFailure } = options;
-  try {
-    // 문자열 입력 오류
-    const length = typeof txt === "string" ? txt.length : 0;
-    if (length <= 0) throw new TypeError("복사할 문자열의 형식이 잘못되었습니다.");
 
-    // 최신 API (navigator.clipboard) 지원 시
+  // 텍스트 유효성 검사
+  const length = typeof txt === "string" ? txt.length : 0;
+  if (length <= 0) {
+    if (onFailure) onFailure(new Error("TextError"));
+    return;
+  }
+
+  // 기능 지원 여부 검사
+  if (!isCopyToClipboardSupported()) {
+    if (onNotSupported) onNotSupported();
+    else if (onFailure) onFailure(new Error("NotSupportedError"));
+    return;
+  }
+
+  // 복사 실행
+  try {
     if (isModernCopySupported()) {
       await navigator.clipboard.writeText(txt);
-      if (typeof onSuccess === "function") onSuccess();
-      return;
-    }
-
-    if (isLegacyCopySupported()) {
+      if (onSuccess) onSuccess();
+    } else {
       // 기존 요소 제거
       const textAreaID = "copyToClipboard1";
       const prevTextArea = document.getElementById(textAreaID);
@@ -74,7 +82,7 @@ export const copyToClipboard = async (txt: string = "", options: Options = {}): 
       const selection = window.getSelection();
       selection?.removeAllRanges();
       newTextArea.select();
-      newTextArea.setSelectionRange(0, txt.length); // 특정 모바일 위한 추가
+      newTextArea.setSelectionRange(0, length); // 특정 모바일 위한 추가
 
       // 복사 실행
       const isEnabled = document?.queryCommandEnabled("copy"); // 복사 가능한 상태 유무
@@ -89,17 +97,8 @@ export const copyToClipboard = async (txt: string = "", options: Options = {}): 
 
       // 복사 성공 시
       if (typeof onSuccess === "function") onSuccess();
-      return;
-    }
-
-    // 미지원
-    if (typeof onNotSupported === "function") {
-      onNotSupported();
-    } else {
-      throw new Error("클립보드 복사를 지원하지 않는 브라우저입니다.");
     }
   } catch (e) {
-    const msg = e instanceof Error ? e.message : "unknown";
-    if (typeof onFailure === "function") onFailure(msg, e);
+    if (onFailure) onFailure(e);
   }
 };
