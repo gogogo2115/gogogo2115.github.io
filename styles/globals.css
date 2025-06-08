@@ -36,3 +36,20 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+textarea#copyToClipboard {
+  position: absolute;
+  top: -9999px !important;
+  left: -9999px !important;
+  background-color: transparent !important;
+  outline: none !important;
+  border: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  width: 1px !important;
+  height: 1px !important;
+  font-size: 4px !important;
+  user-select: all !important;
+  overflow: hidden !important;
+  resize: none !important;
+}
