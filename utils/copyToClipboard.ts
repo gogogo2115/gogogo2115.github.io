@@ -59,7 +59,7 @@ export const copyToClipboard = async (txt: string = "", options: Options = {}): 
       if (onSuccess) onSuccess();
     } else {
       // 기존 요소 제거
-      const textAreaID = "copyToClipboard1";
+      const textAreaID = "copyToClipboard";
       const prevTextArea = document.getElementById(textAreaID);
       prevTextArea?.remove();
 
@@ -93,7 +93,7 @@ export const copyToClipboard = async (txt: string = "", options: Options = {}): 
       document.body.removeChild(newTextArea);
 
       // 복사 실패
-      if (!isEnabled || !isCopied) throw new Error("execCommand 복사 오류 발생");
+      if (!isEnabled || !isCopied) throw new Error("ExecCommandError");
 
       // 복사 성공 시
       if (typeof onSuccess === "function") onSuccess();
