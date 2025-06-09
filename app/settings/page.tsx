@@ -6,7 +6,7 @@ import { selectSettings, setFontSize, setTheme } from "@/lib/store/slice/setting
 import { isValidFontSize, isValidTheme } from "@/lib/store/slice/settings/settingsUtils";
 
 export default function SettingsPage() {
-  const settings = useAppSelector(selectSettings);
+  const { theme, fontSize } = useAppSelector(selectSettings);
   const dispatch = useAppDispatch();
 
   const handleThemeClick = (ev: MouseEvent<HTMLButtonElement>) => {
@@ -25,83 +25,56 @@ export default function SettingsPage() {
 
   return (
     <>
-      <div role="radiogroup" aria-label="테마 선택" className="flex flex-row gap-1">
-        <button
-          type="button"
-          role="radio"
-          aria-checked={settings.theme === "light"}
-          aria-label="라이트 테마"
-          className="cursor-pointer align-middle select-none"
-          data-value="light"
-          onClick={handleThemeClick}
-        >
-          <div className="rounded-2xl overflow-hidden aspect-[4/3] min-w-[100px] max-w-[120px] w-full border-[2px] border-gray-700 box-border">
-            <div className="relative overflow-hidden w-full h-full bg-white">
-              <div className="absolute top-2 left-2 text-black font-medium text-xs select-none">Aa</div>
+      <div role="radiogroup" aria-label="테마 변경" className="flex flex-row gap-1">
+        <button type="button" className="cursor-pointer select-none" role="radio" aria-checked={theme === "dark"} aria-label="라이트" onClick={handleThemeClick} data-value="dark">
+          <div className="relative rounded-2xl overflow-hidden aspect-[4/3] min-w-[100px] max-w-[120px] w-full border-[2px] border-gray-500 box-border">
+            <div className="relative block overflow-hidden w-full h-full bg-black">
+              <div className="absolute top-2 left-2 text-white font-medium text-xs select-none">가</div>
             </div>
           </div>
-
-          <div>밝은 배경</div>
+          <div>다크</div>
         </button>
-
-        <button
-          type="button"
-          role="radio"
-          aria-checked={settings.theme === "dark"}
-          aria-label="다크 테마"
-          className="cursor-pointer align-middle select-none"
-          data-value="dark"
-          onClick={handleThemeClick}
-        >
-          <div className="rounded-2xl overflow-hidden aspect-[4/3] min-w-[100px] max-w-[120px] w-full border-[2px] border-gray-700 box-border">
-            <div className="relative overflow-hidden w-full h-full bg-black">
-              <div className="absolute top-2 left-2 text-white font-medium text-xs select-none">Aa</div>
+        <button type="button" className="cursor-pointer select-none" role="radio" aria-checked={theme === "light"} aria-label="다크" onClick={handleThemeClick} data-value="light">
+          <div className="relative rounded-2xl overflow-hidden aspect-[4/3] min-w-[100px] max-w-[120px] w-full border-[2px] border-gray-500 box-border">
+            <div className="relative block overflow-hidden w-full h-full bg-white">
+              <div className="absolute top-2 left-2 text-black font-medium text-xs select-none">가</div>
             </div>
           </div>
-          <div>어두운 배경</div>
+          <div>라이트</div>
         </button>
-
-        <button
-          type="button"
-          role="radio"
-          aria-checked={settings.theme === "system"}
-          aria-label="시스템 테마"
-          className="cursor-pointer align-middle select-none"
-          data-value="system"
-          onClick={handleThemeClick}
-        >
-          <div className="rounded-2xl overflow-hidden aspect-[4/3] min-w-[100px] max-w-[120px] w-full border-[2px] border-gray-700 box-border flex flex-row">
-            <div className="relative overflow-hidden w-1/2 h-full bg-white">
-              <div className="absolute top-2 left-2 text-black font-medium text-xs select-none">Aa</div>
+        <button type="button" className="cursor-pointer select-none" role="radio" aria-checked={theme === "system"} aria-label="시스템" onClick={handleThemeClick} data-value="system">
+          <div className="relative rounded-2xl overflow-hidden aspect-[4/3] min-w-[100px] max-w-[120px] w-full border-[2px] border-gray-500 box-border flex flex-row">
+            <div className="relative block bg-black w-1/2 h-full">
+              <div className="absolute top-2 left-2 text-white font-medium text-xs select-none">가</div>
             </div>
-            <div className="relative overflow-hidden w-1/2 h-full bg-black">
-              <div className="absolute top-2 left-2 text-white font-medium text-xs select-none">Aa</div>
+            <div className="relative block bg-white w-1/2 h-full">
+              <div className="absolute top-2 left-2 text-black font-medium text-xs select-none">가</div>
             </div>
           </div>
-          <div>사용자 배경</div>
+          <div>시스템</div>
         </button>
       </div>
 
-      {/* <div role="radiogroup">
-        <button type="button" className="" role="radio" aria-checked={settings.fontSize === 1} data-value="1" onClick={handleFontSizeClick}>
+      <div role="radiogroup" aria-label="글자 크기 변경" className="flex flex-row gap-1">
+        <button type="button" className="w-10 h-10 cursor-pointer" role="radio" aria-checked={fontSize === 1} data-value={1} onClick={handleFontSizeClick}>
           1
         </button>
-        <button type="button" className="" role="radio" aria-checked={settings.fontSize === 2} data-value="2" onClick={handleFontSizeClick}>
+        <button type="button" className="w-10 h-10 cursor-pointer" role="radio" aria-checked={fontSize === 2} data-value={2} onClick={handleFontSizeClick}>
           2
         </button>
-        <button type="button" className="" role="radio" aria-checked={settings.fontSize === 3} data-value="3" onClick={handleFontSizeClick}>
+        <button type="button" className="w-10 h-10 cursor-pointer" role="radio" aria-checked={fontSize === 3} data-value={3} onClick={handleFontSizeClick}>
           3
         </button>
-        <button type="button" className="" role="radio" aria-checked={settings.fontSize === 4} data-value="4" onClick={handleFontSizeClick}>
+        <button type="button" className="w-10 h-10 cursor-pointer" role="radio" aria-checked={fontSize === 4} data-value={4} onClick={handleFontSizeClick}>
           4
         </button>
-        <button type="button" className="" role="radio" aria-checked={settings.fontSize === 5} data-value="5" onClick={handleFontSizeClick}>
+        <button type="button" className="w-10 h-10 cursor-pointer" role="radio" aria-checked={fontSize === 5} data-value={5} onClick={handleFontSizeClick}>
           5
         </button>
-        <button type="button" className="" role="radio" aria-checked={settings.fontSize === 6} data-value="6" onClick={handleFontSizeClick}>
+        <button type="button" className="w-10 h-10 cursor-pointer" role="radio" aria-checked={fontSize === 6} data-value={6} onClick={handleFontSizeClick}>
           6
         </button>
-      </div> */}
+      </div>
     </>
   );
 }
