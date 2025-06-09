@@ -10,7 +10,7 @@ import { IS_DEVELOPMENT } from "@/utils/configNode";
 
 type QueryProviderProps = { readonly children: ReactNode };
 
-export function QueryStreamingProvider({ children }: QueryProviderProps) {
+export const QueryStreamingProvider = ({ children }: QueryProviderProps) => {
   const queryClient = getQueryClient();
 
   return (
@@ -19,9 +19,9 @@ export function QueryStreamingProvider({ children }: QueryProviderProps) {
       {IS_DEVELOPMENT && <ReactQueryDevtools initialIsOpen={false} />}
     </QueryClientProvider>
   );
-}
+};
 
-export function QueryPrefetchingProvider({ children }: QueryProviderProps) {
+export const QueryPrefetchingProvider = ({ children }: QueryProviderProps) => {
   const queryClient = getQueryClient();
 
   return (
@@ -30,4 +30,4 @@ export function QueryPrefetchingProvider({ children }: QueryProviderProps) {
       {IS_DEVELOPMENT && <ReactQueryDevtools initialIsOpen={false} />}
     </QueryClientProvider>
   );
-}
+};
