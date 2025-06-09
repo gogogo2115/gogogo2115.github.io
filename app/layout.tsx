@@ -23,7 +23,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="ko-KR" dir="ltr" suppressHydrationWarning>
-      <body id="__next" className={`relative ${geistSans.variable} ${geistMono.variable} antialiased`} suppressHydrationWarning>
+      <body id="__next" className={`${geistSans.variable} ${geistMono.variable} antialiased`} suppressHydrationWarning>
         <StoreProvider>
           <SettingsScript />
           <QueryStreamingProvider>{children}</QueryStreamingProvider>
