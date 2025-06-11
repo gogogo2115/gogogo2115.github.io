@@ -5,26 +5,42 @@ if (isClient) {
   throw new Error("configEnv: 보안상 서버환경에서만 실행이 가능합니다.");
 }
 
-type GenerateBuildKeys = {
-  BUILD_PUBLIC_KEY: string;
-  BUILD_PRIVATE_KEY: string;
-};
-
-type GenerateBuildKeysOptions = {
-  persist?: boolean; // 키를 파일로 저장할지 여부
-  dir?: string; // 저장 경로 (기본값: keys)
-};
-
+import path from "path";
+import { chmodSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
 import { generateKeyPairSync, privateDecrypt, publicEncrypt, randomInt } from "crypto";
 import { stringShuffle } from "./shuffle";
-import path from "path";
-import { chmodSync, existsSync, mkdirSync, writeFileSync } from "fs";
 
-const generateBuildRandKey = (prefix: { start?: string; end?: string } = {}, length: number = 32): string => {
+const getPackageVersion = (keyName: string): string => {
   try {
     if (isClient) throw new Error("보안상 서버환경에서만 실행이 가능합니다.");
 
-    const { start = "", end = "" } = { start: "", end: "", ...prefix };
+    const packageJsonPath = path.resolve(process.cwd(), "package.json");
+    if (!existsSync(packageJsonPath)) throw new Error(`package.json 파일을 찾을 수 없습니다.`);
+
+    const fileContent = readFileSync(packageJsonPath, "utf-8");
+    const packageJson = JSON.parse(fileContent);
+
+    // const version = packageJson?.[keyName] || packageJson.dependencies?.[keyName] || packageJson.devDependencies?.[keyName] || packageJson.peerDependencies?.[keyName];
+    const keyMap: Record<string, string | undefined | null> = {
+      name: packageJson.name ?? "",
+      version: packageJson.version ?? "",
+      next: packageJson.dependencies?.next?.replace(/[\^~]/g, ""),
+      react: packageJson.dependencies?.react?.replace(/[\^~]/g, ""),
+    };
+
+    const value = (keyMap[keyName] ?? "").trim();
+    if (!value) throw new Error(`${keyName} 값을 찾을 수 없습니다.`);
+    return value;
+  } catch (e) {
+    const message = e instanceof Error ? e.message : "알 수 없는 오류 발생";
+    throw new Error(`getPackageVersion: ${message}`);
+  }
+};
+
+const generateBuildRandKey = (length: number = 24, prefix: { start?: string; end?: string } = {}): string => {
+  try {
+    if (isClient) throw new Error("보안상 서버환경에서만 실행이 가능합니다.");
+
     if (length < 1) throw new Error("길이는 1 이상의 값이어야 합니다.");
 
     const charShuffle = stringShuffle("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"); // 문자열 섞기
@@ -33,16 +49,23 @@ const generateBuildRandKey = (prefix: { start?: string; end?: string } = {}, len
     for (let i = 0; i < length; i++) {
       randomKey += charShuffle[randomInt(0, charShuffle.length)]; // crypto.randomInt 사용
     }
+
     randomKey = randomKey.trim();
     if (!randomKey) throw new Error("생성된 난수 값이 비어있습니다.");
+
+    const { start = "", end = "" } = { start: "", end: "", ...prefix };
     return `${start}${randomKey}${end}`;
   } catch (e) {
-    const message = e instanceof Error ? e.message : "알 수 없는 오류";
+    const message = e instanceof Error ? e.message : "알 수 없는 오류 발생";
     throw new Error(`generateBuildRandKey: ${message}`);
   }
 };
 
-const generateBuildKeys = (options: GenerateBuildKeysOptions = {}): GenerateBuildKeys => {
+// persist: 키를 파일로 저장할지 여부
+// dir: // 저장 경로 (기본값: keys)
+type GenerateBuildKeysOpts = { persist?: boolean; dir?: string };
+type GenerateBuildKeys = { BUILD_PUBLIC_KEY: string; BUILD_PRIVATE_KEY: string };
+const generateBuildKeys = (opts: GenerateBuildKeysOpts = {}): GenerateBuildKeys => {
   try {
     if (isClient) throw new Error(`보안상 서버환경에서만 실행이 가능합니다.`);
 
@@ -55,7 +78,12 @@ const generateBuildKeys = (options: GenerateBuildKeysOptions = {}): GenerateBuil
 
     // 키 타입 검증
     if (typeof BUILD_PUBLIC_KEY !== "string" || typeof BUILD_PRIVATE_KEY !== "string") {
-      throw new Error("RSA 키 생성 실패: 키가 문자열 형태가 아닙니다.");
+      throw new Error("RSA 키 생성 실패(키가 문자열 형태가 아닙니다.)");
+    }
+
+    // 키 길이 검증 추가
+    if (BUILD_PUBLIC_KEY.length < 100 || BUILD_PRIVATE_KEY.length < 100) {
+      throw new Error("RSA 키 생성 실패(키 길이가 너무 짧습니다.)");
     }
 
     // 테스트 메시지로 키 검증
@@ -63,17 +91,16 @@ const generateBuildKeys = (options: GenerateBuildKeysOptions = {}): GenerateBuil
     try {
       const encrypted = publicEncrypt(BUILD_PUBLIC_KEY, Buffer.from(testMessage));
       const decrypted = privateDecrypt(BUILD_PRIVATE_KEY, encrypted).toString("utf-8");
-
-      if (decrypted !== testMessage) {
-        throw new Error("RSA 키 검증 실패: 암호화/복호화 테스트 실패");
+      if (testMessage !== decrypted) {
+        throw new Error("RSA 키 검증 실패(암호화/복호화 테스트 실패)");
       }
     } catch (cryptoError) {
       const cryptoMessage = cryptoError instanceof Error ? cryptoError.message : "알 수 없는 암호화 오류";
-      throw new Error(`RSA 키 검증 실패: ${cryptoMessage}`);
+      throw new Error(`generateBuildKeys: ${cryptoMessage}`);
     }
 
     // 파일 저장
-    const { persist = false, dir = "keys" } = options;
+    const { persist = false, dir = "keys" } = opts;
     if (persist) {
       try {
         const KEYS_DIR = path.resolve(process.cwd(), dir);
@@ -96,19 +123,26 @@ const generateBuildKeys = (options: GenerateBuildKeysOptions = {}): GenerateBuil
         chmodSync(privateFilePath, 0o600);
       } catch (fileError) {
         const fileMessage = fileError instanceof Error ? fileError.message : "알 수 없는 파일 오류";
-        throw new Error(`키 파일 저장 실패: ${fileMessage}`);
+        throw new Error(`generateBuildKeys: 키 파일 저장 실패(${fileMessage})`);
       }
     }
 
     return { BUILD_PUBLIC_KEY, BUILD_PRIVATE_KEY };
   } catch (e) {
-    const message = e instanceof Error ? e.message : "알 수 없는 오류";
+    const message = e instanceof Error ? e.message : "알 수 없는 오류 발생";
     throw new Error(`generateBuildKeys: ${message}`);
   }
 };
 
 export const CONFIG_ENV = {
-  BUILD_RAND_KEY: generateBuildRandKey({ start: `${process.env.NODE_ENV.slice(0, 1)}_` }),
-  BUILD_DATE_ISO: new Date().toISOString(),
+  NEXT_PUBLIC_PACKAGE_NAME: getPackageVersion("name"),
+  NEXT_PUBLIC_PACKAGE_VERSION: getPackageVersion("version"),
+  NEXT_PUBLIC_NEXT_VERSION: getPackageVersion("next"),
+  NEXT_PUBLIC_REACT_VERSION: getPackageVersion("react"),
+
   ...generateBuildKeys(),
+  BUILD_RAND_KEY: generateBuildRandKey(24, { start: `${String(process.env.NODE_ENV.slice(0, 1))}_` }),
+  BUILD_DATE_ISO: new Date().toISOString(),
 };
+
+console.log(CONFIG_ENV);
