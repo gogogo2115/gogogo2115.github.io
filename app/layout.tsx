@@ -21,6 +21,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <StoreProvider>
       <html lang="ko-KR" suppressHydrationWarning>
+        <head></head>
         <body id="__next" className={`${geistSans.variable} ${geistMono.variable} antialiased`} suppressHydrationWarning>
           <SettingsScript />
           <QueryStreamingProvider>{children}</QueryStreamingProvider>
