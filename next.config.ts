@@ -9,6 +9,10 @@ const nextConfig: NextConfig = {
   sassOptions: {
     implementation: "sass-embedded",
   },
+  webpack: (config) => {
+    if (config.name === "server") config.optimization.concatenateModules = false;
+    return config;
+  },
 };
 
 export default nextConfig;
