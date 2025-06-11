@@ -4,7 +4,7 @@ import type { MetadataRoute } from "next";
 export const dynamic = "force-static";
 
 // ISR을 사용하여 일정 시간(초)마다 재생성하도록 설정
-export const revalidate = 60000;
+export const revalidate = 600000;
 
 export default function robots(): MetadataRoute.Robots {
   return {
