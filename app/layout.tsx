@@ -2,7 +2,9 @@ import "@/styles/globals.css";
 import type { ReactNode } from "react";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+
 import SettingsScript from "@/components/SettingsScript";
+import { QueryStreamingProvider } from "@/components/providers/QueryProvider";
 
 type RootLayoutProps = Readonly<{ children: ReactNode }>;
 
@@ -19,7 +21,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
     <html lang="ko-KR" suppressHydrationWarning>
       <body id="__next" className={`${geistSans.variable} ${geistMono.variable} antialiased`} suppressHydrationWarning>
         <SettingsScript />
-        {children}
+        <QueryStreamingProvider>{children}</QueryStreamingProvider>
       </body>
     </html>
   );
