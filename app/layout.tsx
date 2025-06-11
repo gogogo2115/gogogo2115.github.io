@@ -5,6 +5,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 
 import SettingsScript from "@/components/SettingsScript";
 import { QueryStreamingProvider } from "@/components/providers/QueryProvider";
+import { StoreProvider } from "@/components/providers/StoreProvider";
 
 type RootLayoutProps = Readonly<{ children: ReactNode }>;
 
@@ -18,11 +19,13 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
-    <html lang="ko-KR" suppressHydrationWarning>
-      <body id="__next" className={`${geistSans.variable} ${geistMono.variable} antialiased`} suppressHydrationWarning>
-        <SettingsScript />
-        <QueryStreamingProvider>{children}</QueryStreamingProvider>
-      </body>
-    </html>
+    <StoreProvider>
+      <html lang="ko-KR" suppressHydrationWarning>
+        <body id="__next" className={`${geistSans.variable} ${geistMono.variable} antialiased`} suppressHydrationWarning>
+          <SettingsScript />
+          <QueryStreamingProvider>{children}</QueryStreamingProvider>
+        </body>
+      </html>
+    </StoreProvider>
   );
 }
