@@ -4,6 +4,7 @@ import bundleAnalyzer from "@next/bundle-analyzer";
 import { CONFIG_ENV } from "@/utils/configEnv";
 
 const nextConfig: NextConfig = {
+  reactStrictMode: false,
   output: "export",
   env: CONFIG_ENV,
   sassOptions: {
@@ -17,6 +18,9 @@ const nextConfig: NextConfig = {
     rules: {
       "*.svg": { loaders: ["@svgr/webpack"], as: "*.js" },
     },
+  },
+  compiler: {
+    styledComponents: true,
   },
 };
 
