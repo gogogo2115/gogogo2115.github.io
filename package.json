@@ -3,13 +3,16 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "next dev",
+    "dev:turbopack": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
   },
   "dependencies": {
     "@reduxjs/toolkit": "2.8.2",
+    "@tanstack/react-query": "5.80.6",
+    "@tanstack/react-query-next-experimental": "5.80.6",
     "classnames": "2.5.1",
     "dompurify": "3.2.6",
     "jose": "6.0.11",
@@ -21,6 +24,7 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
+    "@tanstack/react-query-devtools": "5.80.6",
     "@types/node": "^24",
     "@types/react": "^19",
     "@types/react-dom": "^19",
