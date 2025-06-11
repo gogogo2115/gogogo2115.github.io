@@ -32,13 +32,13 @@
     "@svgr/webpack": "8.1.0",
     "@tailwindcss/postcss": "^4",
     "@tanstack/react-query-devtools": "5.80.6",
-    "@types/node": "^22",
+    "@types/node": "^24",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "cross-env": "7.0.3",
     "eslint": "^9",
     "eslint-config-next": "15.3.3",
-    "sass": "1.89.1",
+    "sass": "1.89.2",
     "tailwindcss": "^4",
     "typescript": "^5"
   }
