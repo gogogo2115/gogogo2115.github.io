@@ -1,5 +1,3 @@
-"use server";
-
 const isClient = typeof window !== "undefined";
 if (isClient) {
   throw new Error("configEnv: 보안상 서버환경에서만 실행이 가능합니다.");
@@ -134,15 +132,17 @@ const generateBuildKeys = (opts: GenerateBuildKeysOpts = {}): GenerateBuildKeys 
   }
 };
 
+const BUILD_DATE_ISO = new Date().toISOString();
+const { BUILD_PRIVATE_KEY, BUILD_PUBLIC_KEY } = generateBuildKeys({ persist: true });
+
 export const CONFIG_ENV = {
   NEXT_PUBLIC_PACKAGE_NAME: getPackageVersion("name"),
   NEXT_PUBLIC_PACKAGE_VERSION: getPackageVersion("version"),
   NEXT_PUBLIC_NEXT_VERSION: getPackageVersion("next"),
   NEXT_PUBLIC_REACT_VERSION: getPackageVersion("react"),
 
-  ...generateBuildKeys(),
+  BUILD_PRIVATE_KEY,
+  BUILD_PUBLIC_KEY,
   BUILD_RAND_KEY: generateBuildRandKey(24, { start: `${String(process.env.NODE_ENV.slice(0, 1))}_` }),
-  BUILD_DATE_ISO: new Date().toISOString(),
+  BUILD_DATE_ISO,
 };
-
-console.log(CONFIG_ENV);
