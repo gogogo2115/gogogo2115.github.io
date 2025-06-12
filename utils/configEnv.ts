@@ -140,6 +140,7 @@ export const CONFIG_ENV = {
   NEXT_PUBLIC_NEXT_VERSION: getPackageVersion("next"),
   NEXT_PUBLIC_REACT_VERSION: getPackageVersion("react"),
 
+  // server에서 사용(client에 노출 주의)
   ...generateBuildKeys(),
   BUILD_RAND_KEY: generateBuildRandKey(24, { start: `${String(process.env.NODE_ENV.slice(0, 1))}_` }),
   BUILD_DATE_ISO: new Date().toISOString(),
