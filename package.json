@@ -6,8 +6,11 @@
     "dev": "next dev",
     "dev:turbopack": "next dev --turbopack",
     "build": "next build",
+    "build:analyzer": "cross-env ANALYZE=true next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "serve:start": "npx serve -p 3006 ./out",
+    "serve:analyze": "npx serve -p 3008 .next/analyze"
   },
   "dependencies": {
     "@reduxjs/toolkit": "2.8.2",
@@ -24,11 +27,13 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@next/bundle-analyzer": "15.3.3",
+    "@svgr/webpack": "8.1.0",
     "@tailwindcss/postcss": "^4",
     "@tanstack/react-query-devtools": "5.80.6",
     "@types/node": "^24",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "cross-env": "7.0.3",
     "eslint": "^9",
     "eslint-config-next": "15.3.3",
     "sass": "1.89.2",
