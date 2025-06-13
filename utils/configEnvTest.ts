@@ -6,7 +6,7 @@ if (isClient) {
 import { randomInt } from "crypto";
 import { stringShuffle } from "./shuffle";
 
-const BUILD_DATE_ISO = new Date().toISOString();
+const BUILD_DATE_ISO = new Date().toISOString(); // BUILD_RAND_KEY에도 포함 되니 주의
 
 const BUILD_RAND_KEY = ((length: number = 16): string => {
   try {
@@ -28,6 +28,7 @@ const BUILD_RAND_KEY = ((length: number = 16): string => {
     // 생성된 키 검증
     if (!randomKey || randomKey.trim().length !== length) throw new Error("랜덤 키 생성에 실패했습니다.");
 
+    // 접두사 생성
     const startPrefix = String(process.env.NODE_ENV).charAt(0).toLowerCase();
     if (!startPrefix || typeof startPrefix !== "string") throw new Error("접두사 생성 오류");
 
