@@ -3,17 +3,19 @@ if (isClient) {
   throw new Error("configEnv: 보안상 서버환경에서만 실행이 가능합니다.");
 }
 
-import { randomInt } from "crypto";
+import { resolve } from "path";
+import { existsSync, readFileSync } from "fs";
+import { generateKeyPairSync, randomInt } from "crypto";
 import { stringShuffle } from "./shuffle";
 
 const BUILD_DATE_ISO = new Date().toISOString(); // BUILD_RAND_KEY에도 포함 되니 주의
 
-const BUILD_RAND_KEY = ((length: number = 16): string => {
+const BUILD_RAND_KEY = () => {
   try {
     if (isClient) throw new Error("보안상 서버환경에서만 실행이 가능합니다.");
 
-    if (length < 8) throw new Error("보안을 위해 길이는 최소 8자 이상이어야 합니다.");
-    if (length > 64) throw new Error("키 길이는 64자를 초과할 수 없습니다.");
+    // 생성할 문자열 길이
+    const length = 16;
 
     // BUILD_RAND_KEY의 문자열 섞기
     const charShuffle = stringShuffle("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789");
@@ -21,9 +23,7 @@ const BUILD_RAND_KEY = ((length: number = 16): string => {
 
     // 랜덤 키 생성
     let randomKey = "";
-    for (let i = 0; i < length; i++) {
-      randomKey += charShuffle[randomInt(0, charShuffle.length)];
-    }
+    for (let i = 0; i < length; i++) randomKey += charShuffle[randomInt(0, charShuffle.length)];
 
     // 생성된 키 검증
     if (!randomKey || randomKey.trim().length !== length) throw new Error("랜덤 키 생성에 실패했습니다.");
@@ -43,11 +43,76 @@ const BUILD_RAND_KEY = ((length: number = 16): string => {
     return `${startPrefix}_${randomKey}_${endSuffix}`;
   } catch (e) {
     const message = e instanceof Error ? e.message : "알 수 없는 오류 발생";
-    throw new Error(`BUILD_DATE_KEY: ${message}`);
+    throw new Error(`BUILD_RAND_KEY : ${message}`);
   }
-})();
+};
+
+const BUILD_RSA_KEY = () => {
+  try {
+    if (isClient) throw new Error(`보안상 서버환경에서만 실행이 가능합니다.`);
+
+    // RSA 키 생성
+    const { publicKey: BUILD_PUBLIC_KEY, privateKey: BUILD_PRIVATE_KEY } = generateKeyPairSync("rsa", {
+      modulusLength: 2048,
+      publicKeyEncoding: { type: "spki", format: "pem" },
+      privateKeyEncoding: { type: "pkcs8", format: "pem" },
+    });
+
+    // 키 타입 검증
+    if (typeof BUILD_PUBLIC_KEY !== "string" || typeof BUILD_PRIVATE_KEY !== "string") {
+      throw new Error("RSA 키 생성 실패(키가 문자열 형태가 아닙니다.)");
+    }
+
+    // 키 길이 검증 추가
+    if (BUILD_PUBLIC_KEY.length < 100 || BUILD_PRIVATE_KEY.length < 100) {
+      throw new Error("RSA 키 생성 실패(키 길이가 너무 짧습니다.)");
+    }
+
+    return { BUILD_PUBLIC_KEY, BUILD_PRIVATE_KEY };
+  } catch (e) {
+    const message = e instanceof Error ? e.message : "알 수 없는 오류 발생";
+    throw new Error(`BUILD_RSA_KEY : ${message}`);
+  }
+};
+
+const PACKAGE_VERSION = () => {
+  try {
+    if (isClient) throw new Error("보안상 서버환경에서만 실행이 가능합니다.");
+
+    const packageJsonPath = resolve(process.cwd(), "package.json");
+    if (!existsSync(packageJsonPath)) throw new Error(`package.json 파일을 찾을 수 없습니다.`);
+
+    const fileContent = readFileSync(packageJsonPath, "utf-8");
+    const packageJson = JSON.parse(fileContent);
+    if (!packageJson || typeof packageJson !== "object" || Array.isArray(packageJson)) throw new Error(`package.json 형식에 오류가 발생하였습니다.`);
+
+    const NEXT_PUBLIC_PACKAGE_NAME = packageJson?.name;
+    const NEXT_PUBLIC_PACKAGE_VERSION = packageJson?.version;
+    const NEXT_PUBLIC_REACT_VERSION = packageJson?.dependencies?.next?.replace(/[\^~]/g, "");
+    const NEXT_PUBLIC_NEXT_VERSION = packageJson?.dependencies?.react?.replace(/[\^~]/g, "");
+
+    if (typeof NEXT_PUBLIC_PACKAGE_NAME !== "string") throw new Error("PACKAGE_NAME 오류");
+    if (typeof NEXT_PUBLIC_PACKAGE_VERSION !== "string") throw new Error("PACKAGE_VERSION 오류");
+    if (typeof NEXT_PUBLIC_REACT_VERSION !== "string") throw new Error("REACT_VERSION 오류");
+    if (typeof NEXT_PUBLIC_NEXT_VERSION !== "string") throw new Error("NEXT_VERSION 오류");
+
+    return {
+      NEXT_PUBLIC_PACKAGE_NAME,
+      NEXT_PUBLIC_PACKAGE_VERSION,
+      NEXT_PUBLIC_REACT_VERSION,
+      NEXT_PUBLIC_NEXT_VERSION,
+    };
+  } catch (e) {
+    const message = e instanceof Error ? e.message : "알 수 없는 오류 발생";
+    throw new Error(`GET_PACKAGE_VERSION : ${message}`);
+  }
+};
 
 export const CONFIG_ENV_TEST = {
+  ...PACKAGE_VERSION(),
   BUILD_DATE_ISO,
-  BUILD_RAND_KEY,
+  BUILD_RAND_KEY: BUILD_RAND_KEY(),
+  ...BUILD_RSA_KEY(),
 };
+
+console.log(CONFIG_ENV_TEST);
