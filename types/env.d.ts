@@ -7,8 +7,8 @@ declare namespace NodeJS {
 
     BUILD_DATE_ISO: string;
     BUILD_RAND_KEY: string;
-    // BUILD_PUBLIC_KEY 숨김 처리 (서버에서만 호출)
-    // BUILD_PRIVATE_KEY 숨김 처리 (서버에서만 호출)
+    BUILD_PUBLIC_KEY: string;
+    // BUILD_PRIVATE_KEY 자동 완성 숨김 처리 (서버에서만 호출)
     // Add other environment variables here
   }
 }
