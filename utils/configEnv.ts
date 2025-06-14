@@ -1,6 +1,6 @@
 const isClient = typeof window !== "undefined";
 if (isClient) {
-  throw new Error("configEnv: 보안상 서버환경에서만 실행이 가능합니다.");
+  throw new Error('configEnv<"보안상 서버환경에서만 실행이 가능합니다.">');
 }
 
 import { join, resolve } from "path";
@@ -10,7 +10,7 @@ import { stringShuffle } from "./shuffle";
 
 const BUILD_DATE_ISO = new Date().toISOString(); // BUILD_RAND_KEY에도 포함 되니 주의
 
-const BUILD_RAND_KEY = () => {
+const BUILD_RAND_KEY = (() => {
   try {
     if (isClient) throw new Error("보안상 서버환경에서만 실행이 가능합니다.");
 
@@ -43,11 +43,11 @@ const BUILD_RAND_KEY = () => {
     return `${startPrefix}_${randomKey}_${endSuffix}`;
   } catch (e) {
     const message = e instanceof Error ? e.message : "알 수 없는 오류 발생";
-    throw new Error(`BUILD_RAND_KEY : ${message}`);
+    throw new Error(`BUILD_RAND_KEY<"${message}">`);
   }
-};
+})();
 
-const BUILD_RSA_KEY = () => {
+const BUILD_RSA_KEY = (() => {
   try {
     if (isClient) throw new Error(`보안상 서버환경에서만 실행이 가능합니다.`);
 
@@ -91,18 +91,18 @@ const BUILD_RSA_KEY = () => {
       chmodSync(privateFilePath, 0o600);
     } catch (fileError) {
       const fileMessage = fileError instanceof Error ? fileError.message : "알 수 없는 파일 오류";
-      throw new Error(`generateBuildKeys: 키 파일 저장 실패(${fileMessage})`);
+      throw new Error(`BUILD_RSA_KEY<"키 파일 저장 실패(${fileMessage})">`);
     }
 
     // 결과값
     return { BUILD_PUBLIC_KEY, BUILD_PRIVATE_KEY };
   } catch (e) {
     const message = e instanceof Error ? e.message : "알 수 없는 오류 발생";
-    throw new Error(`BUILD_RSA_KEY : ${message}`);
+    throw new Error(`BUILD_RSA_KEY<"${message}">`);
   }
-};
+})();
 
-const PACKAGE_VERSION = () => {
+const PACKAGE_VERSION = (() => {
   try {
     if (isClient) throw new Error("보안상 서버환경에서만 실행이 가능합니다.");
 
@@ -131,13 +131,13 @@ const PACKAGE_VERSION = () => {
     };
   } catch (e) {
     const message = e instanceof Error ? e.message : "알 수 없는 오류 발생";
-    throw new Error(`GET_PACKAGE_VERSION : ${message}`);
+    throw new Error(`GET_PACKAGE_VERSION<"${message}">`);
   }
-};
+})();
 
 export const CONFIG_ENV = {
+  ...PACKAGE_VERSION,
   BUILD_DATE_ISO,
-  BUILD_RAND_KEY: BUILD_RAND_KEY(),
-  ...BUILD_RSA_KEY(),
-  ...PACKAGE_VERSION(),
+  BUILD_RAND_KEY,
+  ...BUILD_RSA_KEY,
 };
