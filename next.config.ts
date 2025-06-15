@@ -16,8 +16,17 @@ const nextConfig: NextConfig = {
     implementation: "sass-embedded",
   },
   webpack: (config) => {
+    // @svgr/webpack
+    config.module.rules.push({ test: /\.svg$/i, issuer: /\.[jt]sx?$/, use: ["@svgr/webpack"] });
+
+    // react-query
     if (config.name === "server") config.optimization.concatenateModules = false;
     return config;
+  },
+  turbopack: {
+    rules: {
+      "*.svg": { loaders: ["@svgr/webpack"], as: "*.js" },
+    },
   },
 };
 
