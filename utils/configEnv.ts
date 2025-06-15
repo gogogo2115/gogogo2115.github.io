@@ -40,7 +40,7 @@ const BUILD_RAND_KEY = (() => {
     const endSuffix = timestamp.toString(36).slice(-4);
     if (!endSuffix || typeof endSuffix !== "string") throw new Error("접미사 생성 오류");
 
-    return `${startPrefix}_${randomKey}_${endSuffix}`;
+    return `${startPrefix}${randomKey}${endSuffix}`;
   } catch (e) {
     const message = e instanceof Error ? e.message : "알 수 없는 오류 발생";
     throw new Error(`BUILD_RAND_KEY<"${message}">`);
