@@ -3,30 +3,33 @@ if (isClient) {
   throw new Error('configEnv<"보안상 서버환경에서만 실행이 가능합니다.">');
 }
 
+console.time("configEnv");
+
 import { join, resolve } from "path";
 import { chmodSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
 import { generateKeyPairSync, randomInt } from "crypto";
 import { stringShuffle } from "./shuffle";
 
-const BUILD_DATE_ISO = new Date().toISOString(); // BUILD_RAND_KEY에도 포함 되니 주의
+const BUILD_DATE_ISO: string = new Date().toISOString(); // BUILD_RAND_KEY에도 포함 되니 주의
 
-const BUILD_RAND_KEY = (() => {
+const BUILD_RAND_KEY = ((): string => {
   try {
     if (isClient) throw new Error("보안상 서버환경에서만 실행이 가능합니다.");
 
     // 생성할 문자열 길이
-    const length = 16;
+    const keyLength = 16;
 
     // BUILD_RAND_KEY의 문자열 섞기
-    const charShuffle = stringShuffle("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789");
-    if (!charShuffle || charShuffle.length === 0) throw new Error("문자셋 섞기에 실패했습니다.");
+    const char = stringShuffle("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789", { removeWhitespace: true });
+    const charLen = char.length;
+    if (!char || charLen === 0) throw new Error("문자셋 섞기에 실패했습니다.");
 
     // 랜덤 키 생성
     let randomKey = "";
-    for (let i = 0; i < length; i++) randomKey += charShuffle[randomInt(0, charShuffle.length)];
+    for (let i = 0; i < keyLength; i++) randomKey += char[randomInt(0, charLen)]; // crypto.randomInt 사용
 
     // 생성된 키 검증
-    if (!randomKey || randomKey.trim().length !== length) throw new Error("랜덤 키 생성에 실패했습니다.");
+    if (!randomKey || randomKey.trim().length !== keyLength) throw new Error("랜덤 키 생성에 실패했습니다.");
 
     // 접두사 생성
     const startPrefix = String(process.env.NODE_ENV).charAt(0).toLowerCase();
@@ -43,11 +46,11 @@ const BUILD_RAND_KEY = (() => {
     return `${startPrefix}_${randomKey}_${endSuffix}`;
   } catch (e) {
     const message = e instanceof Error ? e.message : "알 수 없는 오류 발생";
-    throw new Error(`BUILD_RAND_KEY<"${message}">`);
+    throw new Error(`BUILD_RSA_KEY<"${message}">`);
   }
 })();
 
-const BUILD_RSA_KEY = (() => {
+const BUILD_RSA_KEY = ((): { BUILD_PUBLIC_KEY: string; BUILD_PRIVATE_KEY: string } => {
   try {
     if (isClient) throw new Error(`보안상 서버환경에서만 실행이 가능합니다.`);
 
@@ -55,12 +58,17 @@ const BUILD_RSA_KEY = (() => {
     const { publicKey: BUILD_PUBLIC_KEY, privateKey: BUILD_PRIVATE_KEY } = generateKeyPairSync("rsa", {
       modulusLength: 2048,
       publicKeyEncoding: { type: "spki", format: "pem" },
-      privateKeyEncoding: { type: "pkcs8", format: "pem" },
+      privateKeyEncoding: { type: "pkcs8", format: "pem", cipher: "aes-256-cbc", passphrase: BUILD_DATE_ISO },
     });
 
-    // 키 타입 검증
-    if (typeof BUILD_PUBLIC_KEY !== "string" || typeof BUILD_PRIVATE_KEY !== "string") {
-      throw new Error("RSA 키 생성 실패(키가 문자열 형태가 아닙니다.)");
+    // BUILD_PUBLIC_KEY
+    if (typeof BUILD_PUBLIC_KEY !== "string" || BUILD_PUBLIC_KEY.length === 0) {
+      throw new Error("RSA 공개 키 생성에 실패했습니다.");
+    }
+
+    // BUILD_PRIVATE_KEY
+    if (typeof BUILD_PRIVATE_KEY !== "string" || BUILD_PRIVATE_KEY.length === 0) {
+      throw new Error("RSA 개인 키 생성에 실패했습니다.");
     }
 
     // 키 길이 검증 추가
@@ -68,7 +76,6 @@ const BUILD_RSA_KEY = (() => {
       throw new Error("RSA 키 생성 실패(키 길이가 너무 짧습니다.)");
     }
 
-    // 파일 저장
     try {
       const dir = "keys";
       const KEYS_DIR = resolve(process.cwd(), dir);
@@ -82,19 +89,18 @@ const BUILD_RSA_KEY = (() => {
       const publicFileName = "buildPublicKey.pem";
       const publicFilePath = join(KEYS_DIR, publicFileName);
       writeFileSync(publicFilePath, BUILD_PUBLIC_KEY, { encoding: "utf-8" });
-      chmodSync(publicFilePath, 0o644);
+      chmodSync(publicFilePath, 0o644); // 읽기 권한 설정 (소유자 읽기/쓰기, 그룹/기타 읽기)
 
       // Private 키 파일 저장
       const privateFileName = "buildPrivateKey.pem";
       const privateFilePath = join(KEYS_DIR, privateFileName);
       writeFileSync(privateFilePath, BUILD_PRIVATE_KEY, { encoding: "utf-8" });
-      chmodSync(privateFilePath, 0o600);
+      chmodSync(privateFilePath, 0o600); // 읽기/쓰기 권한 설정 (소유자만)
     } catch (fileError) {
       const fileMessage = fileError instanceof Error ? fileError.message : "알 수 없는 파일 오류";
       throw new Error(`BUILD_RSA_KEY<"키 파일 저장 실패(${fileMessage})">`);
     }
 
-    // 결과값
     return { BUILD_PUBLIC_KEY, BUILD_PRIVATE_KEY };
   } catch (e) {
     const message = e instanceof Error ? e.message : "알 수 없는 오류 발생";
@@ -141,3 +147,5 @@ export const CONFIG_ENV = {
   BUILD_RAND_KEY,
   ...BUILD_RSA_KEY,
 };
+
+console.timeEnd("configEnv");
