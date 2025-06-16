@@ -11,7 +11,7 @@ import { generateKeyPairSync, randomInt } from "crypto";
 import { stringShuffle } from "./shuffle";
 import { IS_DEVELOPMENT } from "./configNode";
 
-const nodeUsed1 = process.memoryUsage().heapUsed;
+const before = process.memoryUsage().heapUsed;
 if (IS_DEVELOPMENT) {
   console.time("configEnv");
 }
@@ -149,8 +149,8 @@ export const CONFIG_ENV = {
   ...BUILD_RSA_KEY,
 };
 
-const nodeUsed2 = process.memoryUsage().heapUsed;
+const after = process.memoryUsage().heapUsed;
 if (IS_DEVELOPMENT) {
-  console.log(`configEnv: Node.js 메모리 사용량 ${((nodeUsed2 - nodeUsed1) / 1024 / 1024).toFixed(2)} MB 증가`);
+  console.log(`configEnv: Node.js 메모리 사용량 ${((after - before) / 1024 / 1024).toFixed(2)} MB 증가`);
   console.timeEnd("configEnv");
 }
