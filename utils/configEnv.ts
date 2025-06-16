@@ -1,9 +1,12 @@
+"use server";
+
 const isClient = typeof window !== "undefined";
 if (isClient) {
   throw new Error('configEnv<"보안상 서버환경에서만 실행이 가능합니다.">');
 }
 
 console.time("configEnv");
+const nodeUsed1 = process.memoryUsage().heapUsed;
 
 import { join, resolve } from "path";
 import { chmodSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
@@ -148,4 +151,8 @@ export const CONFIG_ENV = {
   ...BUILD_RSA_KEY,
 };
 
+const nodeUsed2 = process.memoryUsage().heapUsed;
+const nodeUsedDiff = (nodeUsed2 - nodeUsed1) / 1024 / 1024; // MB 단위로 변환
+
+console.log(`Node.js에서 메모리 사용량 증가: ${nodeUsedDiff.toFixed(2)} MB`);
 console.timeEnd("configEnv");
