@@ -1,17 +1,18 @@
 import type { NextConfig } from "next";
 import bundleAnalyzer from "@next/bundle-analyzer";
 
-import { IS_PRODUCTION } from "@/utils/configNode";
+import { IS_DEVELOPMENT, IS_PRODUCTION } from "@/utils/configNode";
 import { CONFIG_ENV } from "./utils/configEnv";
 
 const nextConfig: NextConfig = {
   /* config options here */
   generateBuildId: async () => `build-${CONFIG_ENV.BUILD_RAND_KEY.replace(/[_]/g, "-")}`,
-  reactStrictMode: false,
+  reactStrictMode: IS_DEVELOPMENT,
   compress: true,
   output: "export",
   env: CONFIG_ENV,
   compiler: { removeConsole: IS_PRODUCTION },
+  poweredByHeader: true,
   sassOptions: {
     implementation: "sass-embedded",
   },
