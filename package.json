@@ -22,6 +22,7 @@
     "next": "15.3.3",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
+    "react-hook-form": "7.58.0",
     "react-redux": "9.2.0"
   },
   "devDependencies": {

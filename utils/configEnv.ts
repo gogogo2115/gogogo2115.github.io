@@ -1,14 +1,23 @@
+"use server";
+
+// 이 파일은 next.config.ts에서만 import 되어야 합니다.
+// 다른 코드에서 import하지 마세요.
+
 const isClient = typeof window !== "undefined";
 if (isClient) {
   throw new Error('configEnv<"보안상 서버환경에서만 실행이 가능합니다.">');
 }
 
-console.time("configEnv");
-
 import { join, resolve } from "path";
 import { chmodSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
 import { generateKeyPairSync, randomInt } from "crypto";
 import { stringShuffle } from "./shuffle";
+import { IS_DEVELOPMENT } from "./configNode";
+
+const before = process.memoryUsage().heapUsed;
+if (IS_DEVELOPMENT) {
+  console.time("configEnv");
+}
 
 const BUILD_DATE_ISO: string = new Date().toISOString(); // BUILD_RAND_KEY에도 포함 되니 주의
 
@@ -62,18 +71,13 @@ const BUILD_RSA_KEY = ((): { BUILD_PUBLIC_KEY: string; BUILD_PRIVATE_KEY: string
     });
 
     // BUILD_PUBLIC_KEY
-    if (typeof BUILD_PUBLIC_KEY !== "string" || BUILD_PUBLIC_KEY.length === 0) {
+    if (typeof BUILD_PUBLIC_KEY !== "string" || BUILD_PUBLIC_KEY.length < 100) {
       throw new Error("RSA 공개 키 생성에 실패했습니다.");
     }
 
     // BUILD_PRIVATE_KEY
-    if (typeof BUILD_PRIVATE_KEY !== "string" || BUILD_PRIVATE_KEY.length === 0) {
+    if (typeof BUILD_PRIVATE_KEY !== "string" || BUILD_PRIVATE_KEY.length < 100) {
       throw new Error("RSA 개인 키 생성에 실패했습니다.");
-    }
-
-    // 키 길이 검증 추가
-    if (BUILD_PUBLIC_KEY.length < 100 || BUILD_PRIVATE_KEY.length < 100) {
-      throw new Error("RSA 키 생성 실패(키 길이가 너무 짧습니다.)");
     }
 
     try {
@@ -148,4 +152,8 @@ export const CONFIG_ENV = {
   ...BUILD_RSA_KEY,
 };
 
-console.timeEnd("configEnv");
+const after = process.memoryUsage().heapUsed;
+if (IS_DEVELOPMENT) {
+  console.log(`configEnv: Node.js 메모리 사용량 ${((after - before) / 1024 / 1024).toFixed(2)} MB 증가`);
+  console.timeEnd("configEnv");
+}
