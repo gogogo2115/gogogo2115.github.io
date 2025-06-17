@@ -1,5 +1,8 @@
 "use server";
 
+// 이 파일은 next.config.ts에서만 import 되어야 합니다.
+// 다른 코드에서 import하지 마세요.
+
 const isClient = typeof window !== "undefined";
 if (isClient) {
   throw new Error('configEnv<"보안상 서버환경에서만 실행이 가능합니다.">');
