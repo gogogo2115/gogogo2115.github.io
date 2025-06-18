@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import DynamicSettingsClientPage from "./page.client";
+import SettingsClientPage from "./page.client";
 
 export const metadata: Metadata = {
   title: "설정",
@@ -7,5 +7,5 @@ export const metadata: Metadata = {
 };
 
 export default function SettingsPage() {
-  return <DynamicSettingsClientPage />;
+  return <SettingsClientPage />;
 }
