@@ -28,6 +28,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
         <body id="__next" className={`${geistSans.variable} ${geistMono.variable} antialiased`} suppressHydrationWarning>
           <SettingsScript />
           <QueryStreamingProvider>{children}</QueryStreamingProvider>
+          <div id="root_modal" />
         </body>
       </html>
     </StoreProvider>
