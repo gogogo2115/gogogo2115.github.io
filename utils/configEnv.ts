@@ -125,8 +125,8 @@ const PACKAGE_VERSION = (() => {
 
     const NEXT_PUBLIC_PACKAGE_NAME = packageJson?.name;
     const NEXT_PUBLIC_PACKAGE_VERSION = packageJson?.version;
-    const NEXT_PUBLIC_REACT_VERSION = packageJson?.dependencies?.next?.replace(/[\^~]/g, "");
-    const NEXT_PUBLIC_NEXT_VERSION = packageJson?.dependencies?.react?.replace(/[\^~]/g, "");
+    const NEXT_PUBLIC_REACT_VERSION = packageJson?.dependencies?.react?.replace(/[\^~]/g, "");
+    const NEXT_PUBLIC_NEXT_VERSION = packageJson?.dependencies?.next?.replace(/[\^~]/g, "");
 
     if (typeof NEXT_PUBLIC_PACKAGE_NAME !== "string") throw new Error("PACKAGE_NAME 오류");
     if (typeof NEXT_PUBLIC_PACKAGE_VERSION !== "string") throw new Error("PACKAGE_VERSION 오류");
