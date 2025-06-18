@@ -10,60 +10,58 @@ export const DEFAULT_FONT_SIZE: FontSize = 3;
 export const DEFAULT_SETTINGS: Settings = { theme: DEFAULT_THEME, fontSize: DEFAULT_FONT_SIZE };
 
 // 유틸리티 상수 (유효성 검사용 Set 객체)
-export const VALID_THEMES: ReadonlySet<Theme> = new Set<Theme>(["dark", "light", "system", "gray"]);
-export const VALID_FONT_SIZES: ReadonlySet<FontSize> = new Set<FontSize>([1, 2, 3, 4, 5]);
+export const VALID_THEMES: ReadonlySet<Theme> = new Set(["dark", "light", "system", "gray"]);
+export const VALID_FONT_SIZES: ReadonlySet<FontSize> = new Set([1, 2, 3, 4, 5]);
 export const MIN_FONT_SIZE = Math.min(...VALID_FONT_SIZES) as FontSize;
 export const MAX_FONT_SIZE = Math.max(...VALID_FONT_SIZES) as FontSize;
 
-// theme 입력값을 문자열로 변환하고 소문자로 정규화
-const normalizeTheme = (theme: unknown): string | undefined => {
+const parseTheme = (theme: unknown): string | undefined => {
   return typeof theme === "string" ? theme.toLowerCase().trim() : undefined;
 };
 
-// fontSize 입력값을 숫자로 파싱하여 숫자로 변환
 const parseFontSize = (fontSize: unknown): number | undefined => {
-  const typeFS = typeof fontSize;
-  const value = typeFS === "string" ? Number((fontSize as string).trim()) : typeFS === "number" ? (fontSize as number) : NaN;
+  const typeFS = typeof fontSize,
+    value = typeFS === "string" ? Number((fontSize as string).trim()) : typeFS === "number" ? (fontSize as number) : NaN;
   return Number.isFinite(value) ? Math.floor(value) : undefined;
 };
 
-// settings 입력값을 객체로 파싱
-const parseSettings = (settings: unknown): Record<string, unknown> => {
+const parseSettings = (settings: unknown): Partial<Settings> => {
   try {
     const parsed = typeof settings === "string" ? JSON.parse(settings) : settings;
     if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return {};
-    return parsed as Record<string, unknown>;
+    return parsed as Partial<Settings>;
   } catch {
     return {};
   }
 };
 
 export const isValidTheme = (theme: unknown): theme is Theme => {
-  const normalized = normalizeTheme(theme);
-  return normalized !== undefined && VALID_THEMES.has(normalized as Theme);
+  const value = parseTheme(theme);
+  return value !== undefined && VALID_THEMES.has(value as Theme);
 };
 
 export const isValidFontSize = (fontSize: unknown): fontSize is FontSize => {
-  const parsed = parseFontSize(fontSize);
-  return parsed !== undefined && VALID_FONT_SIZES.has(parsed as FontSize);
+  const value = parseFontSize(fontSize);
+  return value !== undefined && VALID_FONT_SIZES.has(value as FontSize);
 };
 
 export const isValidSettings = (settings: unknown): settings is Settings => {
-  const obj = parseSettings(settings) as Partial<Settings>;
+  const obj = parseSettings(settings);
   if (!("theme" in obj) || !isValidTheme(obj.theme)) return false;
   if (!("fontSize" in obj) || !isValidFontSize(obj.fontSize)) return false;
   return true;
 };
 
 export const isValidSettingsDetailed = (settings: unknown): { validTheme: boolean; validFontSize: boolean } => {
-  const obj = parseSettings(settings) as Partial<Settings>;
-  const validTheme = "theme" in obj && isValidTheme(obj.theme);
-  const validFontSize = "fontSize" in obj && isValidFontSize(obj.fontSize);
-  return { validTheme, validFontSize };
+  const obj = parseSettings(settings);
+  return {
+    validTheme: isValidTheme(obj.theme),
+    validFontSize: isValidFontSize(obj.fontSize),
+  };
 };
 
 export const clampTheme = (theme: unknown): Theme => {
-  const value = normalizeTheme(theme);
+  const value = parseTheme(theme);
   return value !== undefined && VALID_THEMES.has(value as Theme) ? (value as Theme) : DEFAULT_THEME;
 };
 
@@ -74,9 +72,10 @@ export const clampFontSize = (fontSize: unknown): FontSize => {
 
 export const clampSettings = (settings: unknown): Settings => {
   const obj = parseSettings(settings);
-  const clampedTheme = clampTheme(obj.theme);
-  const clampedFontSize = clampFontSize(obj.fontSize);
-  return { theme: clampedTheme, fontSize: clampedFontSize };
+  return {
+    theme: clampTheme(obj.theme),
+    fontSize: clampFontSize(obj.fontSize),
+  };
 };
 
 export const getSystemTheme = (fallback: Extract<Theme, "dark" | "light"> = "light"): Extract<Theme, "dark" | "light"> => {
@@ -91,25 +90,39 @@ export const setStorageSettings = (settings: Settings) => {
   } catch {}
 };
 
-export const getStorageSettings = ({ shouldResetOnError }: { shouldResetOnError?: boolean } = {}): { target: "server" | "client"; settings: Settings } => {
+export const getStorageSettings = ({ resetOnInvalid }: { resetOnInvalid?: boolean } = {}): { target: "server" | "client"; settings: Settings } => {
   try {
     if (typeof window === "undefined" || !("localStorage" in window)) return { target: "server", settings: DEFAULT_SETTINGS };
 
-    const storedString = window.localStorage.getItem(DEFAULT_KEY);
-    if (!storedString || storedString.trim() === "") {
-      if (shouldResetOnError) setStorageSettings(DEFAULT_SETTINGS);
+    const stored = window.localStorage.getItem(DEFAULT_KEY);
+    if (!stored || stored.trim() === "") {
+      if (resetOnInvalid) setStorageSettings(DEFAULT_SETTINGS);
       return { target: "client", settings: DEFAULT_SETTINGS };
     }
 
-    if (!isValidSettings(storedString)) {
-      const clamp = clampSettings(storedString);
-      if (shouldResetOnError) setStorageSettings(clamp);
-      return { target: "client", settings: clamp };
+    const clamped = clampSettings(stored);
+    if (!isValidSettings(stored)) {
+      if (resetOnInvalid) setStorageSettings(clamped);
+      return { target: "client", settings: clamped };
     }
 
-    return { target: "client", settings: parseSettings(storedString) as Settings };
+    return { target: "client", settings: clamped };
   } catch {
-    if (shouldResetOnError) setStorageSettings(DEFAULT_SETTINGS);
     return { target: "client", settings: DEFAULT_SETTINGS };
   }
+};
+
+export const updateDocumentSettings = (settings: Settings) => {
+  try {
+    if (typeof window === "undefined" || typeof document === "undefined" || !document.documentElement) return;
+
+    const el = document.documentElement;
+    const dataTheme = el.getAttribute("data-theme") ?? "";
+    const systemTheme = settings.theme === "system" ? getSystemTheme() : settings.theme;
+
+    if (dataTheme !== systemTheme) {
+      el.setAttribute("data-theme", systemTheme);
+      el.style.colorScheme = systemTheme === "dark" || systemTheme === "gray" ? "dark" : "light";
+    }
+  } catch {}
 };
