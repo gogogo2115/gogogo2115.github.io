@@ -80,30 +80,30 @@ const BUILD_RSA_KEY = ((): { BUILD_PUBLIC_KEY: string; BUILD_PRIVATE_KEY: string
       throw new Error("RSA 개인 키 생성에 실패했습니다.");
     }
 
-    try {
-      const dir = "keys";
-      const KEYS_DIR = resolve(process.cwd(), dir);
+    // try {
+    //   const dir = "keys";
+    //   const KEYS_DIR = resolve(process.cwd(), dir);
 
-      // 디렉토리 생성
-      if (!existsSync(KEYS_DIR)) {
-        mkdirSync(KEYS_DIR, { recursive: true });
-      }
+    //   // 디렉토리 생성
+    //   if (!existsSync(KEYS_DIR)) {
+    //     mkdirSync(KEYS_DIR, { recursive: true });
+    //   }
 
-      // Public 키 파일 저장
-      const publicFileName = "buildPublicKey.pem";
-      const publicFilePath = join(KEYS_DIR, publicFileName);
-      writeFileSync(publicFilePath, BUILD_PUBLIC_KEY, { encoding: "utf-8" });
-      chmodSync(publicFilePath, 0o644); // 읽기 권한 설정 (소유자 읽기/쓰기, 그룹/기타 읽기)
+    //   // Public 키 파일 저장
+    //   const publicFileName = "buildPublicKey.pem";
+    //   const publicFilePath = join(KEYS_DIR, publicFileName);
+    //   writeFileSync(publicFilePath, BUILD_PUBLIC_KEY, { encoding: "utf-8" });
+    //   chmodSync(publicFilePath, 0o644); // 읽기 권한 설정 (소유자 읽기/쓰기, 그룹/기타 읽기)
 
-      // Private 키 파일 저장
-      const privateFileName = "buildPrivateKey.pem";
-      const privateFilePath = join(KEYS_DIR, privateFileName);
-      writeFileSync(privateFilePath, BUILD_PRIVATE_KEY, { encoding: "utf-8" });
-      chmodSync(privateFilePath, 0o600); // 읽기/쓰기 권한 설정 (소유자만)
-    } catch (fileError) {
-      const fileMessage = fileError instanceof Error ? fileError.message : "알 수 없는 파일 오류";
-      throw new Error(`BUILD_RSA_KEY<"키 파일 저장 실패(${fileMessage})">`);
-    }
+    //   // Private 키 파일 저장
+    //   const privateFileName = "buildPrivateKey.pem";
+    //   const privateFilePath = join(KEYS_DIR, privateFileName);
+    //   writeFileSync(privateFilePath, BUILD_PRIVATE_KEY, { encoding: "utf-8" });
+    //   chmodSync(privateFilePath, 0o600); // 읽기/쓰기 권한 설정 (소유자만)
+    // } catch (fileError) {
+    //   const fileMessage = fileError instanceof Error ? fileError.message : "알 수 없는 파일 오류";
+    //   throw new Error(`BUILD_RSA_KEY<"키 파일 저장 실패(${fileMessage})">`);
+    // }
 
     return { BUILD_PUBLIC_KEY, BUILD_PRIVATE_KEY };
   } catch (e) {
