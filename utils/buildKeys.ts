@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-require-imports */
-
 // 노출 방지 (서버에서만 호출되도록 처리)
 const isServerCache = typeof window === "undefined";
 
