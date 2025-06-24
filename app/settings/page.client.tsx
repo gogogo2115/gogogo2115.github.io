@@ -26,34 +26,42 @@ const SettingsClientComponent = () => {
 
   return (
     <>
-      <div role="radiogroup">
+      <div className="flex flex-row gap-1" role="radiogroup" aria-label="테마 변경">
         <button type="button" className="cursor-pointer select-none align-middle" role="radio" aria-checked={settings.theme === "dark"} onClick={handleThemeClick} data-value="dark">
           <div className="relative overflow-hidden rounded-2xl min-w-28 max-w-36 w-full aspect-[4/3] bg-black block border-[2px] border-gray-500">
-            <div className="absolute top-2 left-2 text-white font-black text-base select-none">가</div>
+            <div className="absolute top-2 left-2 text-white font-black text-base" aria-hidden={true}>
+              가
+            </div>
           </div>
         </button>
 
         <button type="button" className="cursor-pointer select-none align-middle" role="radio" aria-checked={settings.theme === "light"} onClick={handleThemeClick} data-value="light">
           <div className="relative overflow-hidden rounded-2xl min-w-28 max-w-36 w-full aspect-[4/3] bg-white block border-[2px] border-gray-500">
-            <div className="absolute top-2 left-2 text-black font-black text-base select-none">가</div>
+            <div className="absolute top-2 left-2 text-black font-black text-base" aria-hidden={true}>
+              가
+            </div>
           </div>
         </button>
 
         <button type="button" className="cursor-pointer select-none align-middle" role="radio" aria-checked={settings.theme === "system"} onClick={handleThemeClick} data-value="system">
-          <div className="relative overflow-hidden rounded-2xl min-w-28 max-w-36 w-full aspect-[4/3] block border-[2px] border-gray-500">
+          <div className="relative overflow-hidden rounded-2xl min-w-28 max-w-36 w-full aspect-[4/3] bg-transparent block border-[2px] border-gray-500">
             <div className="absolute inset-0 flex flex-row">
               <div className="relative bg-black w-1/2">
-                <div className="absolute top-2 left-2 text-white font-black text-base select-none">가</div>
+                <div className="absolute top-2 left-2 text-white font-black text-base" aria-hidden={true}>
+                  가
+                </div>
               </div>
               <div className="relative bg-white w-1/2">
-                <div className="absolute top-2 left-2 text-black font-black text-base select-none">가</div>
+                <div className="absolute top-2 left-2 text-black font-black text-base" aria-hidden={true}>
+                  가
+                </div>
               </div>
             </div>
           </div>
         </button>
       </div>
 
-      <div role="radiogroup">
+      <div role="radiogroup" aria-label="글자 크기 변경">
         <button type="button" className="cursor-pointer select-none" role="radio" aria-checked={settings.fontSize === 1} data-value={1} onClick={handleFontSizeClick}>
           1
         </button>
