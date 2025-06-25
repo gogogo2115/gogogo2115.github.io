@@ -20,6 +20,7 @@ const eslintConfig = [
     rules: {
       "@typescript-eslint/no-unused-vars": "warn", // 사용하지 않는 변수를 warn 처리
       "react/no-unescaped-entities": "off", // 이스케이프 처리 않은 특수문자를 그대로 사용할 수 있도록 허용(off)
+      "@next/next/no-img-element": "off",
     },
   }),
 ];
