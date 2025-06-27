@@ -6,10 +6,10 @@ export default function OrientationPage() {
   const { data } = useDeviceOrientation();
   return (
     <>
-      <div>{data.alpha}</div>
-      <div>{data.beta}</div>
-      <div>{data.gamma}</div>
-      <div>{data.absolute && "absolute"}</div>
+      <div>alpha: {data.alpha}</div>
+      <div>beta: {data.beta}</div>
+      <div>gamma: {data.gamma}</div>
+      <div>absolute: {data.absolute ? "지원" : "미지원"}</div>
     </>
   );
 }
