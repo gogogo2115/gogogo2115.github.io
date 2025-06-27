@@ -9,7 +9,7 @@ export default function OrientationPage() {
       <div>{data.alpha}</div>
       <div>{data.beta}</div>
       <div>{data.gamma}</div>
-      <div>{data.absolute}</div>
+      <div>{data.absolute && "absolute"}</div>
     </>
   );
 }
