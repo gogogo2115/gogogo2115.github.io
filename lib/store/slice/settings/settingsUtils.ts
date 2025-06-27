@@ -54,10 +54,7 @@ export const isValidSettings = (settings: unknown): settings is Settings => {
 
 export const isValidSettingsDetailed = (settings: unknown): { validTheme: boolean; validFontSize: boolean } => {
   const obj = parseSettings(settings);
-  return {
-    validTheme: isValidTheme(obj.theme),
-    validFontSize: isValidFontSize(obj.fontSize),
-  };
+  return { validTheme: isValidTheme(obj.theme), validFontSize: isValidFontSize(obj.fontSize) };
 };
 
 export const clampTheme = (theme: unknown): Theme => {
@@ -72,10 +69,7 @@ export const clampFontSize = (fontSize: unknown): FontSize => {
 
 export const clampSettings = (settings: unknown): Settings => {
   const obj = parseSettings(settings);
-  return {
-    theme: clampTheme(obj.theme),
-    fontSize: clampFontSize(obj.fontSize),
-  };
+  return { theme: clampTheme(obj.theme), fontSize: clampFontSize(obj.fontSize) };
 };
 
 export const getSystemTheme = (fallback: Extract<Theme, "dark" | "light"> = "light"): Extract<Theme, "dark" | "light"> => {
