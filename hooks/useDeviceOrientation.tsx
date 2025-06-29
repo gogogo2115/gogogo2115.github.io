@@ -1,3 +1,5 @@
+"use client";
+
 import { useCallback, useEffect, useState } from "react";
 import throttle from "lodash/throttle";
 
@@ -23,67 +25,103 @@ type Options = { initialIsListening?: boolean; initialData?: Data; throttleTime?
 // error_denied: 오류 발생
 type Permission = "idle" | "not_supported" | "not_required" | "granted" | "denied" | "error_denied";
 
-const DEFAULT_DATA: Readonly<Data> = { alpha: null, beta: null, gamma: null, absolute: null };
-
 export const isSupported = (): boolean => {
   return typeof window !== "undefined" && "DeviceOrientationEvent" in window && typeof window.DeviceOrientationEvent === "function";
 };
 
-export const requestPermission = async (): Promise<Permission> => {
+export const isPermissionGranted = (permission: unknown): permission is Permission => {
+  return typeof permission === "string" && (permission === "granted" || permission === "not_required");
+};
+
+export const getRequestPermission = async (): Promise<Permission> => {
   if (!isSupported()) return "not_supported";
   if (!("requestPermission" in DeviceOrientationEvent) || typeof DeviceOrientationEvent.requestPermission !== "function") return "not_required";
   try {
-    const permission = (await DeviceOrientationEvent.requestPermission()) as string;
-    return ["granted", "denied"].includes(permission) ? (permission as Permission) : "error_denied";
+    const permission = await DeviceOrientationEvent.requestPermission();
+    return isPermissionGranted(permission) ? permission : "error_denied";
   } catch {
     return "error_denied";
   }
 };
 
-export const useDeviceOrientation = ({ initialIsListening = true, initialData = DEFAULT_DATA, throttleTime = 100 }: Options = {}) => {
-  const [supported, setSupported] = useState<boolean>(false);
+// data 기본 값
+const DEFAULT_DATA: Readonly<Data> = { alpha: null, beta: null, gamma: null, absolute: null };
+
+export const useDeviceOrientation = ({ initialIsListening = false, initialData = DEFAULT_DATA, throttleTime = 100 }: Options = {}) => {
+  const [supported, setSupported] = useState<boolean>(isSupported());
   const [permission, setPermission] = useState<Permission>("idle");
   const [isListening, setIsListening] = useState(initialIsListening);
-  const [data, setData] = useState(initialData);
-
-  // 센서 데이터 범위 조정 코드를 제거 (대부분 브라우저에서 이미 올바른 범위 반환)
-  const updateData = useCallback((ev: DeviceOrientationEvent) => {
-    const newData = { alpha: ev.alpha, beta: ev.beta, gamma: ev.gamma, absolute: ev.absolute };
-    setData((prevData) => ({ ...prevData, ...newData }));
-  }, []);
+  const [data, setData] = useState<Data>(initialData);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const handleThrottledEvent = useCallback(throttle(updateData, throttleTime, { leading: true, trailing: true }), [updateData, throttleTime]);
+  const handleThrottledEvent = useCallback(
+    throttle(
+      (ev: DeviceOrientationEvent) => {
+        const newData: Data = { alpha: ev.alpha, beta: ev.beta, gamma: ev.gamma, absolute: ev.absolute };
+        setData((prev) => ({ ...prev, ...newData }));
+      },
+      throttleTime,
+      { leading: true, trailing: true }
+    ),
+    [throttleTime]
+  );
 
-  const start = useCallback(() => {
-    if (supported && ["not_required", "granted"].includes(permission)) {
-      setIsListening(true); // 리스닝 시작
+  const requestPermission = useCallback(async () => {
+    try {
+      const result = await getRequestPermission();
+      setPermission(result);
+      return result;
+    } catch {
+      setPermission("error_denied");
+      return "error_denied";
     }
-  }, [supported, permission]);
+  }, []);
+
+  const start = useCallback(async () => {
+    if (!supported) return;
+
+    let currentPermission = permission;
+    if (!isPermissionGranted(currentPermission)) {
+      currentPermission = await requestPermission();
+    }
+
+    if (isPermissionGranted(currentPermission)) {
+      setIsListening(true);
+    }
+  }, [permission, requestPermission, supported]);
 
   const stop = useCallback(() => {
-    setIsListening(false); // 리스닝 중지
-  }, []);
+    handleThrottledEvent.cancel();
+    setIsListening(false);
+  }, [handleThrottledEvent]);
 
   useEffect(() => {
     const init = async () => {
       const checkSupported = isSupported();
-      const checkPermission = await requestPermission();
+      const checkPermission = await getRequestPermission();
+
       setSupported(checkSupported);
       setPermission(checkPermission);
+
+      if (initialIsListening && checkSupported && isPermissionGranted(checkPermission)) {
+        setIsListening(true);
+      }
     };
     init();
-  }, []);
+  }, [initialIsListening]);
 
   useEffect(() => {
-    if (!supported || !isListening || !["not_required", "granted"].includes(permission)) {
+    if (!supported || !isListening || !isPermissionGranted(permission)) {
       window.removeEventListener("deviceorientation", handleThrottledEvent);
     } else {
       window.addEventListener("deviceorientation", handleThrottledEvent);
     }
 
-    return () => window.removeEventListener("deviceorientation", handleThrottledEvent);
+    return () => {
+      handleThrottledEvent.cancel();
+      window.removeEventListener("deviceorientation", handleThrottledEvent);
+    };
   }, [handleThrottledEvent, isListening, permission, supported]);
 
-  return { supported, permission, isListening, data, start, stop };
+  return { supported, permission, isListening, data, requestPermission, start, stop };
 };
