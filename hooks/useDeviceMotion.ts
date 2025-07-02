@@ -1,9 +1,13 @@
-"use client";
+"use strict";
 
 import { useCallback, useEffect, useState } from "react";
 import throttle from "lodash/throttle";
 
-// 기기의 가속도 및 회전율 데이터를 위한 타입 정의
+// 기기 모션 데이터 타입 정의
+// acceleration: 중력 제외 가속도 (x, y, z)
+// accelerationIncludingGravity: 중력 포함 가속도 (x, y, z)
+// rotationRate: 회전 속도 (alpha, beta, gamma)
+// interval: 이벤트 간격 (밀리초)
 type Acceleration = {
   x: number | null | undefined;
   y: number | null | undefined;
@@ -16,7 +20,6 @@ type RotationRate = {
   gamma: number | null | undefined;
 };
 
-// DeviceMotionEvent에서 반환되는 데이터의 타입 정의
 type Data = {
   acceleration: Acceleration; // 중력을 제외한 가속도 (m/s^2)
   accelerationIncludingGravity: Acceleration; // 중력을 포함한 가속도 (m/s^2)
@@ -24,13 +27,21 @@ type Data = {
   interval: number | null | undefined; // 데이터 획득 간격 (ms)
 };
 
-// 훅의 옵션 타입 정의
+// 훅 옵션 타입 정의
+// initialIsListening: 훅 초기화 시 즉시 데이터 수집 시작 여부
+// throttleTime: 스로틀링 시간 (밀리초), 기본값 100ms
 type Options = {
   initialIsListening?: boolean;
   throttleTime?: number;
 };
 
-// 권한 상태 (DeviceOrientation과 동일)
+// 권한 상태
+// idle: 시작 전
+// not_supported: DeviceMotionEvent 지원하지 않음
+// not_required: 권한 요청이 필요 없는 환경 (권한 허용으로 처리)
+// granted: 권한 허용됨
+// denied: 권한 거부됨
+// error_denied: 오류 발생
 type Permission = "idle" | "not_supported" | "not_required" | "granted" | "denied" | "error_denied";
 
 export const getIsSupported = (): boolean => {
@@ -54,11 +65,19 @@ export const getRequestPermission = async (): Promise<Permission> => {
   }
 };
 
+// 기본 값
 const DEFAULT_THROTTLE = 100;
 const DEFAULT_IS_LISTENING = false;
 
+/**
+ * 기기 모션 데이터(가속도계 및 자이로스코프)를 수집하는 커스텀 훅
+ * @param options 훅 설정 옵션
+ * @param options.initialIsListening 즉시 데이터 수집 시작 여부 (기본값: false)
+ * @param options.throttleTime 스로틀링 시간(밀리초, 기본값: 100)
+ * @returns 지원 여부, 권한 상태, 수집 상태, 모션 데이터, 제어 함수를 포함한 객체
+ */
 export const useDeviceMotion = ({ initialIsListening = DEFAULT_IS_LISTENING, throttleTime = DEFAULT_THROTTLE }: Options = {}) => {
-  const [supported, setSupported] = useState<boolean>(getIsSupported());
+  const [supported, setSupported] = useState(getIsSupported());
   const [permission, setPermission] = useState<Permission>("idle");
   const [isListening, setIsListening] = useState(initialIsListening);
   const [data, setData] = useState<Data>({
@@ -68,6 +87,7 @@ export const useDeviceMotion = ({ initialIsListening = DEFAULT_IS_LISTENING, thr
     interval: null,
   });
 
+  // 스로틀링된 이벤트 핸들러
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const handleThrottledEvent = useCallback(
     throttle(
@@ -97,12 +117,14 @@ export const useDeviceMotion = ({ initialIsListening = DEFAULT_IS_LISTENING, thr
     [throttleTime]
   );
 
+  // 권한 요청 함수
   const requestPermission = useCallback(async () => {
     const result = await getRequestPermission();
     setPermission(result);
     return result;
   }, []);
 
+  // 데이터 수집 시작 함수
   const start = useCallback(async () => {
     if (!supported) return;
 
@@ -116,11 +138,13 @@ export const useDeviceMotion = ({ initialIsListening = DEFAULT_IS_LISTENING, thr
     }
   }, [permission, requestPermission, supported]);
 
+  // 데이터 수집 중지 함수
   const stop = useCallback(() => {
     setIsListening(false);
     handleThrottledEvent.cancel();
   }, [handleThrottledEvent]);
 
+  // 초기화
   useEffect(() => {
     const init = async () => {
       try {
@@ -133,12 +157,15 @@ export const useDeviceMotion = ({ initialIsListening = DEFAULT_IS_LISTENING, thr
         if (initialIsListening && checkSupported && getIsPermissionGranted(checkPermission)) {
           setIsListening(true);
         }
-      } catch {}
+      } catch (error) {
+        console.error("기기 모션 초기화 실패:", error);
+      }
     };
 
     init();
   }, [initialIsListening]);
 
+  // 이벤트 리스너 관리
   useEffect(() => {
     if (supported && isListening && getIsPermissionGranted(permission)) {
       window.addEventListener("devicemotion", handleThrottledEvent);
