@@ -133,9 +133,7 @@ export const useDeviceMotion = ({ initialIsListening = DEFAULT_IS_LISTENING, thr
         if (initialIsListening && checkSupported && getIsPermissionGranted(checkPermission)) {
           setIsListening(true);
         }
-      } catch (error) {
-        console.error("Failed to initialize device motion:", error);
-      }
+      } catch {}
     };
 
     init();
