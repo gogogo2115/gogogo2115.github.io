@@ -3,7 +3,7 @@
 import { useDeviceOrientation } from "@/hooks/useDeviceOrientation";
 
 export default function ClientOrientation() {
-  const { supported, permission, isListening, data, start, stop, requestPermission } = useDeviceOrientation();
+  const { supported, permission, isListening, data, start, stop, requestPermission } = useDeviceOrientation({ initialIsListening: true });
 
   return (
     <main className="p-8">

@@ -4,7 +4,7 @@ import { useDeviceMotion } from "@/hooks/useDeviceMotion"; // useDeviceMotion �
 // 예시: 만약 useDeviceMotion.ts 파일이 project_root/hooks/useDeviceMotion.ts 에 있다면 위 경로처럼요.
 
 export default function MotionPage() {
-  const { supported, permission, isListening, data, start, stop, requestPermission } = useDeviceMotion();
+  const { supported, permission, isListening, data, start, stop, requestPermission } = useDeviceMotion({ initialIsListening: true });
 
   return (
     <main className="p-8">
