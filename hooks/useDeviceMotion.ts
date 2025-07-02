@@ -4,141 +4,153 @@ import { useCallback, useEffect, useState } from "react";
 import throttle from "lodash/throttle";
 
 // 기기의 가속도 및 회전율 데이터를 위한 타입 정의
-type Vector3D = { x: null | number; y: null | number; z: null | number };
-type RotationRate = { alpha: null | number; beta: null | number; gamma: null | number };
+type Acceleration = {
+  x: number | null | undefined;
+  y: number | null | undefined;
+  z: number | null | undefined;
+};
+
+type RotationRate = {
+  alpha: number | null | undefined;
+  beta: number | null | undefined;
+  gamma: number | null | undefined;
+};
 
 // DeviceMotionEvent에서 반환되는 데이터의 타입 정의
 type Data = {
-  acceleration: Vector3D; // 중력을 제외한 가속도 (m/s^2)
-  accelerationIncludingGravity: Vector3D; // 중력을 포함한 가속도 (m/s^2)
+  acceleration: Acceleration; // 중력을 제외한 가속도 (m/s^2)
+  accelerationIncludingGravity: Acceleration; // 중력을 포함한 가속도 (m/s^2)
   rotationRate: RotationRate; // 회전율 (degrees/second)
-  interval: null | number; // 데이터 획득 간격 (ms)
+  interval: number | null | undefined; // 데이터 획득 간격 (ms)
 };
 
 // 훅의 옵션 타입 정의
-type Options = { initialIsListening?: boolean; initialData?: Data; throttleTime?: number };
+type Options = {
+  initialIsListening?: boolean;
+  throttleTime?: number;
+};
 
 // 권한 상태 (DeviceOrientation과 동일)
 type Permission = "idle" | "not_supported" | "not_required" | "granted" | "denied" | "error_denied";
 
-export const isSupported = (): boolean => {
-  // DeviceMotionEvent가 window 객체에 있는지 확인
+export const getIsSupported = (): boolean => {
   return typeof window !== "undefined" && "DeviceMotionEvent" in window && typeof window.DeviceMotionEvent === "function";
 };
 
-export const isPermissionGranted = (permission: unknown): permission is Permission => {
+export const getIsPermissionGranted = (permission: unknown): permission is Permission => {
   return typeof permission === "string" && (permission === "granted" || permission === "not_required");
 };
 
 export const getRequestPermission = async (): Promise<Permission> => {
-  if (!isSupported()) return "not_supported";
-  if (!("requestPermission" in DeviceMotionEvent) || typeof DeviceMotionEvent.requestPermission !== "function") return "not_required";
+  if (!getIsSupported()) return "not_supported";
+  if (!("requestPermission" in DeviceMotionEvent) || typeof DeviceMotionEvent.requestPermission !== "function") {
+    return "not_required";
+  }
   try {
-    const permission = await DeviceMotionEvent.requestPermission(); // 타입 캐스팅
-    return isPermissionGranted(permission) ? permission : "error_denied";
+    const permission = await DeviceMotionEvent.requestPermission();
+    return ["granted", "denied"].includes(permission) ? permission : "error_denied";
   } catch {
-    return "error_denied";
+    return "denied";
   }
 };
 
-// data 기본 값
-const DEFAULT_DATA: Readonly<Data> = {
-  acceleration: { x: null, y: null, z: null },
-  accelerationIncludingGravity: { x: null, y: null, z: null },
-  rotationRate: { alpha: null, beta: null, gamma: null },
-  interval: null,
-};
+const DEFAULT_THROTTLE = 100;
+const DEFAULT_IS_LISTENING = false;
 
-export const useDeviceMotion = ({ initialIsListening = false, initialData = DEFAULT_DATA, throttleTime = 100 }: Options = {}) => {
-  const [supported, setSupported] = useState<boolean>(isSupported());
+export const useDeviceMotion = ({ initialIsListening = false, throttleTime = 100 }: Options = {}) => {
+  const [supported, setSupported] = useState<boolean>(getIsSupported());
   const [permission, setPermission] = useState<Permission>("idle");
   const [isListening, setIsListening] = useState(initialIsListening);
-  const [data, setData] = useState<Data>(initialData);
+  const [data, setData] = useState<Data>({
+    acceleration: { x: null, y: null, z: null },
+    accelerationIncludingGravity: { x: null, y: null, z: null },
+    rotationRate: { alpha: null, beta: null, gamma: null },
+    interval: null,
+  });
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const handleThrottledEvent = useCallback(
     throttle(
       (ev: DeviceMotionEvent) => {
-        const newData: Data = {
+        setData({
           acceleration: {
-            x: ev.acceleration?.x ?? null,
-            y: ev.acceleration?.y ?? null,
-            z: ev.acceleration?.z ?? null,
+            x: typeof ev.acceleration?.x === "number" ? ev.acceleration.x : null,
+            y: typeof ev.acceleration?.y === "number" ? ev.acceleration.y : null,
+            z: typeof ev.acceleration?.z === "number" ? ev.acceleration.z : null,
           },
           accelerationIncludingGravity: {
-            x: ev.accelerationIncludingGravity?.x ?? null,
-            y: ev.accelerationIncludingGravity?.y ?? null,
-            z: ev.accelerationIncludingGravity?.z ?? null,
+            x: typeof ev.accelerationIncludingGravity?.x === "number" ? ev.accelerationIncludingGravity.x : null,
+            y: typeof ev.accelerationIncludingGravity?.y === "number" ? ev.accelerationIncludingGravity.y : null,
+            z: typeof ev.accelerationIncludingGravity?.z === "number" ? ev.accelerationIncludingGravity.z : null,
           },
           rotationRate: {
-            alpha: ev.rotationRate?.alpha ?? null,
-            beta: ev.rotationRate?.beta ?? null,
-            gamma: ev.rotationRate?.gamma ?? null,
+            alpha: typeof ev.rotationRate?.alpha === "number" ? ev.rotationRate.alpha : null,
+            beta: typeof ev.rotationRate?.beta === "number" ? ev.rotationRate.beta : null,
+            gamma: typeof ev.rotationRate?.gamma === "number" ? ev.rotationRate.gamma : null,
           },
-          interval: ev.interval ?? null,
-        };
-        setData((prev) => ({ ...prev, ...newData }));
+          interval: typeof ev.interval === "number" ? ev.interval : null,
+        });
       },
       throttleTime,
       { leading: true, trailing: true }
     ),
-    [throttleTime] // throttleTime이 변경될 때만 이 함수를 다시 생성
+    [throttleTime]
   );
 
   const requestPermission = useCallback(async () => {
-    try {
-      const result = await getRequestPermission();
-      setPermission(result);
-      return result;
-    } catch {
-      setPermission("error_denied");
-      return "error_denied";
-    }
+    const result = await getRequestPermission();
+    setPermission(result);
+    return result;
   }, []);
 
   const start = useCallback(async () => {
     if (!supported) return;
 
-    let currentPermission = permission;
-    if (!isPermissionGranted(currentPermission)) {
-      currentPermission = await requestPermission();
+    let currPermission = permission;
+    if (!getIsPermissionGranted(currPermission)) {
+      currPermission = await requestPermission();
     }
 
-    if (isPermissionGranted(currentPermission)) {
+    if (getIsPermissionGranted(currPermission)) {
       setIsListening(true);
     }
   }, [permission, requestPermission, supported]);
 
   const stop = useCallback(() => {
-    handleThrottledEvent.cancel();
     setIsListening(false);
+    handleThrottledEvent.cancel();
   }, [handleThrottledEvent]);
 
   useEffect(() => {
     const init = async () => {
-      const checkSupported = isSupported();
-      const checkPermission = await getRequestPermission();
+      try {
+        const checkSupported = getIsSupported();
+        setSupported(checkSupported);
 
-      setSupported(checkSupported);
-      setPermission(checkPermission);
+        const checkPermission = await getRequestPermission();
+        setPermission(checkPermission);
 
-      if (initialIsListening && checkSupported && isPermissionGranted(checkPermission)) {
-        setIsListening(true);
+        if (initialIsListening && checkSupported && getIsPermissionGranted(checkPermission)) {
+          setIsListening(true);
+        }
+      } catch (error) {
+        console.error("Failed to initialize device motion:", error);
       }
     };
+
     init();
   }, [initialIsListening]);
 
   useEffect(() => {
-    if (!supported || !isListening || !isPermissionGranted(permission)) {
-      window.removeEventListener("devicemotion", handleThrottledEvent);
-    } else {
+    if (supported && isListening && getIsPermissionGranted(permission)) {
       window.addEventListener("devicemotion", handleThrottledEvent);
+    } else {
+      window.removeEventListener("devicemotion", handleThrottledEvent);
     }
 
     return () => {
-      handleThrottledEvent.cancel();
       window.removeEventListener("devicemotion", handleThrottledEvent);
+      handleThrottledEvent.cancel();
     };
   }, [handleThrottledEvent, isListening, permission, supported]);
 
