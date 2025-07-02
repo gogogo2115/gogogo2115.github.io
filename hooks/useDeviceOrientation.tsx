@@ -1,4 +1,4 @@
-"use client";
+"use strict";
 
 import { useCallback, useEffect, useState } from "react";
 import throttle from "lodash/throttle";
@@ -8,13 +8,13 @@ import throttle from "lodash/throttle";
 // beta: X축 회전 각도 (-180-180).
 // gamma: Y축 회전 각도 (-90-90).
 // absolute: 데이터가 지자기 북쪽을 기준으로 하는지 여부.
-type Data = { alpha: null | number; beta: null | number; gamma: null | number; absolute: null | boolean };
+type Data = { alpha: number | null | undefined; beta: number | null | undefined; gamma: number | null | undefined; absolute: boolean | null | undefined };
 
 // 훅의 옵션 타입 정의
 // initialAction: 훅 초기화 시 즉시 데이터 수집을 시작할지 여부
 // initialData: 초기 센서 데이터 (선택 사항)
 // throttleTime: 스로틀링 시간 (밀리초), 기본값 100ms
-type Options = { initialIsListening?: boolean; initialData?: Data; throttleTime?: number };
+type Options = { initialIsListening?: boolean; throttleTime?: number };
 
 // 권한 상태
 // idle: 시작전
@@ -25,40 +25,45 @@ type Options = { initialIsListening?: boolean; initialData?: Data; throttleTime?
 // error_denied: 오류 발생
 type Permission = "idle" | "not_supported" | "not_required" | "granted" | "denied" | "error_denied";
 
-export const isSupported = (): boolean => {
+export const getIsSupported = (): boolean => {
   return typeof window !== "undefined" && "DeviceOrientationEvent" in window && typeof window.DeviceOrientationEvent === "function";
 };
 
-export const isPermissionGranted = (permission: unknown): permission is Permission => {
+export const getIsPermissionGranted = (permission: unknown): permission is Permission => {
   return typeof permission === "string" && (permission === "granted" || permission === "not_required");
 };
 
 export const getRequestPermission = async (): Promise<Permission> => {
-  if (!isSupported()) return "not_supported";
+  if (!getIsSupported()) return "not_supported";
   if (!("requestPermission" in DeviceOrientationEvent) || typeof DeviceOrientationEvent.requestPermission !== "function") return "not_required";
   try {
     const permission = await DeviceOrientationEvent.requestPermission();
-    return isPermissionGranted(permission) ? permission : "error_denied";
+    return ["granted", "denied"].includes(permission) ? permission : "error_denied";
   } catch {
-    return "error_denied";
+    return "denied";
   }
 };
 
-// data 기본 값
-const DEFAULT_DATA: Readonly<Data> = { alpha: null, beta: null, gamma: null, absolute: null };
+// 기본 값
+const DEFAULT_THROTTLE = 100;
+const DEFAULT_IS_LISTENING = false;
 
-export const useDeviceOrientation = ({ initialIsListening = false, initialData = DEFAULT_DATA, throttleTime = 100 }: Options = {}) => {
-  const [supported, setSupported] = useState<boolean>(isSupported());
+export const useDeviceOrientation = ({ initialIsListening = DEFAULT_IS_LISTENING, throttleTime = DEFAULT_THROTTLE }: Options = {}) => {
+  const [supported, setSupported] = useState(getIsSupported());
   const [permission, setPermission] = useState<Permission>("idle");
   const [isListening, setIsListening] = useState(initialIsListening);
-  const [data, setData] = useState<Data>(initialData);
+  const [data, setData] = useState<Data>({ alpha: null, beta: null, gamma: null, absolute: null });
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const handleThrottledEvent = useCallback(
     throttle(
       (ev: DeviceOrientationEvent) => {
-        const newData: Data = { alpha: ev.alpha, beta: ev.beta, gamma: ev.gamma, absolute: ev.absolute };
-        setData((prev) => ({ ...prev, ...newData }));
+        setData({
+          alpha: typeof ev.alpha === "number" ? ev.alpha : null,
+          beta: typeof ev.beta === "number" ? ev.beta : null,
+          gamma: typeof ev.gamma === "number" ? ev.gamma : null,
+          absolute: typeof ev.absolute === "boolean" ? ev.absolute : null,
+        });
       },
       throttleTime,
       { leading: true, trailing: true }
@@ -67,59 +72,57 @@ export const useDeviceOrientation = ({ initialIsListening = false, initialData =
   );
 
   const requestPermission = useCallback(async () => {
-    try {
-      const result = await getRequestPermission();
-      setPermission(result);
-      return result;
-    } catch {
-      setPermission("error_denied");
-      return "error_denied";
-    }
+    const result = await getRequestPermission();
+    setPermission(result);
+    return result;
   }, []);
 
   const start = useCallback(async () => {
     if (!supported) return;
 
-    let currentPermission = permission;
-    if (!isPermissionGranted(currentPermission)) {
-      currentPermission = await requestPermission();
+    let currPermission = permission;
+    if (!getIsPermissionGranted(currPermission)) {
+      currPermission = await requestPermission();
     }
 
-    if (isPermissionGranted(currentPermission)) {
+    if (getIsPermissionGranted(currPermission)) {
       setIsListening(true);
     }
   }, [permission, requestPermission, supported]);
 
   const stop = useCallback(() => {
-    handleThrottledEvent.cancel();
     setIsListening(false);
+    handleThrottledEvent.cancel();
   }, [handleThrottledEvent]);
 
   useEffect(() => {
     const init = async () => {
-      const checkSupported = isSupported();
-      const checkPermission = await getRequestPermission();
+      try {
+        const checkSupported = getIsSupported();
+        setSupported(checkSupported);
 
-      setSupported(checkSupported);
-      setPermission(checkPermission);
+        const checkPermission = await getRequestPermission();
+        setPermission(checkPermission);
 
-      if (initialIsListening && checkSupported && isPermissionGranted(checkPermission)) {
-        setIsListening(true);
-      }
+        if (initialIsListening && checkSupported && getIsPermissionGranted(checkPermission)) {
+          setIsListening(true);
+        }
+      } catch {}
     };
+
     init();
   }, [initialIsListening]);
 
   useEffect(() => {
-    if (!supported || !isListening || !isPermissionGranted(permission)) {
-      window.removeEventListener("deviceorientation", handleThrottledEvent);
-    } else {
+    if (supported && isListening && getIsPermissionGranted(permission)) {
       window.addEventListener("deviceorientation", handleThrottledEvent);
+    } else {
+      window.removeEventListener("deviceorientation", handleThrottledEvent);
     }
 
     return () => {
-      handleThrottledEvent.cancel();
       window.removeEventListener("deviceorientation", handleThrottledEvent);
+      handleThrottledEvent.cancel();
     };
   }, [handleThrottledEvent, isListening, permission, supported]);
 
