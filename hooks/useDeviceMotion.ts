@@ -57,7 +57,7 @@ export const getRequestPermission = async (): Promise<Permission> => {
 const DEFAULT_THROTTLE = 100;
 const DEFAULT_IS_LISTENING = false;
 
-export const useDeviceMotion = ({ initialIsListening = false, throttleTime = 100 }: Options = {}) => {
+export const useDeviceMotion = ({ initialIsListening = DEFAULT_IS_LISTENING, throttleTime = DEFAULT_THROTTLE }: Options = {}) => {
   const [supported, setSupported] = useState<boolean>(getIsSupported());
   const [permission, setPermission] = useState<Permission>("idle");
   const [isListening, setIsListening] = useState(initialIsListening);
