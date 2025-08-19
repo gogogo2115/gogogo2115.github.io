@@ -44,6 +44,30 @@ export const getRequestPermission = async (): Promise<Permission> => {
   }
 };
 
+// 센서 활성화 여부 확인
+// timeout 내에 유효한 데이터(alpha, beta, gamma 중 하나라도 null 아님)를 수신하면 true 반환
+async function checkActive(timeout: number = 100, permission: Permission): Promise<boolean> {
+  if (!getIsSupported() || !getIsPermissionGranted(permission)) return false;
+
+  return new Promise((resolve) => {
+    let hasData = false;
+    const handler = (e: DeviceOrientationEvent) => {
+      if (e.alpha !== null || e.beta !== null || e.gamma !== null) {
+        hasData = true;
+        clearTimeout(timer);
+        window.removeEventListener("deviceorientation", handler);
+        resolve(true);
+      }
+    };
+
+    window.addEventListener("deviceorientation", handler);
+    const timer = setTimeout(() => {
+      window.removeEventListener("deviceorientation", handler);
+      resolve(hasData);
+    }, timeout);
+  });
+}
+
 // 기본 값
 const DEFAULT_THROTTLE = 100;
 const DEFAULT_IS_LISTENING = false;
