@@ -1,4 +1,6 @@
-type BitSize = 0 | 8 | 16 | 32;
+import { IS_DEVELOPMENT } from "./configNode";
+
+export type BitSize = 0 | 8 | 16 | 32;
 
 // Crypto 객체를 캐싱하여 불필요한 반복 로드를 방지합니다.
 let cachedCrypto: Crypto | null | undefined = undefined;
@@ -62,7 +64,11 @@ export const secureRandomInt = (min: number, max: number, bitSize: BitSize = 16)
   if (min === max) return min;
   if (min > max) [min, max] = [max, min];
 
-  const rand = secureRandom(bitSize).value;
+  const { value: rand, isSecure } = secureRandom(bitSize);
+  if (!isSecure && IS_DEVELOPMENT) {
+    console.warn("secureRandom: Crypto API 미지원으로 Math.random() 사용 중");
+  }
+
   const range = max - min + 1;
   //return Math.floor(rand * range) + min;
   return Math.min(min + Math.floor(rand * range), max);
@@ -73,11 +79,16 @@ export const secureRandomFloat = (min: number, max: number, bitSize: BitSize = 1
   if (min === max) return min;
   if (min > max) [min, max] = [max, min];
 
-  const rand = secureRandom(bitSize).value;
+  const { value: rand, isSecure } = secureRandom(bitSize);
+  if (!isSecure && IS_DEVELOPMENT) {
+    console.warn("secureRandom: Crypto API 미지원으로 Math.random() 사용 중");
+  }
+
+  // Math.min(rand * (max - min) + min, max)
   return rand * (max - min) + min;
 };
 
-export const secureRandomItem = <T>(array: T[], bitSize: BitSize = 16): T | null => {
+export const secureRandomArrayItem = <T>(array: T[], bitSize: BitSize = 16): T | null => {
   if (!Array.isArray(array) || array.length === 0) return null;
   const result = secureRandomInt(0, array.length - 1, bitSize);
   return result ? array[result] : null;
