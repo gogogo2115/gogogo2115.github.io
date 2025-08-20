@@ -9,8 +9,7 @@ export const arrayShuffle = <T>(arr: T[]): T[] => {
   return copyArr;
 };
 
-export const stringShuffle = (str: string, options: { removeWhitespace?: boolean } = { removeWhitespace: false }): string => {
+export const stringShuffle = (str: string): string => {
   if (!str || typeof str !== "string") return "";
-  const processedStr = options.removeWhitespace ? str.replace(/\s+/g, "") : str;
-  return arrayShuffle(processedStr.split("")).join("");
+  return arrayShuffle(str.split("")).join("");
 };
