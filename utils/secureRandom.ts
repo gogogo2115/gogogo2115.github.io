@@ -66,7 +66,7 @@ export const secureRandomInt = (min: number, max: number, bitSize: BitSize = 16)
 
   const { value: rand, isSecure } = secureRandom(bitSize);
   if (!isSecure && IS_DEVELOPMENT) {
-    console.warn("secureRandom: Crypto API 미지원으로 Math.random() 사용 중");
+    console.warn("secureRandom: Crypto API 오류로 Math.random() 사용");
   }
 
   const range = max - min + 1;
@@ -81,7 +81,7 @@ export const secureRandomFloat = (min: number, max: number, bitSize: BitSize = 1
 
   const { value: rand, isSecure } = secureRandom(bitSize);
   if (!isSecure && IS_DEVELOPMENT) {
-    console.warn("secureRandom: Crypto API 미지원으로 Math.random() 사용 중");
+    console.warn("secureRandom: Crypto API 오류로  Math.random() 사용");
   }
 
   // Math.min(rand * (max - min) + min, max)

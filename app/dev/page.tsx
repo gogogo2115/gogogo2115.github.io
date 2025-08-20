@@ -1,9 +1,11 @@
+import { Metadata } from "next";
+import DevPageClient from "@/app/dev/page.client";
+
+export const metadata: Metadata = {
+  title: "개발 정보",
+  description: "개발 정보",
+};
+
 export default function DevPage() {
-  return (
-    <div>
-      <div>next version: {process.env.NEXT_PUBLIC_NEXT_VERSION}</div>
-      <div>react version: {process.env.NEXT_PUBLIC_REACT_VERSION}</div>
-      <div>build iso: {process.env.BUILD_DATE_ISO}</div>
-    </div>
-  );
+  return <DevPageClient />;
 }
