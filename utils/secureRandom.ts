@@ -9,23 +9,22 @@ const mathRandom = () => Math.random();
 
 const getWebCrypto = (): Crypto | null => {
   if (cachedCrypto !== undefined) return cachedCrypto;
+
   try {
     // 1) 표준 전역(globalThis)
     if (typeof globalThis !== "undefined" && "crypto" in globalThis) {
-      const g = (globalThis as unknown as { crypto?: Crypto }).crypto ?? null;
-      cachedCrypto = g;
+      cachedCrypto = (globalThis as unknown as { crypto?: Crypto }).crypto ?? null;
       return cachedCrypto;
     }
 
     // 2) 브라우저(window)
-    if (typeof window !== "undefined" && "crypto" in window) {
-      const w = (window as unknown as { crypto?: Crypto }).crypto ?? null;
-      cachedCrypto = w;
+    else if (typeof window !== "undefined" && "crypto" in window) {
+      cachedCrypto = (window as unknown as { crypto?: Crypto }).crypto ?? null;
       return cachedCrypto;
     }
 
     // 3) Node.js (require 가능 시)
-    if (typeof process !== "undefined" && process.versions?.node) {
+    else if (typeof process !== "undefined" && process.versions?.node) {
       //typeof require !== "undefined" > require 오류 발생 가능성으로 주석 처리
 
       // eslint-disable-next-line @typescript-eslint/no-require-imports
