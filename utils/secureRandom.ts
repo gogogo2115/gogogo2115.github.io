@@ -43,15 +43,16 @@ const getWebCrypto = (): Crypto | null => {
 
 export const secureRandom = (bitSize: BitSize = 16): { isSecure: boolean; value: number } => {
   try {
-    if (![8, 16, 32].includes(bitSize)) throw new Error(`Invalid bitSize: ${bitSize}`);
+    if (bitSize === 0) return { isSecure: false, value: mathRandom() };
+    if (![8, 16, 32].includes(bitSize)) throw new Error(`bitSize: ${bitSize} 오류`);
 
     // Web 환경: window.crypto
     const cryptoObj = getWebCrypto();
-    if (!cryptoObj || !cryptoObj?.getRandomValues) throw new Error("Crypto API not supported");
+    if (!cryptoObj || !cryptoObj?.getRandomValues) throw new Error("Crypto API 미지원");
 
     const arrayMap = { 8: Uint8Array, 16: Uint16Array, 32: Uint32Array } as const;
     const ArrayType = arrayMap[bitSize as 8 | 16 | 32];
-    if (!ArrayType || typeof ArrayType === "undefined") throw new Error("TypedArray not supported or unsupported bit size");
+    if (!ArrayType || typeof ArrayType === "undefined") throw new Error("TypedArray 미지원 또는 bitSize 오류");
 
     const arr = new ArrayType(1);
     cryptoObj.getRandomValues(arr);
