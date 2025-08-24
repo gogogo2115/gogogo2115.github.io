@@ -1,8 +1,29 @@
 import { IS_DEVELOPMENT } from "./configNode";
 
 export type BitSize = 0 | 8 | 16 | 32;
+export type SecureRandomStatus =
+  | "OK" // 정상적으로 보안 랜덤 생성
+  | "UNSUPPORTED" // Crypto API 없음
+  | "INVALID_BITSIZE" // 잘못된 비트 사이즈
+  | "FALLBACK_BITSIZE" // bitSize=0으로 의도적인 Math.random() 사용
+  | "UNKNOWN_ERROR"; // 알 수 없는 오류
 
-// Crypto 객체를 캐싱하여 불필요한 반복 로드를 방지합니다.
+/**
+ * 보안 랜덤 생성 결과를 나타내는 타입
+ */
+type SecureRandomResult = {
+  /** 암호학적으로 안전한 랜덤인지 여부 */
+  isSecure: boolean;
+  /** 0 이상 1 미만의 정규화된 랜덤 값 */
+  value: number;
+  /** 생성 상태 */
+  status: SecureRandomStatus;
+};
+
+const arrayMap = { 8: Uint8Array, 16: Uint16Array, 32: Uint32Array } as const;
+const maxValues = { 8: 2 ** 8, 16: 2 ** 16, 32: 2 ** 32 } as const;
+
+// Crypto 객체를 캐싱하여 불필요한 반복 로드를 방지
 let cachedCrypto: Crypto | null | undefined = undefined;
 
 const mathRandom = () => Math.random();
@@ -13,64 +34,62 @@ const getWebCrypto = (): Crypto | null => {
   try {
     // 1) 표준 전역(globalThis)
     if (typeof globalThis !== "undefined" && "crypto" in globalThis) {
-      cachedCrypto = (globalThis as unknown as { crypto?: Crypto }).crypto ?? null;
-      return cachedCrypto;
+      cachedCrypto = (globalThis as { crypto?: Crypto }).crypto ?? null;
     }
 
     // 2) 브라우저(window)
     else if (typeof window !== "undefined" && "crypto" in window) {
-      cachedCrypto = (window as unknown as { crypto?: Crypto }).crypto ?? null;
-      return cachedCrypto;
+      cachedCrypto = (window as { crypto?: Crypto }).crypto ?? null;
     }
 
     // 3) Node.js (require 가능 시)
-    else if (typeof process !== "undefined" && process.versions?.node) {
-      //typeof require !== "undefined" > require 오류 발생 가능성으로 주석 처리
-
+    else if (typeof process !== "undefined" && process.versions?.node && typeof require === "function") {
       // eslint-disable-next-line @typescript-eslint/no-require-imports
       const { webcrypto } = require("crypto");
       cachedCrypto = (webcrypto as Crypto) ?? null;
-      return cachedCrypto;
     }
 
-    cachedCrypto = null;
-    return cachedCrypto;
+    // 4) 그외 경우
+    else {
+      cachedCrypto = null;
+    }
   } catch {
     cachedCrypto = null;
-    return cachedCrypto;
   }
+
+  return cachedCrypto;
 };
 
-export const secureRandom = (bitSize: BitSize = 16): { isSecure: boolean; value: number } => {
+export const secureRandom = (bitSize: BitSize = 16): SecureRandomResult => {
+  if (![0, 8, 16, 32].includes(bitSize)) return { isSecure: false, value: mathRandom(), status: "INVALID_BITSIZE" };
+  if (bitSize === 0) return { isSecure: false, value: mathRandom(), status: "FALLBACK_BITSIZE" };
+
+  // Web 환경: window.crypto
+  const cryptoObj = getWebCrypto();
+  if (!cryptoObj || !cryptoObj?.getRandomValues) return { isSecure: false, value: mathRandom(), status: "UNSUPPORTED" };
+
+  const ArrayType = arrayMap[bitSize as 8 | 16 | 32];
+  const maxValue = maxValues[bitSize as 8 | 16 | 32];
+
   try {
-    if (bitSize === 0) return { isSecure: false, value: mathRandom() };
-    if (![8, 16, 32].includes(bitSize)) throw new Error(`bitSize: ${bitSize} 오류`);
-
-    // Web 환경: window.crypto
-    const cryptoObj = getWebCrypto();
-    if (!cryptoObj || !cryptoObj?.getRandomValues) throw new Error("Crypto API 미지원");
-
-    const arrayMap = { 8: Uint8Array, 16: Uint16Array, 32: Uint32Array } as const;
-    const ArrayType = arrayMap[bitSize as 8 | 16 | 32];
-    if (!ArrayType || typeof ArrayType === "undefined") throw new Error("TypedArray 미지원 또는 bitSize 오류");
-
     const arr = new ArrayType(1);
     cryptoObj.getRandomValues(arr);
-
-    // 2 ** 8 : 256
-    // 2 ** 16 : 65,536
-    // 2 ** 32 : 4,294,967,296
-    // 0 <= value < 1 (상한 미만)
-    return { isSecure: true, value: arr[0] / 2 ** bitSize };
+    return { isSecure: true, value: arr[0] / maxValue, status: "OK" };
   } catch {
-    return { isSecure: false, value: mathRandom() };
+    return { isSecure: false, value: mathRandom(), status: "UNKNOWN_ERROR" };
   }
 };
 
 const toRangeInt = (rand: number, min: number, max: number) => {
   const range = max - min + 1;
   // min + Math.floor(rand * range);
-  return Math.min(min + Math.floor(rand * range), max);
+  return min + Math.floor(rand * range);
+};
+
+const warnFallback = (mag: string, isSecure: boolean) => {
+  if (!isSecure && IS_DEVELOPMENT) {
+    console.warn(`${mag}`);
+  }
 };
 
 export const secureRandomInt = (min: number, max: number, bitSize: BitSize = 16): number | null => {
@@ -78,10 +97,8 @@ export const secureRandomInt = (min: number, max: number, bitSize: BitSize = 16)
   if (min === max) return min;
   if (min > max) [min, max] = [max, min];
 
-  const { value: rand, isSecure } = secureRandom(bitSize);
-  if (!isSecure && IS_DEVELOPMENT) {
-    console.warn("secureRandomInt: Crypto API 오류로 Math.random() 사용");
-  }
+  const { value: rand, isSecure, status } = secureRandom(bitSize);
+  warnFallback(`secureRandomInt: ${status} 오류로 Math.random() 사용`, isSecure);
 
   return toRangeInt(rand, min, max);
 };
@@ -91,22 +108,10 @@ export const secureRandomFloat = (min: number, max: number, bitSize: BitSize = 1
   if (min === max) return min;
   if (min > max) [min, max] = [max, min];
 
-  const { value: rand, isSecure } = secureRandom(bitSize);
-  if (!isSecure && IS_DEVELOPMENT) {
-    console.warn("secureRandomFloat: Crypto API 오류로  Math.random() 사용");
-  }
+  const { value: rand, isSecure, status } = secureRandom(bitSize);
+  warnFallback(`secureRandomInt: ${status} 오류로 Math.random() 사용`, isSecure);
 
   // Math.min(rand * (max - min) + min, max)
+  // rand * (max - min) + min;
   return rand * (max - min) + min;
-};
-
-export const secureRandomArrayItem = <T>(array: T[], bitSize: BitSize = 16): T | null => {
-  if (!Array.isArray(array) || array.length === 0) return null;
-
-  const { value: rand, isSecure } = secureRandom(bitSize);
-  if (!isSecure && IS_DEVELOPMENT) {
-    console.warn("secureRandomArrayItem: Crypto API 오류로 Math.random() 사용");
-  }
-
-  return array[toRangeInt(rand, 0, array.length - 1)];
 };
