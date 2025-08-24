@@ -81,9 +81,13 @@ export const secureRandom = (bitSize: BitSize = 16): SecureRandomResult => {
 };
 
 const toRangeInt = (rand: number, min: number, max: number) => {
-  const range = max - min + 1;
-  // min + Math.floor(rand * range);
-  return min + Math.floor(rand * range);
+  return Math.floor(rand * (max - min + 1)) + min;
+};
+
+const toRangeFloat = (rand: number, min: number, max: number) => {
+  // Math.min(rand * (max - min) + min, max)
+  // rand * (max - min) + min;
+  return rand * (max - min) + min;
 };
 
 const warnFallback = (mag: string, isSecure: boolean) => {
@@ -109,9 +113,7 @@ export const secureRandomFloat = (min: number, max: number, bitSize: BitSize = 1
   if (min > max) [min, max] = [max, min];
 
   const { value: rand, isSecure, status } = secureRandom(bitSize);
-  warnFallback(`secureRandomInt: ${status} 오류로 Math.random() 사용`, isSecure);
+  warnFallback(`secureRandomFloat: ${status} 오류로 Math.random() 사용`, isSecure);
 
-  // Math.min(rand * (max - min) + min, max)
-  // rand * (max - min) + min;
-  return rand * (max - min) + min;
+  return toRangeFloat(rand, min, max);
 };
