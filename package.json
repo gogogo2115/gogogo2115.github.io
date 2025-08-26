@@ -21,7 +21,7 @@
     "@tanstack/react-query-next-experimental": "5.85.5",
     "classnames": "2.5.1",
     "dompurify": "3.2.6",
-    "jose": "6.0.12",
+    "jose": "6.0.13",
     "lodash": "4.17.21",
     "next": "15.5.0",
     "react": "^19.1.1",
@@ -48,7 +48,7 @@
     "eslint-config-next": "15.5.0",
     "jest": "30.0.5",
     "jest-environment-jsdom": "30.0.5",
-    "sass": "1.90.0",
+    "sass": "1.91.0",
     "tailwindcss": "^4",
     "ts-node": "10.9.2",
     "typescript": "^5"
