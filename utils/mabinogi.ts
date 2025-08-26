@@ -18,7 +18,7 @@ export const erinn = (date = new Date(), { hours24 }: ErinnTimeOption = {}) => {
   // 세컨으로 변경 후 에린시간 36분이 하루이므로 초기준으로 나머지에 대한 시간을 구한다.
   // 에린 하루(24h) = 36분 = 2160초, 24초 오프셋(보정값)은 필요 시 0으로 조정
   const ERINN_DAY_SEC = 36 * 60;
-  const OFFSET_SEC = 7;
+  const OFFSET_SEC = 6.95;
   const elapsedSec = Math.floor((currDate.getTime() - resetDate.getTime()) / 1000);
   // 항상 [0, ERINN_DAY_SEC) 범위를 보장하는 양의 모듈러
   const restSec = (((elapsedSec - OFFSET_SEC) % ERINN_DAY_SEC) + ERINN_DAY_SEC) % ERINN_DAY_SEC;
