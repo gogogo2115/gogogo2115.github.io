@@ -1,61 +1,96 @@
 import { IS_DEVELOPMENT } from "./configNode";
 
 export type BitSize = 0 | 8 | 16 | 32;
+export type SecureRandomResult = {
+  isSecure: boolean;
+  value: number;
+  status: string;
+};
 
-// Crypto 객체를 캐싱하여 불필요한 반복 로드를 방지합니다.
+const arrayMap = { 8: Uint8Array, 16: Uint16Array, 32: Uint32Array } as const;
+const maxValues = { 8: 2 ** 8, 16: 2 ** 16, 32: 2 ** 32 } as const;
+
+// Crypto 객체를 캐싱하여 불필요한 반복 로드를 방지
 let cachedCrypto: Crypto | null | undefined = undefined;
-
-const mathRandom = () => Math.random();
 
 const getWebCrypto = (): Crypto | null => {
   if (cachedCrypto !== undefined) return cachedCrypto;
+
   try {
+    // 1) 표준 전역(globalThis)
     if (typeof globalThis !== "undefined" && "crypto" in globalThis) {
-      cachedCrypto = (globalThis.crypto as Crypto) ?? null;
-      return cachedCrypto;
+      return (cachedCrypto = (globalThis.crypto as Crypto) ?? null);
     }
 
-    // if (typeof window !== "undefined" && "crypto" in window) {
-    //   cachedCrypto = window.crypto as Crypto;
-    //   return cachedCrypto;
-    // }
+    // 2) 브라우저(window)
+    else if (typeof window !== "undefined" && "crypto" in window) {
+      return (cachedCrypto = (window.crypto as Crypto) ?? null);
+    }
 
-    if (typeof require !== "undefined") {
+    // 3) Node.js (require 가능 시)
+    else if (typeof process !== "undefined" && process.versions?.node && typeof require === "function") {
       // eslint-disable-next-line @typescript-eslint/no-require-imports
       const { webcrypto } = require("crypto");
-      cachedCrypto = (webcrypto as Crypto) ?? null;
-      return cachedCrypto;
+      return (cachedCrypto = (webcrypto as Crypto) ?? null);
     }
 
-    cachedCrypto = null;
-    return cachedCrypto;
+    // 4) 그외 경우
+    else {
+      return (cachedCrypto = null);
+    }
   } catch {
-    cachedCrypto = null;
-    return cachedCrypto;
+    return (cachedCrypto = null);
   }
 };
 
-export const secureRandom = (bitSize: BitSize = 16): { isSecure: boolean; value: number } => {
+const toRangeInt = (rand: number, min: number, max: number): number => {
+  const range = max - min;
+  return Math.floor(rand * (range + 1)) + min;
+};
+
+const toRangeFloat = (rand: number, min: number, max: number): number => {
+  const range = max - min;
+  return Math.min(rand * range + min, max);
+};
+
+/**
+ * 기본 랜덤 값 생성 (0 이상 1 미만, 0 <= x < 1)
+ */
+export const mathRandom = () => Math.random();
+
+export const mathRandomInt = (min: number, max: number): number | null => {
+  if (!Number.isInteger(min) || !Number.isInteger(max)) return null;
+  if (min === max) return min;
+  if (min > max) [min, max] = [max, min];
+  return toRangeInt(mathRandom(), min, max);
+};
+
+export const mathRandomFloat = (min: number, max: number): number | null => {
+  if (!Number.isFinite(min) || !Number.isFinite(max)) return null;
+  if (min === max) return min;
+  if (min > max) [min, max] = [max, min];
+  return toRangeFloat(mathRandom(), min, max);
+};
+
+export const secureRandom = (bitSize: BitSize = 16): SecureRandomResult => {
+  // bitSize 체크
+  if (![0, 8, 16, 32].includes(bitSize)) return { isSecure: false, value: Math.random(), status: "INVALID_BIT_SIZE" };
+  if (bitSize === 0) return { isSecure: false, value: Math.random(), status: "ZERO_BIT_SIZE" };
+
+  // Web 환경: window.crypto
+  const cryptoObj = getWebCrypto();
+  if (!cryptoObj || !cryptoObj.getRandomValues) return { isSecure: false, value: Math.random(), status: "CRYPTO_UNSUPPORTED" };
+
   try {
-    if (![8, 16, 32].includes(bitSize)) throw new Error(`Invalid bitSize: ${bitSize}`);
-
-    // Web 환경: window.crypto
-    const cryptoObj = getWebCrypto();
-    if (!cryptoObj || !cryptoObj?.getRandomValues) throw new Error("Crypto API not supported");
-
-    const arrayMap = { 8: Uint8Array, 16: Uint16Array, 32: Uint32Array } as const;
+    // 배열 타입과 최대값
     const ArrayType = arrayMap[bitSize as 8 | 16 | 32];
-    if (!ArrayType || typeof ArrayType === "undefined") throw new Error("TypedArray not supported or unsupported bit size");
+    const maxValue = maxValues[bitSize as 8 | 16 | 32];
 
     const arr = new ArrayType(1);
     cryptoObj.getRandomValues(arr);
-
-    // 2 ** 8 : 256
-    // 2 ** 16 : 65,536
-    // 2 ** 32 : 4,294,967,296
-    return { isSecure: true, value: arr[0] / 2 ** bitSize };
+    return { isSecure: true, value: arr[0] / maxValue, status: "SECURE" };
   } catch {
-    return { isSecure: false, value: mathRandom() };
+    return { isSecure: false, value: Math.random(), status: "FAILED" };
   }
 };
 
@@ -64,32 +99,23 @@ export const secureRandomInt = (min: number, max: number, bitSize: BitSize = 16)
   if (min === max) return min;
   if (min > max) [min, max] = [max, min];
 
-  const { value: rand, isSecure } = secureRandom(bitSize);
-  if (!isSecure && IS_DEVELOPMENT) {
-    console.warn("secureRandom: Crypto API 오류로 Math.random() 사용");
+  const { value: rand, isSecure, status } = secureRandom(bitSize);
+  if (IS_DEVELOPMENT && !isSecure) {
+    console.warn(`secureRandomInt: ${status} 문제로 math.random() 호출`);
   }
 
-  const range = max - min + 1;
-  //return Math.floor(rand * range) + min;
-  return Math.min(min + Math.floor(rand * range), max);
+  return toRangeInt(rand, min, max);
 };
 
 export const secureRandomFloat = (min: number, max: number, bitSize: BitSize = 16): number | null => {
-  if (!Number.isFinite(min) || !Number.isFinite(max)) return null;
+  if (typeof min !== "number" || typeof max !== "number") return null;
   if (min === max) return min;
   if (min > max) [min, max] = [max, min];
 
-  const { value: rand, isSecure } = secureRandom(bitSize);
-  if (!isSecure && IS_DEVELOPMENT) {
-    console.warn("secureRandom: Crypto API 오류로  Math.random() 사용");
+  const { value: rand, isSecure, status } = secureRandom(bitSize);
+  if (IS_DEVELOPMENT && !isSecure) {
+    console.warn(`secureRandomFloat: ${status} 문제로 math.random() 호출`);
   }
 
-  // Math.min(rand * (max - min) + min, max)
-  return rand * (max - min) + min;
-};
-
-export const secureRandomArrayItem = <T>(array: T[], bitSize: BitSize = 16): T | null => {
-  if (!Array.isArray(array) || array.length === 0) return null;
-  const result = secureRandomInt(0, array.length - 1, bitSize);
-  return result ? array[result] : null;
+  return toRangeFloat(rand, min, max);
 };

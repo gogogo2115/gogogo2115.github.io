@@ -29,7 +29,7 @@ const BUILD_RAND_KEY = ((): string => {
     const keyLength = 16;
 
     // BUILD_RAND_KEY의 문자열 섞기
-    const char = stringShuffle("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789", { removeWhitespace: true });
+    const char = stringShuffle("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789");
     const charLen = char.length;
     if (!char || charLen === 0) throw new Error("문자셋 섞기에 실패했습니다.");
 
