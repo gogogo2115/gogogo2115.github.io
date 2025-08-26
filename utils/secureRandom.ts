@@ -1,10 +1,11 @@
 import { IS_DEVELOPMENT } from "./configNode";
 
 export type BitSize = 0 | 8 | 16 | 32;
+export type secureRandomStatus = "INVALID_BIT_SIZE" | "ZERO_BIT_SIZE" | "CRYPTO_UNSUPPORTED" | "SECURE" | "FAILED";
 export type SecureRandomResult = {
   isSecure: boolean;
   value: number;
-  status: string;
+  status: secureRandomStatus;
 };
 
 const arrayMap = { 8: Uint8Array, 16: Uint16Array, 32: Uint32Array } as const;
