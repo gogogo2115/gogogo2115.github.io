@@ -1,7 +1,7 @@
 import { IS_DEVELOPMENT } from "./configNode";
 
-type BitSize = 0 | 8 | 16 | 32;
-type SecureRandomResult = {
+export type BitSize = 0 | 8 | 16 | 32;
+export type SecureRandomResult = {
   isSecure: boolean;
   value: number;
   status: string;
@@ -65,7 +65,7 @@ export const mathRandomInt = (min: number, max: number): number | null => {
   return toRangeInt(mathRandom(), min, max);
 };
 
-export const mathRandomFloat = (min: number, max: number) => {
+export const mathRandomFloat = (min: number, max: number): number | null => {
   if (!Number.isFinite(min) || !Number.isFinite(max)) return null;
   if (min === max) return min;
   if (min > max) [min, max] = [max, min];
@@ -100,8 +100,8 @@ export const secureRandomInt = (min: number, max: number, bitSize: BitSize = 16)
   if (min > max) [min, max] = [max, min];
 
   const { value: rand, isSecure, status } = secureRandom(bitSize);
-  if (IS_DEVELOPMENT && isSecure) {
-    console.warn(`secureRandomInt: ${status}`);
+  if (IS_DEVELOPMENT && !isSecure) {
+    console.warn(`secureRandomInt: ${status} 문제로 math.random() 호출`);
   }
 
   return toRangeInt(rand, min, max);
@@ -113,8 +113,8 @@ export const secureRandomFloat = (min: number, max: number, bitSize: BitSize = 1
   if (min > max) [min, max] = [max, min];
 
   const { value: rand, isSecure, status } = secureRandom(bitSize);
-  if (IS_DEVELOPMENT && isSecure) {
-    console.warn(`secureRandomInt: ${status}`);
+  if (IS_DEVELOPMENT && !isSecure) {
+    console.warn(`secureRandomFloat: ${status} 문제로 math.random() 호출`);
   }
 
   return toRangeFloat(rand, min, max);
