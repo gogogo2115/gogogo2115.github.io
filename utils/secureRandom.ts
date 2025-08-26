@@ -99,7 +99,11 @@ export const secureRandomInt = (min: number, max: number, bitSize: BitSize = 16)
   if (min === max) return min;
   if (min > max) [min, max] = [max, min];
 
-  const { value: rand } = secureRandom(bitSize);
+  const { value: rand, isSecure, status } = secureRandom(bitSize);
+  if (IS_DEVELOPMENT && isSecure) {
+    console.warn(`secureRandomInt: ${status}`);
+  }
+
   return toRangeInt(rand, min, max);
 };
 
@@ -108,6 +112,10 @@ export const secureRandomFloat = (min: number, max: number, bitSize: BitSize = 1
   if (min === max) return min;
   if (min > max) [min, max] = [max, min];
 
-  const { value: rand } = secureRandom(bitSize);
+  const { value: rand, isSecure, status } = secureRandom(bitSize);
+  if (IS_DEVELOPMENT && isSecure) {
+    console.warn(`secureRandomInt: ${status}`);
+  }
+
   return toRangeFloat(rand, min, max);
 };
