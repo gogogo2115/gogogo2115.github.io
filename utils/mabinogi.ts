@@ -1,5 +1,10 @@
 type ErinnTimeOption = {
   hours24?: boolean;
+  minsBlock?: boolean;
+};
+
+const originErinnTime = () => {
+  const currDate: Date = new Date();
 };
 
 export const erinn = (date = new Date(), { hours24 }: ErinnTimeOption = {}) => {
@@ -13,7 +18,7 @@ export const erinn = (date = new Date(), { hours24 }: ErinnTimeOption = {}) => {
   // 세컨으로 변경 후 에린시간 36분이 하루이므로 초기준으로 나머지에 대한 시간을 구한다.
   // 에린 하루(24h) = 36분 = 2160초, 24초 오프셋(보정값)은 필요 시 0으로 조정
   const ERINN_DAY_SEC = 36 * 60;
-  const OFFSET_SEC = 24;
+  const OFFSET_SEC = 7;
   const elapsedSec = Math.floor((currDate.getTime() - resetDate.getTime()) / 1000);
   // 항상 [0, ERINN_DAY_SEC) 범위를 보장하는 양의 모듈러
   const restSec = (((elapsedSec - OFFSET_SEC) % ERINN_DAY_SEC) + ERINN_DAY_SEC) % ERINN_DAY_SEC;
@@ -21,7 +26,13 @@ export const erinn = (date = new Date(), { hours24 }: ErinnTimeOption = {}) => {
   // 90초 = 1 에린시간, 1.5초 = 1 에린분
   const erinnHour = String(Math.floor(restSec / 90)).padStart(2, "0");
   const erinnMin = String(Math.floor((restSec % 90) / 1.5)).padStart(2, "0");
-  console.log(erinnHour, erinnMin);
+
+  let aa = erinnMin;
+  if (!erinnMin.endsWith("0")) {
+    aa = erinnMin[0] + "0";
+  }
+
+  return { hour: erinnHour, min: aa };
 };
 
 // export const erinn_time = () => {
