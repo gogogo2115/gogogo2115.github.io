@@ -6,19 +6,59 @@
 // 현실 시간의 하루 = 에린 시간의 40일
 // 현실 시간의 1주일 = 에린 시간의 280일 = 에린 시간의 1년
 
+type Meridiem = "am" | "pm";
+type TimeFormat = "12h" | "24h";
+
 type ErinnTimeOption = {
-  timeFormat?: "12h" | "24h";
+  timeFormat?: TimeFormat;
   truncateTo10?: boolean;
 };
 
 type ErinnTimeResult = {
-  meridiem: "am" | "pm";
+  meridiem: Meridiem;
   hour: string;
   min: string;
-  timeFormat: "12h" | "24h";
+  timeFormat: TimeFormat;
 };
 
-export const testErinnTime = (option: ErinnTimeOption = {}) => {
+// === 상수 정의 ===
+const REAL_SEC_PER_ERRIN_DAY = 2160; // 현실 36분 = 에린 1일
+const REAL_SEC_PER_ERRIN_HOUR = 90; // 현실 90초 = 에린 1시간
+const REAL_SEC_PER_ERRIN_MIN = 1.5; // 현실 1.5초 = 에린 1분
+
+export const errinTimeV2 = (option: ErinnTimeOption = {}): ErinnTimeResult => {
+  // 옵션 기본값 정의
+  const { timeFormat = "24h", truncateTo10 = false } = option;
+
+  const currDateSec = (Date.now() / 1000) | 0;
+  const resetDateSec = 86400; // 자정 기준 경과 초 / 하루(초)
+
+  // 현실 하루 기준 경과된 초
+  const diffSec = currDateSec % resetDateSec;
+  const offsetSec = 9.009; // 임의의 테스트로 맞춘 보정값 (초 단위)
+
+  // 에린 하루 기준 경과된 초 (음수 결과 방지)
+  const errinSec = (diffSec - offsetSec + REAL_SEC_PER_ERRIN_DAY) % REAL_SEC_PER_ERRIN_DAY;
+
+  const hour = (errinSec / REAL_SEC_PER_ERRIN_HOUR) | 0;
+  const min = ((errinSec % REAL_SEC_PER_ERRIN_HOUR) / REAL_SEC_PER_ERRIN_MIN) | 0;
+
+  // 미세한 성능 향상을 위해 padStart 제거
+  // 오전 / 오후
+  const strMeridiem = hour >= 12 ? "pm" : "am";
+
+  // 시
+  const h = timeFormat === "12h" ? hour % 12 || 12 : hour;
+  const strHour = (h < 10 ? "0" : "") + h;
+
+  // 분
+  const m = truncateTo10 ? min - (min % 10) : min;
+  const strMin = (m < 10 ? "0" : "") + m;
+
+  return { meridiem: strMeridiem, hour: strHour, min: strMin, timeFormat };
+};
+
+export const erinnTimeV1 = (option: ErinnTimeOption = {}): ErinnTimeResult => {
   // 옵션 기본값 정의
   const { timeFormat = "24h", truncateTo10 = false } = option;
 
@@ -32,99 +72,104 @@ export const testErinnTime = (option: ErinnTimeOption = {}) => {
   // 현재시간 - 자정시간
   // 세컨으로 변경 후 에린시간 36분이 하루이므로 초기준으로 나머지에 대한 시간을 구한다.
   const diffSec = Math.floor((currDate.getTime() - resetDate.getTime()) / 1000);
-  const offsetSec = 9.009; // 임의의 테스트로 맞춘값
+  const offsetSec = 9.009; // 임의의 테스트로 맞춘 보정값 (초 단위)
   const errinDaySec = 36 * 60; // 에린 하루(24h) = 36분 = 2160초
 
+  // 에린 하루 기준 경과된 초 (음수 결과 방지)
   const errinSec = (((diffSec - offsetSec) % errinDaySec) + errinDaySec) % errinDaySec;
 
   const hour = Math.floor(errinSec / 90);
   const min = Math.floor((errinSec % 90) / 1.5);
 
+  const strMeridiem = hour >= 12 ? "pm" : "am";
   const strHour = String(timeFormat === "12h" ? hour % 12 || 12 : hour).padStart(2, "0");
   const strMin = String(truncateTo10 ? Math.floor(min / 10) * 10 : min).padStart(2, "0");
 
-  return { meridiem: hour >= 12 ? "pm" : "am", hour: strHour, min: strMin, timeFormat };
+  return { meridiem: strMeridiem, hour: strHour, min: strMin, timeFormat };
 };
 
-// let e = setInterval(() => {
-//   var e;
-//   let n, a, t, c;
-//   l((e) => new Date().getTime()),
-//     s(
-//       ((n = new Date()),
-//       (a = new Date()).setHours(0, 0, 0, 0),
-//       (t = Math.floor((e = Math.round((((n - a) / 1e3) % 2160) - 0)) / 90)),
-//       (c = Math.floor((e % 90) / 1.5)),
-//       (t = i(t.toString(), 2, "0")),
-//       (c = i(c.toString(), 2, "0")),
-//       t.substring(0, 1) + t.substring(1, 2) + ":" + c.substring(0, 1) + c.substring(1, 2))
-//     );
-// }, 1e3);
-
-// 공식 홈페이지의 소스
-// function erinn_time() {
-//   var curr_date = new Date();
-
-//   // 에린시간
-//   var reset_date = new Date();
-//   reset_date.setHours(0, 0, 0, 0);
-
-//   // 현재시간 - 자정시간
-//   // 세컨으로 변경 후 에린시간 36분이 하루이므로 초기준으로 나머지에 대한 시간을 구한다.
-//   var rest_sec = Math.round((((curr_date - reset_date) / 1000) % (36 * 60)) - 24);
-
-//   // 90초가 1시간 / 1.5초가 1분
-//   erinn_hour = Math.floor(rest_sec / 90);
-//   erinn_min = Math.floor((rest_sec % 90) / 1.5);
-
-//   //console.log(erinn_hour + ":" + erinn_min);
-
-//   erinn_hour = lpad(erinn_hour.toString(), 2, "0");
-//   erinn_min = lpad(erinn_min.toString(), 2, "0");
-
-//   $("#erin_time").html(erinn_hour.substring(0, 1) + " " + erinn_hour.substring(1, 2) + " : " + erinn_min.substring(0, 1) + " " + erinn_min.substring(1, 2));
-// }
-
-export const erinn = () => {
-  const currDate: Date = new Date();
+/**
+ * 마비노기 공식 홈페이지에서 추출한 소스 변수만 조금 수정함
+ * 오전 00:00:00 시에 오류 있음 수정 필요함
+ */
+export const erinnTimeOfficial = () => {
+  const curr_date = new Date();
 
   // 에린시간
-  const resetDate = new Date();
-  resetDate.setHours(0, 0, 0, 0);
+  const reset_date = new Date();
+  reset_date.setHours(0, 0, 0, 0);
 
   // 현재시간 - 자정시간
   // 세컨으로 변경 후 에린시간 36분이 하루이므로 초기준으로 나머지에 대한 시간을 구한다.
-  // 에린 하루(24h) = 36분 = 2160초, 24초 오프셋(보정값)은 필요 시 0으로 조정
-  const ERINN_DAY_SEC = 36 * 60; // 에린 하루(24h) = 36분 = 2160초,
-  const OFFSET_SEC = 8.8;
-  const elapsedSec = Math.floor((currDate.getTime() - resetDate.getTime()) / 1000);
-  // 항상 [0, ERINN_DAY_SEC) 범위를 보장하는 양의 모듈러
-  const restSec = (((elapsedSec - OFFSET_SEC) % ERINN_DAY_SEC) + ERINN_DAY_SEC) % ERINN_DAY_SEC;
+  const rest_sec = Math.round((((curr_date.getTime() - reset_date.getTime()) / 1000) % (36 * 60)) - 24);
 
-  // 90초 = 1 에린시간, 1.5초 = 1 에린분
-  const erinnHour = String(Math.floor(restSec / 90)).padStart(2, "0");
-  const erinnMin = String(Math.floor((restSec % 90) / 1.5)).padStart(2, "0");
-  const erinnSec = String(Math.floor(((restSec % 90) % 1.5) / 0.025)).padStart(2, "0");
+  // 90초가 1시간 / 1.5초가 1분
+  const erinn_hour = Math.floor(rest_sec / 90);
+  const erinn_min = Math.floor((rest_sec % 90) / 1.5);
 
-  // let aa = erinnMin;
-  // if (!erinnMin.endsWith("0")) {
-  //   aa = erinnMin[0] + "0";
-  // }
+  const hour = (erinn_hour < 10 ? "0" + erinn_hour : erinn_hour).toString();
+  const min = (erinn_min < 10 ? "0" + erinn_min : erinn_min).toString();
 
-  return { hour: erinnHour, min: erinnMin, sec: erinnSec };
+  return { hour, min };
 };
 
-export function getErinnTime() {
-  const KOREAN_OFFSET = 9;
-  const SECONDS_IN_DAY = 60 * 60 * 24;
-  const FIX_SECONDS = 0 * 60 * 60 - 8 * 60 + 0;
-  const date = new Date();
-  const KoreanHours = (date.getUTCHours() + KOREAN_OFFSET) % 24;
-  const KoreanMinutes = (date.getUTCMinutes() + KOREAN_OFFSET * 60) % 60;
-  const KoreanSeconds = (date.getUTCSeconds() + KOREAN_OFFSET * 60 * 60) % 60;
-  const KoreanTimeInSeconds = KoreanHours * 60 * 60 + KoreanMinutes * 60 + KoreanSeconds;
-  let ErinnTimeInSeconds = KoreanTimeInSeconds * 40;
-  ErinnTimeInSeconds = ErinnTimeInSeconds + FIX_SECONDS;
-  ErinnTimeInSeconds %= SECONDS_IN_DAY;
-  return [Math.floor((ErinnTimeInSeconds / 60 / 60) % 24), Math.floor((ErinnTimeInSeconds / 60) % 60), ErinnTimeInSeconds % 60];
-}
+// export const erinnTimeV3 = (option: ErinnTimeOption = {}): ErinnTimeResult => {
+//   // 옵션 기본값 정의
+//   const { timeFormat = "24h", truncateTo10 = false } = option;
+
+//   const currDate = Date.now();
+//   const resetDate = 86400; // 자정 기준 경과 초
+//   const diffSec = ((currDate / 1000) | 0) % resetDate;
+//   const offsetSec = 9.009; // 임의의 테스트로 맞춘값
+//   const errinDaySec = 2160; // 에린 하루(24h) = 36분 = 2160초
+
+//   // 에린 하루 기준 나머지 초
+//   const errinSec = (((diffSec - offsetSec) % errinDaySec) + errinDaySec) % errinDaySec;
+
+//   // 에린 시/분 계산
+//   const hour = (errinSec / 90) | 0;
+//   let min = ((errinSec % 90) / 1.5) | 0;
+//   if (truncateTo10) min = min - (min % 10);
+
+//   const h = timeFormat === "12h" ? hour % 12 || 12 : hour;
+//   const strHour = (h < 10 ? "0" : "") + h;
+//   const strMin = (min < 10 ? "0" : "") + min;
+
+//   return { meridiem: hour >= 12 ? "pm" : "am", hour: strHour, min: strMin, timeFormat };
+// };
+
+// export const testErinnTime2 = (option: ErinnTimeOption = {}): ErinnTimeResult => {
+//   // 옵션 기본값 정의
+//   const { timeFormat = "24h", truncateTo10 = false } = option;
+
+//   // 현재시간 - 자정시간
+//   // 세컨으로 변경 후 에린시간 36분이 하루이므로 초기준으로 나머지에 대한 시간을 구한다.
+//   const diffSec = ((Date.now() / 1000) | 0) % 86400;
+//   const offsetSec = 9.009; // 임의의 테스트로 맞춘값
+//   const errinDaySec = 2160; // 에린 하루(24h) = 36분 = 2160초
+
+//   const errinSec = (((diffSec - offsetSec) % errinDaySec) + errinDaySec) % errinDaySec;
+
+//   const hour = (errinSec / 90) | 0;
+//   const min = ((errinSec % 90) / 1.5) | 0;
+
+//   const strHour = String(timeFormat === "12h" ? hour % 12 || 12 : hour).padStart(2, "0");
+//   const strMin = String(truncateTo10 ? Math.floor(min / 10) * 10 : min).padStart(2, "0");
+
+//   return { meridiem: hour >= 12 ? "pm" : "am", hour: strHour, min: strMin, timeFormat };
+// };
+
+// export function getErinnTime() {
+//   const KOREAN_OFFSET = 9;
+//   const SECONDS_IN_DAY = 60 * 60 * 24;
+//   const FIX_SECONDS = 0 * 60 * 60 - 8 * 60 + 0;
+//   const date = new Date();
+//   const KoreanHours = (date.getUTCHours() + KOREAN_OFFSET) % 24;
+//   const KoreanMinutes = (date.getUTCMinutes() + KOREAN_OFFSET * 60) % 60;
+//   const KoreanSeconds = (date.getUTCSeconds() + KOREAN_OFFSET * 60 * 60) % 60;
+//   const KoreanTimeInSeconds = KoreanHours * 60 * 60 + KoreanMinutes * 60 + KoreanSeconds;
+//   let ErinnTimeInSeconds = KoreanTimeInSeconds * 40;
+//   ErinnTimeInSeconds = ErinnTimeInSeconds + FIX_SECONDS;
+//   ErinnTimeInSeconds %= SECONDS_IN_DAY;
+//   return [Math.floor((ErinnTimeInSeconds / 60 / 60) % 24), Math.floor((ErinnTimeInSeconds / 60) % 60), ErinnTimeInSeconds % 60];
+// }
