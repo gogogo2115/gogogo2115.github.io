@@ -1,6 +1,6 @@
 // 현실 1.5초 → 에린 1분
 // 현실 시간의 15초 = 에린 시간의 10분
-// 현실 시간의 1분 30초(90초) = 에린 시간의 1시간
+// 현실 시간의 1분 30초 (90초) = 에린 시간의 1시간
 // 현실 시간의 18분 = 에린 시간의 12시간
 // 현실 시간의 36분 = 에린 시간의 하루 에린 시간 24시간(=1일)
 // 현실 시간의 하루 = 에린 시간의 40일
@@ -32,14 +32,18 @@ export const testErinnTime = (option: ErinnTimeOption = {}) => {
   // 현재시간 - 자정시간
   // 세컨으로 변경 후 에린시간 36분이 하루이므로 초기준으로 나머지에 대한 시간을 구한다.
   const diffSec = Math.floor((currDate.getTime() - resetDate.getTime()) / 1000);
-  const offsetSec = 8.8;
+  const offsetSec = 9.009; // 임의의 테스트로 맞춘값
   const errinDaySec = 36 * 60; // 에린 하루(24h) = 36분 = 2160초
 
   const errinSec = (((diffSec - offsetSec) % errinDaySec) + errinDaySec) % errinDaySec;
 
   const hour = Math.floor(errinSec / 90);
   const min = Math.floor((errinSec % 90) / 1.5);
-  return { meridiem: "am", hour, min, timeFormat };
+
+  const strHour = String(timeFormat === "12h" ? hour % 12 || 12 : hour).padStart(2, "0");
+  const strMin = String(truncateTo10 ? Math.floor(min / 10) * 10 : min).padStart(2, "0");
+
+  return { meridiem: hour >= 12 ? "pm" : "am", hour: strHour, min: strMin, timeFormat };
 };
 
 // let e = setInterval(() => {
