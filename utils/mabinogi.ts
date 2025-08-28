@@ -22,9 +22,9 @@ export type ErinnTimeResult = {
 };
 
 // === 상수 정의 ===
-const REAL_SEC_PER_ERRIN_DAY = 2160; // 현실 36분 = 에린 1일
-const REAL_SEC_PER_ERRIN_HOUR = 90; // 현실 90초 = 에린 1시간
-const REAL_SEC_PER_ERRIN_MIN = 1.5; // 현실 1.5초 = 에린 1분
+const REAL_ERRIN_DAY_SEC = 2160; // 현실 36분 = 에린 1일
+const REAL_ERRIN_HOUR_SEC = 90; // 현실 90초 = 에린 1시간
+const REAL_ERRIN_MIN_SEC = 1.5; // 현실 1.5초 = 에린 1분
 
 export const errinTimeV2 = (option: ErinnTimeOption = {}): ErinnTimeResult => {
   // 옵션 기본값 정의
@@ -36,10 +36,10 @@ export const errinTimeV2 = (option: ErinnTimeOption = {}): ErinnTimeResult => {
   const offsetSec = 9.009; // 임의의 테스트로 맞춘 보정값 (초 단위)
 
   // 에린 하루 기준 경과된 초 (음수 결과 방지)
-  const errinSec = (diffSec - offsetSec + REAL_SEC_PER_ERRIN_DAY) % REAL_SEC_PER_ERRIN_DAY;
+  const errinSec = (diffSec - offsetSec + REAL_ERRIN_DAY_SEC) % REAL_ERRIN_DAY_SEC;
 
-  const hour = Math.floor(errinSec / REAL_SEC_PER_ERRIN_HOUR);
-  const min = Math.floor((errinSec % REAL_SEC_PER_ERRIN_HOUR) / REAL_SEC_PER_ERRIN_MIN);
+  const hour = Math.floor(errinSec / REAL_ERRIN_HOUR_SEC);
+  const min = Math.floor((errinSec % REAL_ERRIN_HOUR_SEC) / REAL_ERRIN_MIN_SEC);
 
   // 미세한 성능 향상을 위해 padStart 제거
   // 오전 / 오후
