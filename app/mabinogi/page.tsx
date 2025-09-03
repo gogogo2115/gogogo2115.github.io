@@ -1,6 +1,6 @@
 "use client";
 
-import { ErinnTimeOption, ErinnTimeResult, errinTimeV2 } from "@/utils/mabinogi";
+import { ErinnTimeOption, ErinnTimeResult, errinTimeV2 } from "@/utils/erinnTime";
 import { useEffect, useState } from "react";
 
 export default function MabinogiPage() {
