@@ -33,7 +33,7 @@ export const errinTimeV2 = (option: ErinnTimeOption = {}): ErinnTimeResult => {
   // 현실 하루 기준 경과된 초
   // 현실 자정 이후 경과 초
   const diffSec = Math.floor(Date.now() / 1000) % 86400;
-  const offsetSec = 9.009; // 임의의 테스트로 맞춘 보정값 (초 단위)
+  const offsetSec = 8.909; // 임의의 테스트로 맞춘 보정값 (초 단위)
 
   // 에린 하루 기준 경과된 초 (음수 결과 방지)
   const errinSec = (diffSec - offsetSec + REAL_ERRIN_DAY_SEC) % REAL_ERRIN_DAY_SEC;
