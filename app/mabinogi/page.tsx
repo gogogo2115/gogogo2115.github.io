@@ -3,6 +3,17 @@
 import { ErinnTimeOption, ErinnTimeResult, errinTimeV2 } from "@/utils/erinnTime";
 import { useEffect, useState } from "react";
 
+/**
+ * Client React page component that displays a live Erinn time and controls to toggle format and granularity.
+ *
+ * Renders the current Erinn time (updated every 500ms) using `errinTimeV2` with local options:
+ * - `timeFormat`: "12h" | "24h"
+ * - `truncateTo10`: boolean (10-minute vs 1-minute display)
+ *
+ * The effect computes the time immediately on mount and starts a 500ms interval; the interval is cleared on unmount or when options change.
+ *
+ * @returns The page's JSX element.
+ */
 export default function MabinogiPage() {
   const [errinTimeOpt, setErrinTimeOpt] = useState<ErinnTimeOption>({
     timeFormat: "24h",
