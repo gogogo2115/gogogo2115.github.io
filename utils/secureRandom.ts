@@ -1,15 +1,29 @@
 import { IS_DEVELOPMENT } from "./configNode";
 
 export type BitSize = 0 | 8 | 16 | 32;
-export type secureRandomStatus = "INVALID_BIT_SIZE" | "ZERO_BIT_SIZE" | "CRYPTO_UNSUPPORTED" | "SECURE" | "FAILED";
+export type secureRandomStatus = "INVALID_BIT_SIZE" | "ZERO_BIT_SIZE" | "CRYPTO_UNSUPPORTED" | "CRYPTO_SECURE" | "CRYPTO_FAILED";
 export type SecureRandomResult = {
   isSecure: boolean;
-  value: number;
   status: secureRandomStatus;
+  value: number;
 };
 
 const arrayMap = { 8: Uint8Array, 16: Uint16Array, 32: Uint32Array } as const;
-const maxValues = { 8: 2 ** 8, 16: 2 ** 16, 32: 2 ** 32 } as const;
+const maxValues = {
+  8: 2 ** 8,
+  16: 2 ** 16,
+  32: 2 ** 32,
+} as const;
+
+const toRangeInt = (rand: number, min: number, max: number): number => {
+  const range = max - min;
+  return Math.floor(rand * (range + 1)) + min;
+};
+
+const toRangeFloat = (rand: number, min: number, max: number): number => {
+  const range = max - min;
+  return Math.min(rand * range + min, max);
+};
 
 // Crypto 객체를 캐싱하여 불필요한 반복 로드를 방지
 let cachedCrypto: Crypto | null | undefined = undefined;
@@ -42,16 +56,6 @@ const getWebCrypto = (): Crypto | null => {
   } catch {
     return (cachedCrypto = null);
   }
-};
-
-const toRangeInt = (rand: number, min: number, max: number): number => {
-  const range = max - min;
-  return Math.floor(rand * (range + 1)) + min;
-};
-
-const toRangeFloat = (rand: number, min: number, max: number): number => {
-  const range = max - min;
-  return Math.min(rand * range + min, max);
 };
 
 /**
@@ -89,9 +93,9 @@ export const secureRandom = (bitSize: BitSize = 16): SecureRandomResult => {
 
     const arr = new ArrayType(1);
     cryptoObj.getRandomValues(arr);
-    return { isSecure: true, value: arr[0] / maxValue, status: "SECURE" };
+    return { isSecure: true, value: arr[0] / maxValue, status: "CRYPTO_SECURE" };
   } catch {
-    return { isSecure: false, value: Math.random(), status: "FAILED" };
+    return { isSecure: false, value: Math.random(), status: "CRYPTO_FAILED" };
   }
 };
 
