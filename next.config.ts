@@ -1,10 +1,13 @@
 import type { NextConfig } from "next";
 import { IS_DEVELOPMENT, IS_PRODUCTION } from "./utils/env";
+import { ENV_CONFIG } from "./utils/env.config";
 
 const nextConfig: NextConfig = {
   /* config options here */
   output: "export",
+  reactStrictMode: false,
   reactCompiler: true,
+  env: ENV_CONFIG,
   compiler: {
     removeConsole: IS_PRODUCTION,
   },
