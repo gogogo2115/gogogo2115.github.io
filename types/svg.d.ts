@@ -1,8 +1,8 @@
 // svg.d.ts
 declare module "*.svg" {
   import { FC, SVGProps } from "react";
-  const content: FC<SVGProps<SVGSVGElement>>;
-  export default content;
+  const ReactComponent: FC<SVGProps<SVGSVGElement>>;
+  export default ReactComponent;
 }
 
 declare module "*.svg?url" {
