@@ -21,7 +21,6 @@ const getWebCrypto = (): Crypto | null => {
     // 3) Node.js (require 가능 시)
     if (typeof process !== "undefined" && process.versions?.node) {
       try {
-        // eslint-disable-next-line @typescript-eslint/no-require-imports
         const req = typeof require === "function" ? require : undefined;
         const nodeCrypto = req?.("node:crypto");
         if ("webcrypto" in nodeCrypto && hasGetRandomValues(nodeCrypto.webcrypto)) {
@@ -29,6 +28,7 @@ const getWebCrypto = (): Crypto | null => {
         }
       } catch {}
     }
+
     return (cachedWebCrypto = null);
   } catch {
     return (cachedWebCrypto = null);
