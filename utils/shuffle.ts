@@ -24,13 +24,13 @@ type StringShuffleOptions = {
    * true면 Intl.Segmenter(grapheme)로 “눈에 보이는 글자 단위”로 쪼개서 섞습니다.
    * (지원되지 않는 런타임이면 자동으로 fallback 처리)
    */
-  useGrapheme?: boolean; // true면 Intl.Segmenter 사용
+  useGrapheme?: boolean;
 
   /**
    * Segmenter 로케일 힌트(선택).
    * 생략하면 런타임 기본 로케일을 사용합니다.
    */
-  locale?: string; // 선택: "ko", "en" 등. 생략하면 런타임 기본 로케일
+  locale?: string;
 };
 
 /**
