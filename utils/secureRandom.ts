@@ -1,3 +1,6 @@
+type SecureRandomResult = { isSecure: boolean; status: "unsupported" | "secure" | "error"; value: number; bitSize: 32 | 53 };
+type BitSizeCheckResult = { guess: 32 | 53 | "unknown"; is32: boolean; is53: boolean };
+
 const hasGetRandomValues = (c: unknown): c is Crypto => {
   if (typeof c !== "object" || c === null) return false;
   return "getRandomValues" in c && typeof (c as { getRandomValues?: unknown }).getRandomValues === "function";
@@ -33,8 +36,6 @@ const getWebCrypto = (): Crypto | null => {
   }
 };
 
-type SecureRandomResult = { isSecure: boolean; status: "unsupported" | "secure" | "error"; value: number; bitSize: 32 | 53 };
-
 export const secureRandom = (bitSize: 32 | 53 = 32): SecureRandomResult => {
   const effectiveBitSize: 32 | 53 = bitSize === 53 ? 53 : 32;
 
@@ -65,11 +66,18 @@ export const secureRandom = (bitSize: 32 | 53 = 32): SecureRandomResult => {
   }
 };
 
-export const checkBitSize = (val: number): 32 | 53 | "unknown" => {
-  const is32 = Number.isInteger(val * 4294967296);
-  const is53 = Number.isInteger(val * 9007199254740992);
+export const checkBitSize = (val: number): BitSizeCheckResult => {
+  if (!Number.isFinite(val) || val < 0 || val >= 1) {
+    return { guess: "unknown", is32: false, is53: false };
+  }
 
-  if (is32) return 32; // 32비트 배수라면 32비트일 확률이 높음
-  if (is53) return 53; // 32비트 배수가 아닌데 53비트 배수라면 확실히 53비트
-  return "unknown";
+  const is32 = Number.isInteger(val * 0x100000000); // 2^32
+  const is53 = Number.isInteger(val * 0x20000000000000); // 2^53
+
+  // 추정 규칙(오판 줄이기용 휴리스틱)
+  // - 32 격자에 안 맞고 53 격자에만 맞으면 53일 가능성이 상대적으로 큼
+  // - 32 격자에 맞으면 32일 가능성이 큼(단, 53도 일부는 여기에 걸릴 수 있음)
+  const guess: 32 | 53 | "unknown" = is53 && !is32 ? 53 : is32 ? 32 : is53 ? 53 : "unknown";
+
+  return { guess, is32, is53 };
 };
