@@ -4,7 +4,7 @@ const isClient = typeof window !== "undefined";
 if (isClient) throw new Error("env.config: 보안상 서버환경에서만 실행이 가능합니다.");
 
 import { execSync } from "child_process";
-import { randomInt } from "crypto";
+import { generateKeyPairSync, randomInt } from "crypto";
 import { stringShuffle } from "./shuffle";
 import { readFileSync } from "fs";
 import { join } from "path";
@@ -45,13 +45,15 @@ const BUILD_RAND_KEY = (() => {
 
     return `${gitShortSha()}${key}${suffix}`;
   } catch (e) {
-    const msg = e instanceof Error && typeof e.message ? e.message : "알 수 업는 오류";
+    const msg = e instanceof Error && typeof e.message ? e.message : "알 수 업는 오류 발생";
     throw new Error(`BUILD_RAND_KEY: ${msg}`);
   }
 })();
 
 const { PACKAGE_NAME, PACKAGE_VERSION, PACKAGE_NEXT_VERSION, PACKAGE_REACT_VERSION } = (() => {
   try {
+    if (isClient) throw new Error("보안상 서버환경에서만 실행이 가능합니다.");
+
     const packagePath = join(process.cwd(), "package.json");
     const packageContent = readFileSync(packagePath, "utf-8");
     const { name, version, dependencies } = JSON.parse(packageContent);
@@ -63,8 +65,33 @@ const { PACKAGE_NAME, PACKAGE_VERSION, PACKAGE_NEXT_VERSION, PACKAGE_REACT_VERSI
       PACKAGE_REACT_VERSION: cleanVersion(dependencies?.react),
     };
   } catch (error) {
-    const message = error instanceof Error ? error.message : "알 수 없는 오류";
+    const message = error instanceof Error ? error.message : "알 수 없는 오류 발생";
     throw new Error(`BUILD_PACKAGE_VERSION 생성 실패: ${message}`);
+  }
+})();
+
+const { BUILD_RSA_PUBLIC_KEY, BUILD_RSA_PRIVATE_KEY } = (() => {
+  try {
+    if (isClient) throw new Error("보안상 서버환경에서만 실행이 가능합니다.");
+
+    const { publicKey, privateKey } = generateKeyPairSync("rsa", {
+      modulusLength: 2048,
+      publicKeyEncoding: { type: "spki", format: "pem" },
+      privateKeyEncoding: { type: "pkcs8", format: "pem", cipher: "aes-256-cbc", passphrase: BUILD_RAND_KEY },
+    });
+
+    // 문자열 길이 및 존재 여부 검증
+    if (!publicKey || publicKey.length < 100 || !privateKey || privateKey.length < 100) {
+      throw new Error("생성된 키의 형식이 올바르지 않거나 길이가 너무 짧습니다.");
+    }
+
+    return {
+      BUILD_RSA_PUBLIC_KEY: Buffer.from(publicKey, "utf8").toString("base64"),
+      BUILD_RSA_PRIVATE_KEY: Buffer.from(privateKey, "utf8").toString("base64"),
+    };
+  } catch (e) {
+    const message = e instanceof Error ? e.message : "알 수 없는 오류 발생";
+    throw new Error(`BUILD_RSA_KEY 생성 실패: ${message}`);
   }
 })();
 
@@ -76,4 +103,7 @@ export const ENV_BUILD = {
   PACKAGE_VERSION,
   PACKAGE_NEXT_VERSION,
   PACKAGE_REACT_VERSION,
+
+  BUILD_RSA_PUBLIC_KEY,
+  BUILD_RSA_PRIVATE_KEY,
 };

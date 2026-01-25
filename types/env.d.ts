@@ -7,5 +7,10 @@ namespace NodeJS {
     readonly PACKAGE_VERSION: string;
     readonly PACKAGE_NEXT_VERSION: string;
     readonly PACKAGE_REACT_VERSION: string;
+
+    readonly BUILD_RSA_PUBLIC_KEY: string;
+    /* 보안 정책상 활성화 하지 말 것
+    readonly BUILD_RSA_PRIVATE_KEY: string;
+    */
   }
 }
