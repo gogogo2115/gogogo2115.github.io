@@ -6,8 +6,10 @@ if (isClient) throw new Error("env.config: 보안상 서버환경에서만 실�
 import { execSync } from "child_process";
 import { randomInt } from "crypto";
 import { stringShuffle } from "./shuffle";
+import { readFileSync } from "fs";
+import { join } from "path";
 
-const gitShortSha = () => {
+const gitShortSha = (): string => {
   try {
     const gitShortSha = execSync("git rev-parse --short HEAD", { encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] }).trim() ?? "";
     return `${gitShortSha || ""}`;
@@ -16,13 +18,17 @@ const gitShortSha = () => {
   }
 };
 
+const cleanVersion = (v?: string): string => {
+  return typeof v === "string" && v.trim().length >= 1 ? v.replace(/[\^~]/g, "") : "unknown";
+};
+
 const BUILD_DATE_ISO = new Date().toISOString();
 
 const BUILD_RAND_KEY = (() => {
   try {
     if (isClient) throw new Error("보안상 서버환경에서만 실행이 가능합니다.");
 
-    const length: number = 12;
+    const length: number = 16;
 
     const chars = stringShuffle("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz");
     if (!chars) throw new Error("chars 길이는 1 이상의 값이어야 합니다.");
@@ -44,7 +50,30 @@ const BUILD_RAND_KEY = (() => {
   }
 })();
 
+const { PACKAGE_NAME, PACKAGE_VERSION, PACKAGE_NEXT_VERSION, PACKAGE_REACT_VERSION } = (() => {
+  try {
+    const packagePath = join(process.cwd(), "package.json");
+    const packageContent = readFileSync(packagePath, "utf-8");
+    const { name, version, dependencies } = JSON.parse(packageContent);
+
+    return {
+      PACKAGE_NAME: cleanVersion(name),
+      PACKAGE_VERSION: cleanVersion(version),
+      PACKAGE_NEXT_VERSION: cleanVersion(dependencies?.next),
+      PACKAGE_REACT_VERSION: cleanVersion(dependencies?.react),
+    };
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "알 수 없는 오류";
+    throw new Error(`BUILD_PACKAGE_VERSION 생성 실패: ${message}`);
+  }
+})();
+
 export const ENV_BUILD = {
   BUILD_DATE_ISO,
   BUILD_RAND_KEY,
+
+  PACKAGE_NAME,
+  PACKAGE_VERSION,
+  PACKAGE_NEXT_VERSION,
+  PACKAGE_REACT_VERSION,
 };
