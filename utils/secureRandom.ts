@@ -48,9 +48,16 @@ export const secureRandom = (bitSize: BitSize = 53, options: SecureRandomOptions
 
     if (!Number.isFinite(value) || Number.isNaN(value)) throw new Error(`secureRandom produced invalid number: ${String(value)}`);
     if (value < 0 || value >= 1) throw new Error(`secureRandom out of range [0,1): ${value}`);
+
+    if (debug) {
+      console.debug("[secureRandom] success:", { bitSize, value });
+    }
+
     return value;
   } catch (error) {
-    if (debug) console.debug("[secureRandom] failed:", error);
+    if (debug) {
+      console.debug("[secureRandom] failed:", error instanceof Error && typeof error.message === "string" ? error.message : "unknown error", error);
+    }
     return null;
   }
 };
