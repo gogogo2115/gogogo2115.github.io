@@ -32,7 +32,7 @@ export const secureRandom = (bitSize: BitSize = 53, options: SecureRandomOptions
 
   try {
     const crypto = getWebCrypto();
-    if (!crypto) throw new Error("WebCrypto unavailable");
+    if (!crypto) throw new Error("WebCrypto 미지원 또는 사용이 불가능한 환경");
 
     let value: number;
 
@@ -46,8 +46,8 @@ export const secureRandom = (bitSize: BitSize = 53, options: SecureRandomOptions
       value = u32[0] / 0x100000000; // / 2^32
     }
 
-    if (!Number.isFinite(value) || Number.isNaN(value)) throw new Error(`secureRandom produced invalid number: ${String(value)}`);
-    if (value < 0 || value >= 1) throw new Error(`secureRandom out of range [0,1): ${value}`);
+    if (!Number.isFinite(value) || Number.isNaN(value)) throw new Error(`결과 값 오류, ${String(value)}`);
+    if (value < 0 || value >= 1) throw new Error(`범위 오류 [0,1), ${value}`);
 
     if (debug) {
       console.debug("[secureRandom] success:", { bitSize, value });
@@ -56,7 +56,8 @@ export const secureRandom = (bitSize: BitSize = 53, options: SecureRandomOptions
     return value;
   } catch (error) {
     if (debug) {
-      console.debug("[secureRandom] failed:", error instanceof Error && typeof error.message === "string" ? error.message : "unknown error", error);
+      const msg = error instanceof Error && typeof error.message === "string" ? error.message : "알 수 없는 오류";
+      console.debug("[secureRandom] failed:", msg, error);
     }
     return null;
   }
