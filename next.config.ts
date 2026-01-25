@@ -1,13 +1,13 @@
 import type { NextConfig } from "next";
-import { IS_DEVELOPMENT, IS_PRODUCTION } from "./utils/env";
-import { ENV_CONFIG } from "./utils/env.config";
+import { IS_PRODUCTION } from "./utils/env.config";
+import { ENV_BUILD } from "./utils/env.build";
 
 const nextConfig: NextConfig = {
   /* config options here */
   output: "export",
   reactStrictMode: false,
   reactCompiler: true,
-  env: ENV_CONFIG,
+  env: ENV_BUILD,
   compiler: {
     removeConsole: IS_PRODUCTION,
   },
@@ -16,10 +16,10 @@ const nextConfig: NextConfig = {
     return config;
   },
   turbopack: {
-    debugIds: IS_DEVELOPMENT,
-    rules: {
-      "*.svg": { loaders: ["@svgr/webpack"], as: "*.js" },
-    },
+    rules: { "*.svg": { loaders: ["@svgr/webpack"], as: "*.js" } },
+  },
+  sassOptions: {
+    implementation: "sass-embedded",
   },
 };
 
