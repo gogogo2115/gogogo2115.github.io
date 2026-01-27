@@ -25,10 +25,10 @@ export const arrayShuffle = <T>(arr?: readonly T[] | null, randomFn: RandomFunct
   const len = target.length;
   if (len <= 1) return target;
 
-  const rnd = createSafeRandom(randomFn);
+  const rand = createSafeRandom(randomFn);
 
   for (let i = len - 1; i > 0; i--) {
-    const j = Math.floor(rnd() * (i + 1));
+    const j = Math.floor(rand() * (i + 1));
     const tmp = target[i];
     target[i] = target[j];
     target[j] = tmp;
@@ -37,12 +37,12 @@ export const arrayShuffle = <T>(arr?: readonly T[] | null, randomFn: RandomFunct
   return target;
 };
 
-export const stringShuffle = (s?: unknown, randomFn: RandomFunction = Math.random) => {
-  if (typeof s !== "string" || s.length === 0) return "";
-  if (s.length <= 1) return s;
+export const stringShuffle = (str?: unknown, randomFn: RandomFunction = Math.random) => {
+  if (typeof str !== "string" || str.length === 0) return "";
+  if (str.length <= 1) return str;
 
-  const parts = Array.from(s);
-  if (parts.length <= 1) return s;
+  const parts = Array.from(str);
+  if (parts.length <= 1) return str;
 
   return arrayShuffle(parts, randomFn).join("");
 };
