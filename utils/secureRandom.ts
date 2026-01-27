@@ -49,9 +49,7 @@ export const secureRandom = (bitSize: BitSize = 53, options: SecureRandomOptions
     if (!Number.isFinite(value) || Number.isNaN(value)) throw new Error(`결과 값 오류, ${String(value)}`);
     if (value < 0 || value >= 1) throw new Error(`범위 오류 [0,1), ${value}`);
 
-    if (debug) {
-      console.debug("[secureRandom] success:", { bitSize, value });
-    }
+    if (debug) console.debug("[secureRandom] success:", { bitSize, value });
 
     return value;
   } catch (error) {
