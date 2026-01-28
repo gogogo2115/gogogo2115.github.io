@@ -17,7 +17,7 @@ const normalizedValue = (value: unknown, caseSensitive?: boolean): Value | undef
 
 const normalizedSet = (arr: readonly Value[], caseSensitive?: boolean) => {
   const set = new Set<Value>();
-  if (!Array.isArray(arr) || arr.length <= 0) return set;
+  if (!Array.isArray(arr) || arr.length === 0) return set;
   for (const candidate of arr) {
     const normalized = normalizedValue(candidate, caseSensitive);
     if (normalized !== undefined) set.add(normalized);
@@ -36,6 +36,7 @@ export const parseBoolean = (value: unknown, options: ParseBooleanOptions = {}):
   if (normalized === undefined) return undefined;
 
   if (typeof normalized === "boolean") return normalized;
+
   if (STRICT_TRUE_VALUES.has(normalized)) return true;
   if (STRICT_FALSE_VALUES.has(normalized)) return false;
 
