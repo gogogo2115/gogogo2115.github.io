@@ -59,8 +59,8 @@ export const secureRandom = (bitSize: BitSize = 53, options: SecureRandomOptions
     return value;
   } catch (error) {
     if (debug) {
-      const msg = error instanceof Error && typeof error.message === "string" ? error.message : "알 수 없는 오류";
-      console.debug("[secureRandom] 실패:", msg, error);
+      const message = error instanceof Error && typeof error.message === "string" ? error.message : "알 수 없는 오류";
+      console.debug("[secureRandom] 실패:", message, error);
     }
     return null;
   }
