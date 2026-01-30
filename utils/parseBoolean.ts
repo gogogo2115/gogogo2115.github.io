@@ -28,7 +28,7 @@ const normalizedSet = (arr: readonly Value[], caseSensitive?: boolean) => {
 };
 
 export const createParserBoolean = (options: ParseBooleanOptions = {}) => {
-  const { caseSensitive = false, extendTrueValues = [], extendFalseValues = [] } = options;
+  const { caseSensitive = true, extendTrueValues = [], extendFalseValues = [] } = options;
 
   const EXTEND_TRUE_VALUES = normalizedSet(extendTrueValues, caseSensitive);
   const EXTEND_FALSE_VALUES = normalizedSet(extendFalseValues, caseSensitive);
