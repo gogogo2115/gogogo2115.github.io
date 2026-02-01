@@ -38,7 +38,7 @@ const getUnknown = (obj: unknown, key: string): unknown | undefined => {
 
 export const errorInfo = (error: unknown): ErrorInfo => {
   if (error === null || typeof error !== "object") {
-    return { type: typeof error, message: "", stack: String(error) };
+    return { type: error === null ? "null" : typeof error, message: "", stack: String(error) };
   }
 
   const isDOMException = typeof DOMException !== "undefined" && error instanceof DOMException;
