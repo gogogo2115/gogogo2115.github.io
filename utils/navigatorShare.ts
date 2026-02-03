@@ -13,6 +13,11 @@ export const isNavigatorCanShareSupported = (): boolean => {
   return typeof navigator !== "undefined" && "canShare" in navigator && typeof navigator.canShare === "function";
 };
 
+const isFile = (v: unknown): v is File => {
+  if (typeof File !== "undefined" && v instanceof File) return true;
+  return typeof v === "object" && v !== null && Object.prototype.toString.call(v) === "[object File]";
+};
+
 const validateShareData = (data?: ShareData) => {
   if (!data || typeof data !== "object") return { hasTextual: false, hasFiles: false };
 
@@ -21,7 +26,7 @@ const validateShareData = (data?: ShareData) => {
   const text = typeof data.text === "string" ? data.text.trim() : "";
 
   const hasTextual = Boolean(title || url || text);
-  const hasFiles = Array.isArray(data.files) && data.files.length > 0;
+  const hasFiles = Array.isArray(data.files) && data.files.length > 0 && data.files.every(isFile);
 
   return { hasTextual, hasFiles };
 };
@@ -36,7 +41,6 @@ export const navigatorShare = async (data?: ShareData): Promise<NavigatorShareRe
     return { success: false, status: "invalid-share-data" };
   }
 
-  // 파일 공유인 경우, canShare 지원 브라우저에서는 사전 검증
   if (hasFiles && isNavigatorCanShareSupported()) {
     try {
       if (!navigator.canShare(data)) {
