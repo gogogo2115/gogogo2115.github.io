@@ -1,7 +1,7 @@
 import { errorInfo } from "@/utils/errorInfo";
 
-export type NavigatorShareStatus = "unsupported" | "invalid-share-data" | "unsupported-share-data" | "aborted" | "failed" | "success";
-export type NavigatorShareResult =
+type NavigatorShareStatus = "unsupported" | "invalid-share-data" | "unsupported-share-data" | "aborted" | "failed" | "success";
+type NavigatorShareResult =
   | { success: true; status: "success" } // 성공
   | { success: false; status: Exclude<NavigatorShareStatus, "success">; error?: unknown }; // 실패
 
