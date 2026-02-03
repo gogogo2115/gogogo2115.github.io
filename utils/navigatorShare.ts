@@ -36,12 +36,14 @@ export const navigatorShare = async (data?: ShareData): Promise<NavigatorShareRe
     return { success: false, status: "invalid-share-data" };
   }
 
+  // 파일 공유인 경우, canShare 지원 브라우저에서는 사전 검증
   if (hasFiles && isNavigatorCanShareSupported()) {
     try {
       if (!navigator.canShare(data)) {
         return { success: false, status: "unsupported-share-data" };
       }
     } catch (e) {
+      // canShare 구현 편차/버그/예외를 안전하게 처리
       return { success: false, status: "unsupported-share-data", error: e };
     }
   }
@@ -52,8 +54,9 @@ export const navigatorShare = async (data?: ShareData): Promise<NavigatorShareRe
   } catch (e) {
     const { name, code } = errorInfo(e);
 
-    if (name === "AbortError" && code === 20) {
-      return { success: false, status: "failed", error: e };
+    // 사용자가 공유 UI를 닫거나 취소한 경우가 일반적으로 AbortError
+    if (name === "AbortError" || code === 20) {
+      return { success: false, status: "aborted", error: e };
     }
 
     return { success: false, status: "failed", error: e };
