@@ -1,5 +1,9 @@
 type Value = string | number | boolean;
 type ParseBooleanOptions = {
+  /**
+   * - true  : 지정된 케이스만 허용 (예: "true", "True", "TRUE"만 허용. "tRuE"는 불허)
+   * - false : 문자열을 소문자 정규화해서 비교 (예: "tRuE"도 허용됨)
+   */
   caseSensitive?: boolean;
   extendTrueValues?: readonly Value[];
   extendFalseValues?: readonly Value[];
@@ -48,16 +52,17 @@ export const createParserBoolean = (options: ParseBooleanOptions = {}) => {
     return undefined;
   };
 
-  return {
-    parseBoolean,
-    isParseBoolean: (value: unknown): boolean => parseBoolean(value) !== undefined,
+  const isParseBoolean = (value: unknown): boolean => {
+    return parseBoolean(value) !== undefined;
   };
-};
 
-export const isParseBoolean = (value: unknown, options: ParseBooleanOptions = {}): boolean => {
-  return createParserBoolean(options).isParseBoolean(value);
+  return { parseBoolean, isParseBoolean };
 };
 
 export const parseBoolean = (value: unknown, options: ParseBooleanOptions = {}): boolean | undefined => {
   return createParserBoolean(options).parseBoolean(value);
+};
+
+export const isParseBoolean = (value: unknown, options: ParseBooleanOptions = {}): boolean => {
+  return createParserBoolean(options).isParseBoolean(value);
 };
