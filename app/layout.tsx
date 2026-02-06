@@ -2,8 +2,11 @@ import "@/styles/globals.css";
 import type { ReactNode } from "react";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { QueryStreamingProvider } from "@/lib/query/providers/QueryStreamingProvider";
 import { GoogleAnalytics } from "@next/third-parties/google";
+
+import { StoreProvider } from "@/lib/store/StoreProvider";
+import { QueryStreamingProvider } from "@/lib/query/providers/QueryStreamingProvider";
+
 import { IS_PRODUCTION } from "@/utils/env.config";
 
 type RootLayoutProps = Readonly<{ children: ReactNode }>;
@@ -22,7 +25,10 @@ export default function RootLayout({ children }: RootLayoutProps) {
     <html lang="ko-KR" dir="ltr">
       <head></head>
       <body id="__next" className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <QueryStreamingProvider>{children}</QueryStreamingProvider>
+        <StoreProvider>
+          <QueryStreamingProvider>{children}</QueryStreamingProvider>
+        </StoreProvider>
+
         {IS_PRODUCTION && <GoogleAnalytics gaId={"G-MR7CLCCCQP"} />}
       </body>
     </html>
