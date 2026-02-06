@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { QueryStreamingProvider } from "@/lib/query/providers/QueryStreamingProvider";
+import { GoogleAnalytics } from "@next/third-parties/google";
 
 type RootLayoutProps = Readonly<{ children: ReactNode }>;
 
@@ -21,6 +22,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
       <head></head>
       <body id="__next" className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <QueryStreamingProvider>{children}</QueryStreamingProvider>
+        <GoogleAnalytics gaId={"G-MR7CLCCCQP"} />
       </body>
     </html>
   );
