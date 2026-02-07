@@ -6,6 +6,6 @@ export const metadata: Metadata = {
   keywords: ["CSS color names", "named colors", "web color"],
 };
 
-export default function ColorCssColorNamePage() {
+export default function ColorCssColorNamesPage() {
   return <></>;
 }

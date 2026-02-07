@@ -6,6 +6,6 @@ export const metadata: Metadata = {
   keywords: ["color contrast checker", "색상 대비 검사기", "WCAG contrast ratio"],
 };
 
-export default function ColorContrastPage() {
+export default function ColorContrastCheckerPage() {
   return <></>;
 }

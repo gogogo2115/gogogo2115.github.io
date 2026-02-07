@@ -6,6 +6,6 @@ export const metadata: Metadata = {
   keywords: ["Web Safe Color Chart", "web safe colors", "웹 안전 색상"],
 };
 
-export default function ColorWebSafePage() {
+export default function ColorWebSafeColorsPage() {
   return <></>;
 }
